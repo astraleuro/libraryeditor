@@ -28,7 +28,30 @@ void JsonBase::remove(QStringList path)
     }
 }
 
-void JsonBase::append(QJsonValue json, QStringList path)
+void JsonBase::remove(int index)
+{
+    JsonBaseItem *item = baseCache[index];
+    if (item != NULL) {
+        JsonBaseItem *root = baseCache[item->parentIndex];
+        if (root->type == Object || root->type == Array)
+            for (int key = 0; key < root->childItems.count(); key++)
+                if (root->childItems[key].currentIndex == index) {
+                    root->childKeys.remove(index);
+                    root->childItems.remove(index);
+                    if (root->type == Array)
+                        for (int i = index; i < root->childKeys.count(); i++)
+                            root->childKeys[i] = QString::number(i);
+                    break;
+                }
+    }
+}
+
+QJsonValue JsonBase::takeAt(int index)
+{
+
+}
+
+int JsonBase::append(QJsonValue json, QStringList path)
 {
     if (!json.isUndefined() && !path.isEmpty()) {
         JsonBaseItem *root = find(baseRoot, path);
@@ -46,49 +69,57 @@ void JsonBase::append(QJsonValue json, QStringList path)
                 append(*root, json, root->parentIndex);
             else if (root->type != Array)
                 append(*root, json.toArray(), root->parentIndex);
+            return root->currentIndex;
         }
     }
+    return -1;
+}
+
+int JsonBase::append(QJsonValue json, int index)
+{
+
 }
 
 void JsonBase::append(JsonBaseItem &root, QJsonObject json, int parentIndex)
 {
-    int currentIndex = baseCache.append(&root);
-    root.parentIndex = parentIndex;
     root.type = Object;
+    root.currentIndex = baseCache.append(&root);
+    root.parentIndex = parentIndex;
     for (QString key : json.keys()) {
         if (!json[key].isUndefined()) {
             increase(root);
             root.childKeys.last() = key;
             if (json[key].isObject())
-                append(root.childItems.last(), json[key].toObject(), currentIndex);
+                append(root.childItems.last(), json[key].toObject(), root.currentIndex);
             else if (json[key].isArray())
-                append(root.childItems.last(), json[key].toArray(), currentIndex);
+                append(root.childItems.last(), json[key].toArray(), root.currentIndex);
             else
-                append(root.childItems.last(), json[key], currentIndex);
+                append(root.childItems.last(), json[key], root.currentIndex);
         }
     }
 }
 
 void JsonBase::append(JsonBaseItem &root, QJsonArray json, int parentIndex)
 {
-    int currentIndex = baseCache.append(&root);
-    root.parentIndex = parentIndex;
     root.type = Array;
+    root.currentIndex = baseCache.append(&root);
+    root.parentIndex = parentIndex;
     for (int key = 0; key < json.count(); key++)
         if (!json[key].isUndefined()) {
             increase(root);
             root.childKeys.last() = QString::number(key);
             if (json[key].isObject())
-                append(root.childItems.last(), json[key].toObject(), currentIndex);
+                append(root.childItems.last(), json[key].toObject(), root.currentIndex);
             else
-                append(root.childItems.last(), json[key], currentIndex);
+                append(root.childItems.last(), json[key], root.currentIndex);
         }
 }
 
 void JsonBase::append(JsonBaseItem  &root, QJsonValue json, int parentIndex)
 {
-    root.parentIndex = parentIndex;
     root.type = Value;
+    root.currentIndex = baseCache.append(&root);
+    root.parentIndex = parentIndex;
     root.value = json;
 }
 

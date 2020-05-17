@@ -29,7 +29,7 @@ public:
     T* operator[](int index)
     {
         if (index >= 0 && index <= lastIndex)
-            return items[index];
+            return items[index].item;
     };
     void clear() {
         lastIndex = 0;

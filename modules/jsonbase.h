@@ -11,10 +11,10 @@
 #include "cachebase.h"
 
 enum JsonBaseItemType {
-    Undefined,
-    Object,
-    Array,
-    Value
+    Undefined = 0,
+    Object = 1,
+    Array = 2,
+    Value = 3
 };
 
 struct JsonBaseItem
@@ -24,6 +24,7 @@ struct JsonBaseItem
     QVector<JsonBaseItem> childItems;
     JsonBaseItemType type = Undefined;
     int parentIndex = -1;
+    int currentIndex = -1;
 };
 
 class JsonBase
@@ -32,16 +33,19 @@ public:
     JsonBase() {};
     void fromJson(QJsonObject json);
     QJsonObject toJson();
-    void append(QJsonValue json, QStringList path);
+    int append(QJsonValue json, QStringList path);
+    int append(QJsonValue json, int index);
     void remove(QStringList path);
+    void remove(int index);
+    QJsonValue takeAt(int index);
 protected:
     void append(JsonBaseItem &root, QJsonObject json, int parentIndex);
     void append(JsonBaseItem &root, QJsonArray json, int parentIndex);
     void append(JsonBaseItem &root, QJsonValue json, int parentIndex);
-    JsonBaseItem *find(JsonBaseItem &root, QStringList path);
-    int indexOf(JsonBaseItem &root, QString key);
-    JsonBaseItem *takeAt(JsonBaseItem &root, int key);
     void increase(JsonBaseItem &root);
+    int indexOf(JsonBaseItem &root, QString key);
+    JsonBaseItem *find(JsonBaseItem &root, QStringList path);
+    JsonBaseItem *takeAt(JsonBaseItem &root, int key);
     QJsonValue toJson(JsonBaseItem &root);
 protected:
     JsonBaseItem baseRoot;
