@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
         path.clear();
         path << "arg1";
         base.remove(path);
+        path.clear();
+        path << "obj1" << "arg3";
+        base.move(0, base.indexOf(path), "arg3");
         if (file.open("levels_new.json", QIODevice::WriteOnly)) {
             QJsonDocument jsonDocument(base.toJson());
             file.write(jsonDocument.toJson());

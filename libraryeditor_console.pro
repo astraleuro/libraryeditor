@@ -20,8 +20,7 @@ SOURCES += \
         main.cpp \
         modules/filebase.cpp \
         modules/fsprocessor.cpp \
-        modules/jsonbase.cpp \
-        modules/settings.cpp
+        modules/jsonbase.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -29,8 +28,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    modules/cachebase.h \
     modules/filebase.h \
     modules/fsprocessor.h \
     modules/jsonbase.h \
-    modules/settings.h
+    modules/templates.h
