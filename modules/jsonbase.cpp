@@ -49,6 +49,11 @@ void JsonBase::remove(int index)
     }
 }
 
+bool JsonBase::isValid(JsonBase &schema)
+{
+    return isValid(baseRoot, schema.baseRoot);
+}
+
 QJsonValue JsonBase::takeAt(int index)
 {
     JsonBaseItem *root = baseCache[index];
@@ -310,6 +315,57 @@ QJsonValue JsonBase::toJson(JsonBaseItem *root)
         break;
     }
     return QJsonValue();
+}
+
+bool JsonBase::isValid(JsonBaseItem *root, JsonBaseItem *schema)
+{
+    if (root != NULL && schema != NULL) {
+        if (root->type == schema->type) {
+            if (root->type == Object) {
+                if (root->childKeys.count() == schema->childKeys.count()) {
+                    int keyIndex = -1;
+                    for (int i = 0; i < root->childKeys.count(); i++) {
+                        keyIndex = indexOf(schema, root->childKeys[i]);
+                        if (keyIndex == -1)
+                            return false;
+                        if (root->childItems[i]->type == schema->childItems[keyIndex]->type) {
+                            if (!isValid(root->childItems[i], schema->childItems[keyIndex]))
+                                return false;
+                        } else
+                            return false;
+                    }
+                } else
+                    return false;
+                return true;
+            } else if (root->type == Array) {
+                bool isExist = true;
+                for (int i = 0; i < root->childItems.count(); i++) {
+                    if (root->childItems[i]->type == Value) {
+                        isExist = false;
+                        for (int j = 0; j < schema->childItems.count(); j++)
+                            if (schema->childItems[j]->type == Value) {
+                                isExist = true;
+                                break;
+                            }
+                    } else {
+                        isExist = false;
+                        for (int j = 0; j < schema->childItems.count(); j++)
+                            if (schema->childItems[j]->type == Object) {
+                                isExist = isValid(root->childItems[i], schema->childItems[j]);
+                                if (isExist)
+                                    break;
+                            }
+                        if (!isExist)
+                            return false;
+                    }
+                }
+                return isExist;
+            } else
+                return true;
+        } else
+            return false;
+    } else
+        return false;
 }
 
 void JsonBase::clear(JsonBaseItem *root)

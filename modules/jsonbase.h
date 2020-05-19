@@ -11,10 +11,10 @@
 #include "templates.h"
 
 enum JsonBaseItemType {
-    Undefined = 0,
-    Object = 1,
-    Array = 2,
-    Value = 3
+    Undefined,
+    Object,
+    Array,
+    Value
 };
 
 struct JsonBaseItem
@@ -31,6 +31,7 @@ class JsonBase
 {
 public:
     JsonBase() {};
+    JsonBase(QJsonObject json) {fromJson(json);};
     ~JsonBase() {clear(baseRoot);};
     void fromJson(QJsonObject json);
     QJsonObject toJson();
@@ -41,6 +42,7 @@ public:
     void move(int parentIndex, int index, QString key);
     void remove(QStringList path);
     void remove(int index);
+    bool isValid(JsonBase &schema);
 protected:
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);
     void append(JsonBaseItem *root, QJsonArray json, int parentIndex);
@@ -51,6 +53,7 @@ protected:
     JsonBaseItem *find(JsonBaseItem *root, QStringList path);
     JsonBaseItem *takeAt(JsonBaseItem *root, int key);
     QJsonValue toJson(JsonBaseItem *root);
+    bool isValid(JsonBaseItem *root, JsonBaseItem *schema);
     void clear(JsonBaseItem *root);
 protected:
     JsonBaseItem *baseRoot = NULL;

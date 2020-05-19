@@ -93,8 +93,22 @@ QString toTranslit(QString str, LetterCase letterCase)
     return tr;
 }
 
-bool FileProcessor::open(QString path, QIODevice::OpenMode mode)
+bool FileProcessor::openFile(QString path, QIODevice::OpenMode mode)
 {
     setFileName(path);
     return QFile::open(mode);
+}
+
+bool DirProcessor::openDir(QString path, QString extensions, bool mk)
+{
+    path = QDir::toNativeSeparators(path);
+    if (!exists(path) && mk)
+        mkdir(path);
+    if (exists(path)) {
+        setPath(path);
+        setNameFilters(extensions.split('|'));
+        setFilter(QDir::Files | QDir::AllDirs | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
+        return true;
+    } else
+        return false;
 }
