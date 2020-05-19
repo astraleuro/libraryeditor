@@ -1,4 +1,5 @@
 #include <QCoreApplication>
+#include <QDebug>
 #include <QString>
 #include <QJsonDocument>
 #include "modules/jsonbase.h"
@@ -52,6 +53,9 @@ int main(int argc, char *argv[])
         files.openDir("load", "*.jpg|*,png", true);
         QStringList list = files.entryList();
         list.clear();*/
+
+        //QRegExp rx("^[{][a-zA-Z0-9]*[}]$");
+        //qDebug() << rx.errorString();
     }
     return a.exec();
 }

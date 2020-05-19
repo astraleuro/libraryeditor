@@ -54,6 +54,26 @@ bool JsonBase::isValid(JsonBase &schema)
     return isValid(baseRoot, schema.baseRoot);
 }
 
+bool JsonBase::merge(JsonBase &fromBase, JsonBase &schema)
+{
+    return merge(baseRoot, fromBase.baseRoot, schema.baseRoot);
+}
+
+int JsonBase::countOf(JsonBaseItem *root, QRegExp regExp)
+{
+    if (root != NULL) {
+        if (root->type == Object) {
+            int count = 0;
+            for (int i = 0; i < root->childKeys.count(); i++)
+                if (regExp.exactMatch(root->childKeys[i]))
+                    count++;
+            return count;
+        } else
+            return 0;
+    } else
+        return 0;
+}
+
 QJsonValue JsonBase::takeAt(int index)
 {
     JsonBaseItem *root = baseCache[index];
@@ -288,6 +308,11 @@ void JsonBase::increase(JsonBaseItem *root)
     root->childItems.last() = new JsonBaseItem;
 }
 
+bool JsonBase::merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema)
+{
+
+}
+
 QJsonValue JsonBase::toJson(JsonBaseItem *root)
 {
     QJsonObject object;
@@ -322,7 +347,7 @@ bool JsonBase::isValid(JsonBaseItem *root, JsonBaseItem *schema)
     if (root != NULL && schema != NULL) {
         if (root->type == schema->type) {
             if (root->type == Object) {
-                if (root->childKeys.count() == schema->childKeys.count()) {
+                if (root->childKeys.count() == (schema->childKeys.count() - countOf(schema, QRegExp("[{][a-zA-Z0-9]*[}]$")) )) {
                     int keyIndex = -1;
                     for (int i = 0; i < root->childKeys.count(); i++) {
                         keyIndex = indexOf(schema, root->childKeys[i]);

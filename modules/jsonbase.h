@@ -7,6 +7,7 @@
 #include <QString>
 #include <QStringList>
 #include <QVector>
+#include <QRegExp>
 
 #include "templates.h"
 
@@ -43,11 +44,14 @@ public:
     void remove(QStringList path);
     void remove(int index);
     bool isValid(JsonBase &schema);
+    bool merge(JsonBase &fromBase, JsonBase &schema);
 protected:
+    int countOf(JsonBaseItem *root, QRegExp regExp);
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);
     void append(JsonBaseItem *root, QJsonArray json, int parentIndex);
     void append(JsonBaseItem *root, QJsonValue json, int parentIndex);
     void increase(JsonBaseItem *root);
+    bool merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema);
     int indexOf(JsonBaseItem *root, QString key);
     int indexOf(JsonBaseItem *root, QStringList path);
     JsonBaseItem *find(JsonBaseItem *root, QStringList path);
