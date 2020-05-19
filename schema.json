@@ -1,24 +1,34 @@
 {
+    "{eras}": "{array}|Эпохи",
     "eras": [
         {
+            "{compareby}": "eraName",
+            "{newestby}": "lastUpdate",
             "eraName": "{edit}|Название эпохи",
             "eraImagePath": "{file}|Изображение|load/eras",
             "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
         }
     ],
+    "{authors}": "{array}|Авторы",
     "authors": [
         {
+            "{compareby}": "authorName",
+            "{newestby}": "lastUpdate",
             "authorName": "{edit}|Имя автора",
             "authorImagePath": "{file}|Изображение|load/authors",
             "authorInfo": "{edit}|Информация об авторе",
             "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
         }
     ],
+    "{arts}": "{array}|Произведения искусства",
     "arts": [
         {
+            "{compareby}": "artName",
+            "{newestby}": "lastUpdate",
             "artEra": "{link}|eras/eraName",
             "artPath": "{file}|Изображение|load/arts",
             "artInfo": "{edit}|Информация произведении исскуства",
+            "{artAuthors}": "{array}|Авторы",
             "artAuthors": [
                 "{link}|authors/authorName"
             ],
