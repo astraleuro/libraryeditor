@@ -54,9 +54,13 @@ bool JsonBase::isValid(JsonBase &schema)
     return isValid(baseRoot, schema.baseRoot);
 }
 
-bool JsonBase::merge(JsonBase &fromBase, JsonBase &schema)
+bool JsonBase::merge(JsonBase &base, JsonBase &schema)
 {
-    return merge(baseRoot, fromBase.baseRoot, schema.baseRoot);
+    if (isValid(base.baseRoot, schema.baseRoot)) {
+        merge(baseRoot, base.baseRoot, schema.baseRoot);
+        return true;
+    } else
+        return false;
 }
 
 int JsonBase::countOf(JsonBaseItem *root, QRegExp regExp)
@@ -301,6 +305,16 @@ JsonBaseItem *JsonBase::takeAt(JsonBaseItem *root, int key)
         return NULL;
 }
 
+QString JsonBase::takeKey(JsonBaseItem *root, QString key)
+{
+    if (root != NULL && root->type == Object) {
+        for (int i = 0; i < root->childKeys.count(); i++)
+            if (root->childKeys[i] == key && root->childItems[i] != NULL && root->childItems[i]->type == Value)
+                return root->childItems[i]->value.toString();
+    }
+    return "";
+}
+
 void JsonBase::increase(JsonBaseItem *root)
 {
     root->childKeys.resize(root->childKeys.size() + 1);
@@ -308,9 +322,21 @@ void JsonBase::increase(JsonBaseItem *root)
     root->childItems.last() = new JsonBaseItem;
 }
 
-bool JsonBase::merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema)
+void JsonBase::merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema)
 {
+    if (toBase != NULL && fromBase != NULL && schema != NULL) {
+        if (toBase->type == Array) {
+            QStringList uniqueby = takeKey(schema, UNIQUE_BY).split(LIST_SEPARATOR);
+            QStringList newestby = takeKey(schema, NEWEST_BY).split(LIST_SEPARATOR);
+            if (!uniqueby.isEmpty() && !newestby.isEmpty()) {
 
+            }
+        } else if (toBase->type == Object) {
+
+        } else if (toBase->type == Value) {
+            toBase->value = fromBase->value;
+        }
+    }
 }
 
 QJsonValue JsonBase::toJson(JsonBaseItem *root)

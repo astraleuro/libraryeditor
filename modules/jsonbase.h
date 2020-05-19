@@ -11,6 +11,10 @@
 
 #include "templates.h"
 
+#define UNIQUE_BY "{uniqueby}"
+#define NEWEST_BY "{newestby}"
+#define LIST_SEPARATOR '|'
+
 enum JsonBaseItemType {
     Undefined,
     Object,
@@ -44,18 +48,19 @@ public:
     void remove(QStringList path);
     void remove(int index);
     bool isValid(JsonBase &schema);
-    bool merge(JsonBase &fromBase, JsonBase &schema);
+    bool merge(JsonBase &base, JsonBase &schema);
 protected:
     int countOf(JsonBaseItem *root, QRegExp regExp);
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);
     void append(JsonBaseItem *root, QJsonArray json, int parentIndex);
     void append(JsonBaseItem *root, QJsonValue json, int parentIndex);
     void increase(JsonBaseItem *root);
-    bool merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema);
+    void merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema);
     int indexOf(JsonBaseItem *root, QString key);
     int indexOf(JsonBaseItem *root, QStringList path);
     JsonBaseItem *find(JsonBaseItem *root, QStringList path);
     JsonBaseItem *takeAt(JsonBaseItem *root, int key);
+    QString takeKey(JsonBaseItem *root, QString key);
     QJsonValue toJson(JsonBaseItem *root);
     bool isValid(JsonBaseItem *root, JsonBaseItem *schema);
     void clear(JsonBaseItem *root);

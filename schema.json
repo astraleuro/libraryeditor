@@ -2,7 +2,7 @@
     "{eras}": "{array}|Эпохи",
     "eras": [
         {
-            "{compareby}": "eraName",
+            "{uniqueby}": "eraName",
             "{newestby}": "lastUpdate",
             "eraName": "{edit}|Название эпохи",
             "eraImagePath": "{file}|Изображение|load/eras",
@@ -12,7 +12,7 @@
     "{authors}": "{array}|Авторы",
     "authors": [
         {
-            "{compareby}": "authorName",
+            "{uniqueby}": "authorName",
             "{newestby}": "lastUpdate",
             "authorName": "{edit}|Имя автора",
             "authorImagePath": "{file}|Изображение|load/authors",
@@ -23,7 +23,7 @@
     "{arts}": "{array}|Произведения искусства",
     "arts": [
         {
-            "{compareby}": "artName",
+            "{uniqueby}": "artName",
             "{newestby}": "lastUpdate",
             "artEra": "{link}|eras/eraName",
             "artPath": "{file}|Изображение|load/arts",
