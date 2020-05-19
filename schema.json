@@ -1,0 +1,30 @@
+{
+    "eras": [
+        {
+            "eraName": "{edit}|Название эпохи",
+            "eraImagePath": "{file}|Изображение|load/eras",
+            "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
+        }
+    ],
+    "authors": [
+        {
+            "authorName": "{edit}|Имя автора",
+            "authorImagePath": "{file}|Изображение|load/authors",
+            "authorInfo": "{edit}|Информация об авторе",
+            "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
+        }
+    ],
+    "arts": [
+        {
+            "artEra": "{link}|eras/eraName",
+            "artPath": "{file}|Изображение|load/arts",
+            "artInfo": "{edit}|Информация произведении исскуства",
+            "artAuthors": [
+                "{link}|authors/authorName"
+            ],
+            "artName": "{edit}|Название произведения исскуства",
+            "isDomestic": "{bool}|Категория|Отечесвенное|Зарубежное",
+            "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
+        }
+    ]
+}
