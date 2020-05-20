@@ -1,36 +1,44 @@
 {
-    "{eras}": "{array}|Эпохи",
+    "{eras}": {
+        "{name}": "Эпохи",
+        "{uniqueby}": "eraName",
+        "{newestby}": "lastUpdate"
+    },
     "eras": [
         {
-            "{uniqueby}": "eraName",
-            "{newestby}": "lastUpdate",
             "eraName": "{edit}|Название эпохи",
             "eraImagePath": "{file}|Изображение|load/eras",
             "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
         }
     ],
-    "{authors}": "{array}|Авторы",
+    "{authors}": {
+        "{name}": "Авторы",
+        "{uniqueby}": "authorName",
+        "{newestby}": "lastUpdate"
+    },
     "authors": [
         {
-            "{uniqueby}": "authorName",
-            "{newestby}": "lastUpdate",
             "authorName": "{edit}|Имя автора",
             "authorImagePath": "{file}|Изображение|load/authors",
             "authorInfo": "{edit}|Информация об авторе",
             "lastUpdate": "{date}|Последнее обновление|YYY-MM-dd"
         }
     ],
-    "{arts}": "{array}|Произведения искусства",
+    "{arts}": {
+        "{name}": "Произведения искусства",
+        "{uniqueby}": "artName",
+        "{newestby}": "lastUpdate"
+    },
     "arts": [
         {
-            "{uniqueby}": "artName",
-            "{newestby}": "lastUpdate",
-            "artEra": "{link}|eras/eraName",
+            "artEra": "{link}|Эпоха|eras/eraName",
             "artPath": "{file}|Изображение|load/arts",
             "artInfo": "{edit}|Информация произведении исскуства",
-            "{artAuthors}": "{array}|Авторы",
+            "{artAuthors}": {
+                "{name}": "Авторы"
+            },
             "artAuthors": [
-                "{link}|authors/authorName"
+                "{link}|Автор(ы)|authors/authorName"
             ],
             "artName": "{edit}|Название произведения исскуства",
             "isDomestic": "{bool}|Категория|Отечесвенное|Зарубежное",

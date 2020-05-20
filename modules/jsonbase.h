@@ -8,12 +8,17 @@
 #include <QStringList>
 #include <QVector>
 #include <QRegExp>
+#include <QDate>
 
 #include "templates.h"
 
-#define UNIQUE_BY "{uniqueby}"
-#define NEWEST_BY "{newestby}"
 #define LIST_SEPARATOR '|'
+#define UNIQUEBY_FLAG "{uniqueby}"
+#define NEWESTBY_FLAG "{newestby}"
+#define NAME_FLAG "{name}"
+#define EDIT_FLAG "{edit}"
+#define DATE_FLAG "{date}"
+#define FILE_FLAG "{file}"
 
 enum JsonBaseItemType {
     Undefined,
@@ -54,8 +59,11 @@ protected:
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);
     void append(JsonBaseItem *root, QJsonArray json, int parentIndex);
     void append(JsonBaseItem *root, QJsonValue json, int parentIndex);
-    void increase(JsonBaseItem *root);
-    void merge(JsonBaseItem *toBase, JsonBaseItem *fromBase, JsonBaseItem *schema);
+    void increase(JsonBaseItem *root, bool alloc = true);
+    void mergeObject(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBaseItem *schema);
+    void mergeArray(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBaseItem *schema, QStringList *spec = NULL);
+    int max(QString left, QString right);
+    JsonBaseItem *copy(JsonBaseItem *root, int parentIndex);
     int indexOf(JsonBaseItem *root, QString key);
     int indexOf(JsonBaseItem *root, QStringList path);
     JsonBaseItem *find(JsonBaseItem *root, QStringList path);
