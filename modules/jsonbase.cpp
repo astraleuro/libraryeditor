@@ -63,13 +63,13 @@ bool JsonBase::merge(JsonBase &base, JsonBase &schema)
         return false;
 }
 
-int JsonBase::countOf(JsonBaseItem *root, QRegExp regExp)
+int JsonBase::countOf(JsonBaseItem *root, QRegExp *regExp)
 {
     if (root != NULL) {
         if (root->type == Object) {
             int count = 0;
             for (int i = 0; i < root->childKeys.count(); i++)
-                if (regExp.exactMatch(root->childKeys[i]))
+                if (regExp != NULL && regExp->exactMatch(root->childKeys[i]))
                     count++;
             return count;
         } else
@@ -306,7 +306,7 @@ JsonBaseItem *JsonBase::takeAt(JsonBaseItem *root, int key)
 
 QString JsonBase::takeKey(JsonBaseItem *root, QString key)
 {
-    if (root != NULL && root->type == Object) {
+    if (root != NULL && !key.isEmpty() && root->type == Object) {
         for (int i = 0; i < root->childKeys.count(); i++)
             if (root->childKeys[i] == key && root->childItems[i] != NULL && root->childItems[i]->type == Value)
                 return root->childItems[i]->value.toString();
@@ -328,24 +328,25 @@ void JsonBase::mergeObject(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBas
 {
     QStringList *specList = NULL;
     int fromIndex, schemaIndex;
-    for (int i = 0; i < toRoot->childKeys.count(); i++) {
-        fromIndex = indexOf(fromRoot, toRoot->childKeys[i]);
-        if (toRoot->childItems[i]->type == Array) {
-            schemaIndex = indexOf(schema, "{" + toRoot->childKeys[i] + "}");
-            if (schemaIndex >= 0) {
-                specList = new QStringList;
-                specList->append(takeKey(schema->childItems[schemaIndex], UNIQUEBY_FLAG));
-                specList->append(takeKey(schema->childItems[schemaIndex], NEWESTBY_FLAG));
-            }
-            merge(toRoot->childItems[i], fromRoot->childItems[fromIndex],
-                  schema->childItems[indexOf(schema, toRoot->childKeys[i])], specList);
-            delete specList;
-        } else if (toRoot->childItems[i]->type == Value)
-            toRoot->childItems[i]->value = fromRoot->childItems[fromIndex]->value;
-        else if (toRoot->childItems[i]->type == Object)
-            merge(toRoot->childItems[i], fromRoot->childItems[fromIndex],
-                  schema->childItems[indexOf(schema, toRoot->childKeys[i])]);
-    }
+    for (int i = 0; i < toRoot->childKeys.count(); i++)
+        if (!flagsRegExp.exactMatch(toRoot->childKeys[i])) {
+            fromIndex = indexOf(fromRoot, toRoot->childKeys[i]);
+            if (toRoot->childItems[i]->type == Array) {
+                schemaIndex = indexOf(schema, "{" + toRoot->childKeys[i] + "}");
+                if (schemaIndex >= 0) {
+                    specList = new QStringList;
+                    specList->append(takeKey(schema->childItems[schemaIndex], UNIQUEBY_FLAG));
+                    specList->append(takeKey(schema->childItems[schemaIndex], NEWESTBY_FLAG));
+                }
+                mergeArray(toRoot->childItems[i], fromRoot->childItems[fromIndex],
+                           schema->childItems[indexOf(schema, toRoot->childKeys[i])], specList);
+                delete specList;
+            } else if (toRoot->childItems[i]->type == Value)
+                toRoot->childItems[i]->value = fromRoot->childItems[fromIndex]->value;
+            else if (toRoot->childItems[i]->type == Object)
+                mergeObject(toRoot->childItems[i], fromRoot->childItems[fromIndex],
+                      schema->childItems[indexOf(schema, toRoot->childKeys[i])]);
+        }
 }
 
 void JsonBase::mergeArray(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBaseItem *schema, QStringList *spec)
@@ -353,6 +354,7 @@ void JsonBase::mergeArray(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBase
     int isExist, isEqual;
     QStringList uniqueby = spec->at(0).split(LIST_SEPARATOR, QString::SkipEmptyParts);
     QString newestby = spec->at(1);
+    QString newestSpec = takeKey(schema->childItems[0], newestby);
     for (int i = 0; i < fromRoot->childKeys.count(); i++)
         if (fromRoot->childItems[i]->type == Value) {
             isExist = false;
@@ -363,7 +365,7 @@ void JsonBase::mergeArray(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBase
                     break;
                 }
             if (!isExist) {
-                increase(toRoot, false);
+                increase(toRoot, true);
                 toRoot->childKeys.last() = QString(toRoot->childKeys.count() - 1);
                 toRoot->childItems.last()->type = Value;
                 toRoot->childItems.last()->value = fromRoot->childItems[i]->value;
@@ -373,21 +375,29 @@ void JsonBase::mergeArray(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBase
             if (!uniqueby.isEmpty()) {
                 for (int j = 0; j < toRoot->childKeys.count(); j++)
                     if (toRoot->childItems[j]->type == Object) {
-                        isEqual = true;
+                        isEqual = false;
                         for (QString key : uniqueby)
-                            if (fromRoot->childItems[i]->type == Value &&
-                                    takeKey(toRoot->childItems[j], key) != takeKey(fromRoot->childItems[i], key)) {
-                                isEqual = false;
+                            if (takeKey(toRoot->childItems[j], key) == takeKey(fromRoot->childItems[i], key)) {
+                                isEqual = true;
                                 break;
                             }
-                        if (isEqual && !newestby.isEmpty() &&
-                                max(takeKey(toRoot->childItems[j], newestby), takeKey(fromRoot->childItems[i], newestby)) == 1) {
+                        if (isEqual && !newestby.isEmpty()) {
+                            if (newestSpec.split(LIST_SEPARATOR)[0] == DATE_FLAG) {
+                                if (compare(QDate::fromString(takeKey(toRoot->childItems[j], newestby), newestSpec.split(LIST_SEPARATOR)[2]),
+                                        QDate::fromString(takeKey(fromRoot->childItems[i], newestby), newestSpec.split(LIST_SEPARATOR)[2])) == 1)
+                                    isEqual = false;
+                            } else {
+                                if (compare(takeKey(toRoot->childItems[j], newestby).toDouble(),
+                                        takeKey(fromRoot->childItems[i], newestby).toDouble()) == 1)
+                                    isEqual = false;
+                            }
                             if (!isEqual) {
                                 clear(toRoot->childItems[j]);
                                 toRoot->childItems[j] = copy(fromRoot->childItems[i], toRoot->currentIndex);
                             }
-                        } else
+                            isExist = true;
                             break;
+                        }
                     }
             }
             if (!isExist) {
@@ -400,12 +410,46 @@ void JsonBase::mergeArray(JsonBaseItem *toRoot, JsonBaseItem *fromRoot, JsonBase
 
 int JsonBase::max(QString left, QString right)
 {
-
+    if (left.contains(DATE_FLAG) && right.contains(DATE_FLAG)) {
+        QDate dateLeft = QDate::fromString(left.split(LIST_SEPARATOR)[1]);
+        QDate dateRight = QDate::fromString(right.split(LIST_SEPARATOR)[1]);
+        if (dateLeft.isValid() && dateRight.isValid()) {
+            if (dateLeft < dateRight)
+                return 1;
+            else if (dateLeft > dateRight)
+                return -1;
+            else
+                return 0;
+        }
+    } else {
+        double valueLeft = left.toDouble();
+        double valueRight = right.toDouble();
+        if (valueLeft < valueRight)
+            return 1;
+        else if (valueLeft > valueRight)
+            return -1;
+    }
+    return 0;
 }
 
 JsonBaseItem *JsonBase::copy(JsonBaseItem *root, int parentIndex)
 {
-
+    if (root != NULL) {
+        JsonBaseItem *rootCopy = new JsonBaseItem;
+        rootCopy->currentIndex = baseCache.append(rootCopy);
+        rootCopy->parentIndex = parentIndex;
+        rootCopy->type = root->type;
+        if (root->type == Value)
+            rootCopy->value = root->value;
+        else {
+            rootCopy->childKeys = root->childKeys;
+            rootCopy->childItems.resize(root->childItems.size());
+            for (int i = 0; i < root->childItems.count(); i++)
+                rootCopy->childItems[i] = copy(root->childItems[i], rootCopy->currentIndex);
+        }
+        return rootCopy;
+    } else
+        return NULL;
 }
 
 QJsonValue JsonBase::toJson(JsonBaseItem *root)
@@ -442,7 +486,7 @@ bool JsonBase::isValid(JsonBaseItem *root, JsonBaseItem *schema)
     if (root != NULL && schema != NULL) {
         if (root->type == schema->type) {
             if (root->type == Object) {
-                if (root->childKeys.count() == (schema->childKeys.count() - countOf(schema, QRegExp("[{][a-zA-Z0-9]*[}]$")) )) {
+                if (root->childKeys.count() == (schema->childKeys.count() - countOf(schema, &flagsRegExp) )) {
                     int keyIndex = -1;
                     for (int i = 0; i < root->childKeys.count(); i++) {
                         keyIndex = indexOf(schema, root->childKeys[i]);

@@ -11,17 +11,23 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     FileProcessor file;
     if (file.openFile("levels.json", QIODevice::ReadOnly)) {
-        JsonBase base, schema;
+        JsonBase base, schema, base2;
         base.fromJson(QJsonDocument::fromJson(file.readAll()).object());
         file.close();
         if (file.openFile("schema.json", QIODevice::ReadOnly)) {
             schema.fromJson(QJsonDocument::fromJson(file.readAll()).object());
             file.close();
-            if (base.isValid(schema)) {
-                if (file.openFile("export.json", QIODevice::WriteOnly)) {
-                    QJsonDocument jsonDocument(base.toJson());
-                    file.write(jsonDocument.toJson());
-                    file.close();
+            if (file.openFile("levels2.json", QIODevice::ReadOnly)) {
+                base2.fromJson(QJsonDocument::fromJson(file.readAll()).object());
+                file.close();
+                if (base.isValid(schema)) {
+                    if (base.merge(base2, schema)) {
+                        if (file.openFile("export.json", QIODevice::WriteOnly)) {
+                            QJsonDocument jsonDocument(base.toJson());
+                            file.write(jsonDocument.toJson());
+                            file.close();
+                        }
+                    }
                 }
             }
         }

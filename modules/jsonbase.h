@@ -55,7 +55,7 @@ public:
     bool isValid(JsonBase &schema);
     bool merge(JsonBase &base, JsonBase &schema);
 protected:
-    int countOf(JsonBaseItem *root, QRegExp regExp);
+    int countOf(JsonBaseItem *root, QRegExp *regExp);
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);
     void append(JsonBaseItem *root, QJsonArray json, int parentIndex);
     void append(JsonBaseItem *root, QJsonValue json, int parentIndex);
@@ -75,6 +75,7 @@ protected:
 protected:
     JsonBaseItem *baseRoot = NULL;
     CacheBase<JsonBaseItem> baseCache;
+    QRegExp flagsRegExp = QRegExp("[{][a-zA-Z0-9]*[}]$");
 };
 
 #endif // JSONBASE_H

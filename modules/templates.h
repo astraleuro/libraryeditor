@@ -42,5 +42,15 @@ protected:
     QVector<CacheItem<T>> items;
 };
 
+template<typename T>
+int compare(T left, T right) {
+    if (left < right)
+        return 1;
+    else if (left > right)
+        return -1;
+    else
+        return 0;
+}
+
 
 #endif // CACHEBASE_H
