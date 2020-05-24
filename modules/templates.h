@@ -52,5 +52,4 @@ int compare(T left, T right) {
         return 0;
 }
 
-
 #endif // CACHEBASE_H

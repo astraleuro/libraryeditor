@@ -4,7 +4,7 @@
 #include <QString>
 #include <QVector>
 
-#include "fsprocessor.h"
+#include "../fsprocessor.h"
 
 #define FILE_EXTENSIONS "*.jpg|*.png";
 
@@ -14,8 +14,8 @@ public:
     FileBase();
     bool open(QString path, bool mk = false);
 private:
-    FileProcessor file;
-    DirProcessor dir;
+    //FileProcessor file;
+    //DirProcessor dir;
 };
 
 #endif // FILEBASE_H

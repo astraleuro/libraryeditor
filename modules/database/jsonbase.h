@@ -10,7 +10,7 @@
 #include <QRegExp>
 #include <QDate>
 
-#include "templates.h"
+#include "../templates.h"
 
 #define LIST_SEPARATOR '|'
 #define UNIQUEBY_FLAG "{uniqueby}"
@@ -40,7 +40,7 @@ struct JsonBaseItem
 class JsonBase
 {
 public:
-    JsonBase() {};
+    JsonBase();
     JsonBase(QJsonObject json) {fromJson(json);};
     ~JsonBase() {clear(baseRoot);};
     void fromJson(QJsonObject json);

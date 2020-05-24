@@ -1,5 +1,11 @@
 ﻿#include "jsonbase.h"
 
+JsonBase::JsonBase()
+{
+    baseRoot = new JsonBaseItem;
+    baseRoot->type = Object;
+}
+
 void JsonBase::fromJson(QJsonObject json)
 {
     if (!json.isEmpty()) {
