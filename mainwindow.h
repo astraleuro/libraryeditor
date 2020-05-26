@@ -9,6 +9,8 @@
 #include <QJsonParseError>
 
 #include "widgets/tablewidget.h"
+#include "widgets/tabledelegate.h"
+
 #include "modules/database/jsonbase.h"
 #include "modules/fsprocessor.h"
 
@@ -16,6 +18,8 @@
 #define SETTINGS_PATH ""
 #define DATABASE_FILE "/database.json"
 #define DATABASE_PATH "/database"
+#define SCHEMA_FILE "/schema.json"
+#define SCHEMA_PATH "/database"
 
 class MainWindow : public QMainWindow
 {
@@ -28,7 +32,10 @@ public:
 private:
     QString dataPath;
     JsonBase *mainBase = new JsonBase;
+    JsonBase *mainSchema = new JsonBase;
     QJsonObject settings;
     QLayout *mainLayout = NULL;
+    TableWidget *tableWidget;
+    TableDelegate *tableDelegate;
 };
 #endif // MAINWINDOW_H

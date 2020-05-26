@@ -69,6 +69,52 @@ bool JsonBase::merge(JsonBase &base, JsonBase &schema)
         return false;
 }
 
+JsonBaseItemType JsonBase::typeOf(int index)
+{
+    JsonBaseItem *item = baseCache[index];
+    if (item != nullptr)
+        return item->type;
+    else
+        return Undefined;
+}
+
+QStringList JsonBase::keysOf(int index)
+{
+    JsonBaseItem *root = baseCache[index];
+    QStringList childs;
+    if (root != nullptr)
+        if (root->type == Object || root->type == Array)
+            for (int i = 0; i < root->childKeys.count(); i++)
+                childs.append(root->childKeys[i]);
+    return childs;
+}
+
+int JsonBase::keysCount(int index)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr)
+        if (root->type == Object || root->type == Array)
+            return root->childKeys.count();
+    return 0;
+}
+
+QString JsonBase::keyAt(int index, int key)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr)
+        if ((root->type == Object || root->type == Array) && root->childKeys.count() > key)
+            return root->childKeys[key];
+    return "";
+}
+
+QJsonObject JsonBase::toJson(int index)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr)
+        return toJson(root).toObject();
+    return QJsonObject();
+}
+
 int JsonBase::countOf(JsonBaseItem *root, QRegExp *regExp)
 {
     if (root != NULL) {
@@ -202,7 +248,21 @@ int JsonBase::append(QJsonValue json, QString key, int index)
 
 int JsonBase::indexOf(QStringList path)
 {
-    return indexOf(baseRoot, path);
+    if (!path.isEmpty())
+        return indexOf(baseRoot, path);
+    else
+        return 0;
+}
+
+int JsonBase::indexOf(int index, QString key)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr) {
+        for (int i = 0; i < root->childKeys.count(); i++)
+            if (root->childKeys[i] == key)
+                return root->childItems[i]->currentIndex;
+    }
+    return -1;
 }
 
 void JsonBase::append(JsonBaseItem *root, QJsonObject json, int parentIndex)
@@ -548,4 +608,15 @@ void JsonBase::clear(JsonBaseItem *root)
                 delete root->childItems[i];
             }
     }
+}
+
+QString JsonBase::keyOf(JsonBaseItem *root, int index)
+{
+    if (root != NULL) {
+        for (int i = 0; i < root->childItems.count(); i++)
+            if (root->childItems[i] != nullptr)
+                if (root->childItems[i]->currentIndex == index)
+                    return root->childKeys[i];
+    }
+    return "";
 }

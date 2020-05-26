@@ -21,8 +21,7 @@ SOURCES += \
     widgets/tabledelegate.cpp \
     widgets/tablewidget.cpp \
     modules/fsprocessor.cpp \
-    modules/database/jsonbase.cpp \
-    modules/database/filebase.cpp
+    modules/database/jsonbase.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -30,7 +29,6 @@ HEADERS += \
     widgets/tablewidget.h \
     modules/fsprocessor.h \
     modules/database/jsonbase.h \
-    modules/database/filebase.h \
     modules/templates.h
 
 FORMS +=

@@ -28,7 +28,7 @@ public:
     };
     T* operator[](int index)
     {
-        if (index >= 0 && index <= lastIndex)
+        if (index >= 0 && index < lastIndex)
             return items[index].item;
         else
             return NULL;

@@ -92,3 +92,69 @@ QString toTranslit(QString str, LetterCase letterCase)
     }
     return tr;
 }
+
+bool checkPath(QString path, bool mk)
+{
+    QDir dir;
+    if (!dir.exists(path)) {
+        if (mk) {
+            if (dir.mkpath(path))
+                return true;
+            else
+                return false;
+        } else
+            return false;
+    } else
+        return true;
+    return false;
+}
+
+bool readJson(QString path, QJsonObject &json, QJsonParseError &log)
+{
+    if (checkPath(path)) {
+        QFile file;
+        file.setFileName(path);
+        if (file.open(QIODevice::ReadOnly)) {
+            QJsonDocument jsonDoc;
+            jsonDoc = QJsonDocument::fromJson(file.readAll(), &log);
+            file.close();
+            if (log.error == QJsonParseError::NoError) {
+                json = jsonDoc.object();
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool writeJson(QString path, QJsonObject json)
+{
+    QFile file;
+    file.setFileName(path);
+    if (file.open(QIODevice::WriteOnly)) {
+        QJsonDocument jsonDoc(json);
+        if (file.write(jsonDoc.toJson()) != -1) {
+            file.close();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool readJson(QString path, JsonBase &base, QJsonParseError &log)
+{
+    if (checkPath(path)) {
+        QFile file;
+        file.setFileName(path);
+        if (file.open(QIODevice::ReadOnly)) {
+            QJsonDocument jsonDoc;
+            jsonDoc = QJsonDocument::fromJson(file.readAll(), &log);
+            file.close();
+            if (log.error == QJsonParseError::NoError) {
+                base.fromJson(jsonDoc.object());
+                return true;
+            }
+        }
+    }
+    return false;
+}

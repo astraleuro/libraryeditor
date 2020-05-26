@@ -48,12 +48,18 @@ public:
     int append(QJsonValue json, QStringList path);
     int append(QJsonValue json, QString key, int index);
     int indexOf(QStringList path);
+    int indexOf(int index, QString key);
     QJsonValue takeAt(int index);
     void move(int parentIndex, int index, QString key);
     void remove(QStringList path);
     void remove(int index);
     bool isValid(JsonBase &schema);
     bool merge(JsonBase &base, JsonBase &schema);
+    JsonBaseItemType typeOf(int index);
+    QStringList keysOf(int index);
+    int keysCount(int index);
+    QString keyAt(int index, int key);
+    QJsonObject toJson(int index);
 protected:
     int countOf(JsonBaseItem *root, QRegExp *regExp);
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);
@@ -72,6 +78,7 @@ protected:
     QJsonValue toJson(JsonBaseItem *root);
     bool isValid(JsonBaseItem *root, JsonBaseItem *schema);
     void clear(JsonBaseItem *root);
+    QString keyOf(JsonBaseItem *root, int index);
 protected:
     JsonBaseItem *baseRoot = NULL;
     CacheBase<JsonBaseItem> baseCache;

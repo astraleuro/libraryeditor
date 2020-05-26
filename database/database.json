@@ -1,0 +1,80 @@
+{
+    "arts": [
+        {
+            "artAuthors": [
+                "Тестовый автор 1",
+                "Тестовый автор 2"
+            ],
+            "artEra": "Тестовая эпоха 1",
+            "artInfo": "Информация о тестовом произведеним исскуства 1",
+            "artName": "Тестовая произведение исскуства 1",
+            "artPath": "load/arts/test1.jpg",
+            "isDomestic": 1,
+            "lastUpdate": "2020-05-18"
+        },
+        {
+            "artAuthors": [
+                "Тестовый автор 2"
+            ],
+            "artEra": "Тестовая эпоха 2",
+            "artInfo": "Информация о тестовом произведеним исскуства 2",
+            "artName": "Тестовое произведение исскуства 2",
+            "artPath": "load/arts/test2.jpg",
+            "isDomestic": 1,
+            "lastUpdate": "2020-05-18"
+        },
+        {
+            "artAuthors": [
+                "Тестовый автор 3"
+            ],
+            "artEra": "Тестовая эпоха 3",
+            "artInfo": "Информация о тестовом произведеним исскуства 3",
+            "artName": "Тестовая произведение исскуства 3",
+            "artPath": "load/arts/test3.jpg",
+            "isDomestic": 1,
+            "lastUpdate": "2020-05-18"
+        },
+        {
+            "artAuthors": [
+            ],
+            "artEra": "Тестовая эпоха 3",
+            "artInfo": "Информация о тестовом произведеним исскуства 4",
+            "artName": "Тестовая произведение исскуства 4",
+            "artPath": "load/arts/test3.jpg",
+            "isDomestic": 1,
+            "lastUpdate": "2020-05-18"
+        }
+    ],
+    "authors": [
+        {
+            "authorImagePath": "load/authors/test1.jpg",
+            "authorInfo": "Информация о тестовом авторе 1",
+            "authorName": "Тестовый автор 1",
+            "lastUpdate": "2020-05-18"
+        },
+        {
+            "authorImagePath": "load/authors/test2.jpg",
+            "authorInfo": "Информация о тестовом авторе 2",
+            "authorName": "Тестовый автор 2",
+            "lastUpdate": "2020-05-18"
+        },
+        {
+            "authorImagePath": "load/authors/test3.jpg",
+            "authorInfo": "Информация о тестовом авторе 3",
+            "authorName": "Тестовый автор 3",
+            "lastUpdate": "2020-05-18"
+        }
+    ],
+    "eras": [
+        {
+            "eraImagePath": "load/eras/test1.jpg",
+            "eraName": "Тестовая эпоха 1",
+            "lastUpdate": "2020-05-18"
+        },
+        {
+            "eraImagePath": "load/eras/test2.jpg",
+            "eraName": "Тестовая эпоха 2",
+            "lastUpdate": "2020-05-18"
+        }
+    ]
+}
