@@ -38,7 +38,7 @@
             "artPath": "{file}|Изображение|load/arts",
             "artInfo": "{edit}|Информация",
             "{artAuthors}": {
-                "{label}": "Автор(ы)"
+                "{label}": "Авторы"
             },
             "artAuthors": [
                 "{link}|authors|authorName"

@@ -32,6 +32,7 @@ protected:
     int lastRow() {return rowCount() - 1;};
     int lastCol() {return columnCount() - 1;};
     QString toString(QJsonValue value);
+    void orderArgs(QStringList args);
 
 protected slots:
     void activateChild(int row);

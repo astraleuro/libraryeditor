@@ -2,34 +2,34 @@
     "arts": [
         {
             "artAuthors": [
-                "Тестовый автор 1",
-                "Тестовый автор 2"
+                "Автор 1",
+                "Автор 2"
             ],
-            "artEra": "Тестовая эпоха 1",
-            "artInfo": "Информация о тестовом произведеним исскуства 1",
-            "artName": "Тестовая произведение исскуства 1",
+            "artEra": "Эпоха 1",
+            "artInfo": "Информация о произведении исскуства 1",
+            "artName": "Произведение исскуства 1",
             "artPath": "load/arts/test1.jpg",
             "isDomestic": 1,
             "lastUpdate": "2020-05-18"
         },
         {
             "artAuthors": [
-                "Тестовый автор 2"
+                "Автор 2"
             ],
-            "artEra": "Тестовая эпоха 2",
-            "artInfo": "Информация о тестовом произведеним исскуства 2",
-            "artName": "Тестовое произведение исскуства 2",
+            "artEra": "Эпоха 2",
+            "artInfo": "Информация о произведении исскуства 2",
+            "artName": "Произведение исскуства 2",
             "artPath": "load/arts/test2.jpg",
             "isDomestic": 1,
             "lastUpdate": "2020-05-18"
         },
         {
             "artAuthors": [
-                "Тестовый автор 3"
+                "Автор 3"
             ],
-            "artEra": "Тестовая эпоха 3",
-            "artInfo": "Информация о тестовом произведеним исскуства 3",
-            "artName": "Тестовая произведение исскуства 3",
+            "artEra": "Эпоха 3",
+            "artInfo": "Информация о произведении исскуства 3",
+            "artName": "Произведение исскуства 3",
             "artPath": "load/arts/test3.jpg",
             "isDomestic": 1,
             "lastUpdate": "2020-05-18"
@@ -38,8 +38,8 @@
             "artAuthors": [
             ],
             "artEra": "Тестовая эпоха 3",
-            "artInfo": "Информация о тестовом произведеним исскуства 4",
-            "artName": "Тестовая произведение исскуства 4",
+            "artInfo": "Информация о произведении исскуства 4",
+            "artName": "Произведение исскуства 4",
             "artPath": "load/arts/test3.jpg",
             "isDomestic": 0,
             "lastUpdate": "2020-05-18"
@@ -48,32 +48,32 @@
     "authors": [
         {
             "authorImagePath": "load/authors/test1.jpg",
-            "authorInfo": "Информация о тестовом авторе 1",
-            "authorName": "Тестовый автор 1",
+            "authorInfo": "Информация о авторе 1",
+            "authorName": "Автор 1",
             "lastUpdate": "2020-05-18"
         },
         {
             "authorImagePath": "load/authors/test2.jpg",
-            "authorInfo": "Информация о тестовом авторе 2",
-            "authorName": "Тестовый автор 2",
+            "authorInfo": "Информация о авторе 2",
+            "authorName": "Автор 2",
             "lastUpdate": "2020-05-18"
         },
         {
             "authorImagePath": "load/authors/test3.jpg",
-            "authorInfo": "Информация о тестовом авторе 3",
-            "authorName": "Тестовый автор 3",
+            "authorInfo": "Информация о авторе 3",
+            "authorName": "Автор 3",
             "lastUpdate": "2020-05-18"
         }
     ],
     "eras": [
         {
             "eraImagePath": "load/eras/test1.jpg",
-            "eraName": "Тестовая эпоха 1",
+            "eraName": "Эпоха 1",
             "lastUpdate": "2020-05-18"
         },
         {
             "eraImagePath": "load/eras/test2.jpg",
-            "eraName": "Тестовая эпоха 2",
+            "eraName": "Эпоха 2",
             "lastUpdate": "2020-05-18"
         }
     ]

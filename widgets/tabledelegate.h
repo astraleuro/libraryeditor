@@ -17,7 +17,7 @@ public:
     TableDelegate(QObject *parent = nullptr);
     ~TableDelegate() {clear();};
     void setRowType(int row, RowTypes type);
-    void setModifyer(int row, int col, QString modifyer);
+    void setModifier(int row, int col, QString modifier);
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void clear();
@@ -30,7 +30,7 @@ signals:
 
 private:
     QVector<RowTypes> types;
-    QVector<QVector<QString>> modifyers;
+    QVector<QVector<QString>> modifiers;
 };
 
 #endif // TABLEDELEGATE_H

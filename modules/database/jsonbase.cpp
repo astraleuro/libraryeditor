@@ -402,13 +402,23 @@ JsonBaseItem *JsonBase::find(JsonBaseItem *root, QStringList path)
 int JsonBase::indexOf(JsonBaseItem *root, QString key)
 {
     if (root != NULL) {
-        if (root->type == Object || root->type == Array) {
+        if (root->type == Object) {
             int index = -1;
             for (int key_i = 0; key_i < root->childKeys.count(); key_i++)
                 if (root->childKeys[key_i] == key) {
                     index = key_i;
                     break;
                 }
+            return index;
+        } else if (root->type == Array) {
+            int index = -1;
+            for (int key_i = 0; key_i < root->childKeys.count(); key_i++)
+                if (root->childKeys[key_i] == key) {
+                    index = key_i;
+                    break;
+                }
+            if (index == -1 && keysCount(root->currentIndex) == 1)
+                index = 0;
             return index;
         }
     }

@@ -57,62 +57,84 @@ void TableWidget::showObject()
         appendCol(1);
 
     QJsonObject schema;
-    QString label, modifyer;
+    if (baseIndex != 0) {
+        if (pBase->typeOf(pBase->parentIndex(baseIndex)) == Array)
+            schema = pSchema->toJson(pSchema->indexOf(pSchema->parentIndex(pSchema->parentIndex(schemaIndex)), "{" + path[path.count() - 2] + "}"));
+        else if (pBase->typeOf(pBase->parentIndex(baseIndex)) == Object)
+            schema = pSchema->toJson(pSchema->indexOf(pSchema->parentIndex(schemaIndex), "{" + path.last() + "}"));
+        orderArgs(schema[ORDER_FLAG].toString().split(LIST_SEPARATOR));
+    }
+
+    QString label, modifier;
     for (int i = 0; i < childIndexes.count(); i++) {
         if (pBase->typeOf(childIndexes[i]) == Value) {
+            modifier = toString(pSchema->value(pSchema->indexOf(schemaIndex, childKeys[i])));
+            setItem(i, 0, new QTableWidgetItem(modifier.split(LIST_SEPARATOR)[LABEL_POS]));
+            if (modifier.contains(BOOL_FLAG))
+                setItem(i, 1, new QTableWidgetItem(modifier.split(LIST_SEPARATOR)[pBase->keyAt(baseIndex, childKeys[i]).toInt() + 2]));
+            else
+                setItem(i, 1, new QTableWidgetItem(toString(pBase->value(childIndexes[i]))));
             delegate->setRowType(i, ValueItem);
-            delegate->setModifyer(i, 1, modifyer);
-            modifyer = toString(pSchema->value(pSchema->indexOf(schemaIndex, childKeys[i])));
-            schema = pSchema->toJson(pSchema->indexOf(schemaIndex, childKeys[i]));
-            setItem(i, 0, new QTableWidgetItem(modifyer.split(LIST_SEPARATOR)[LABEL_POS]));
-            setItem(i, 1, new QTableWidgetItem(toString(pBase->value(childIndexes[i]))));
+            delegate->setModifier(i, 1, modifier);
         } else {
-            delegate->setRowType(i, ChildItem);
             schema = pSchema->toJson(pSchema->indexOf(schemaIndex, "{" + childKeys[i] + "}"));
             label = schema[LABEL_FLAG].toString();
             if (label.isEmpty())
                 label = childKeys[i];
-            setItem(i, 0, new QTableWidgetItem(label));
+            if (columnCount() == 1) {
+                setItem(i, 0, new QTableWidgetItem(label + " (" + QString::number(pBase->keysCount(childIndexes[i])) + ")"));
+            } else {
+                setItem(i, 0, new QTableWidgetItem(label));
+                setItem(i, 1, new QTableWidgetItem(pBase->keyAt(baseIndex, childKeys[i])));
+            }
+            delegate->setRowType(i, ChildItem);
         }
     }
 }
 
 void TableWidget::showArray()
 {
-    QString modifyer;
+    QString modifier;
     QStringList labels;
+    QJsonValue childSchema;
     QJsonObject arraySchema = pSchema->toJson(pSchema->indexOf(pSchema->parentIndex(schemaIndex), "{" + path.last() + "}"));
-    QJsonValue childSchema = pSchema->toJson(pSchema->indexOf(schemaIndex, "0"));
     QStringList args = arraySchema[ORDER_FLAG].toString().split(LIST_SEPARATOR);
+    if (pSchema->isChildExist(schemaIndex, Object))
+        childSchema = pSchema->toJson(pSchema->indexOf(schemaIndex, "0"));
+    else
+        childSchema = pSchema->value(pSchema->indexOf(schemaIndex, "0"));
 
     appendRow(childIndexes.count());
-    if (!childIndexes.isEmpty())
-        appendCol(pBase->keysCount(childIndexes[0]));
-
-    if (childSchema.isObject()) {
-        for (QString key : args)
-            if (!childSchema[key].isObject() && !childSchema[key].isArray())
-                labels.append(childSchema[key].toString().split(LIST_SEPARATOR)[LABEL_POS]);
-            else
-                labels.append(childSchema["{" + key + "}"].toObject()[LABEL_FLAG].toString());
-        setHorizontalHeaderLabels(labels);
+    if (!childIndexes.isEmpty()) {
+        if (childSchema.isObject()) {
+            appendCol(pBase->keysCount(childIndexes[0]));
+            for (QString key : args)
+                if (!childSchema[key].isObject() && !childSchema[key].isArray())
+                    labels.append(childSchema[key].toString().split(LIST_SEPARATOR)[LABEL_POS]);
+                else
+                    labels.append(childSchema["{" + key + "}"].toObject()[LABEL_FLAG].toString());
+            setHorizontalHeaderLabels(labels);
+        } else if (childSchema.toString() != "") {
+            appendCol(1);
+        }
     }
 
     for (int i = 0; i < childIndexes.count(); i++) {
         if (pBase->typeOf(childIndexes[i]) == Value) {
             delegate->setRowType(i, ValueItem);
-            delegate->setModifyer(i, 1, childSchema.toString());
-            setItem(i, 0, new QTableWidgetItem(pBase->keyAt(baseIndex, i)));
+            delegate->setModifier(i, 0, childSchema.toString());
+            setItem(i, 0, new QTableWidgetItem(toString(pBase->value(pBase->indexOf(baseIndex, QString::number(i))))));
         } else {
             delegate->setRowType(i, ChildItem);
             for (int j = 0; j < args.count(); j++) {
-                modifyer = childSchema.toObject()[args[j]].toString();
-                if (modifyer.contains(BOOL_FLAG))
-                    setItem(i, j, new QTableWidgetItem(modifyer.split(LIST_SEPARATOR)[pBase->keyAt(childIndexes[i], args[j]).toInt() + 2]));
+                modifier = childSchema.toObject()[args[j]].toString();
+                if (modifier.contains(BOOL_FLAG))
+                    setItem(i, j, new QTableWidgetItem(modifier.split(LIST_SEPARATOR)[pBase->keyAt(childIndexes[i], args[j]).toInt() + 2]));
                 else
                     setItem(i, j, new QTableWidgetItem(pBase->keyAt(childIndexes[i], args[j])));
             }
         }
+        verticalHeaderItem(i)->setText(QString::number(i + 1));
     }
 }
 
@@ -142,6 +164,25 @@ QString TableWidget::toString(QJsonValue value)
         return QString::number(value.toDouble());
     else
         return "";
+}
+
+void TableWidget::orderArgs(QStringList args)
+{
+    QStringList orderedChildKeys;
+    QVector<int> orderedChildIndexes = childIndexes;
+
+    orderedChildKeys = childKeys;
+    orderedChildIndexes.resize(childIndexes.count());
+
+    for (int i = 0; i < childKeys.count(); i++)
+        for (int j = 0; j < args.count(); j++)
+            if (childKeys[i] == args[j]) {
+                orderedChildKeys[j] = childKeys[i];
+                orderedChildIndexes[j] = childIndexes[i];
+            }
+
+    childKeys = orderedChildKeys;
+    childIndexes = orderedChildIndexes;
 }
 
 TableWidget::~TableWidget()
