@@ -41,7 +41,7 @@
             "artInfo": "Информация о тестовом произведеним исскуства 4",
             "artName": "Тестовая произведение исскуства 4",
             "artPath": "load/arts/test3.jpg",
-            "isDomestic": 1,
+            "isDomestic": 0,
             "lastUpdate": "2020-05-18"
         }
     ],

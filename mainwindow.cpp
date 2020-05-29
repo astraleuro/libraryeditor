@@ -11,18 +11,22 @@ MainWindow::MainWindow(QString path, QWidget *parent) : QMainWindow(parent)
     if (checkPath(dataPath + SCHEMA_PATH, true))
         readJson(dataPath + SCHEMA_PATH + SCHEMA_FILE, *mainSchema, jsonLog);
 
-    mainLayout = new QVBoxLayout();
     setCentralWidget(new QWidget());
     delete centralWidget()->layout();
     centralWidget()->setLayout(mainLayout);
 
-    tableWidget = new TableWidget();
-    tableDelegate = new TableDelegate();
-    tableWidget->setItemDelegate(tableDelegate);
+    backButton->setEnabled(false);
+    connect(tableWidget, SIGNAL(backExist(bool)), this, SLOT(setBackButtonState(bool)));
+    connect(backButton, SIGNAL(released()), tableWidget, SLOT(goBack()));
+
+    topBarLayout->addWidget(backButton);
+    topBarLayout->addWidget(headerLabel);
+    topBarLayout->setStretch(1, 1);
 
     tableWidget->connectBase(mainBase, mainSchema);
-    tableWidget->showData(QStringList());
+    tableWidget->showData();
 
+    mainLayout->addLayout(topBarLayout);
     mainLayout->addWidget(tableWidget);
 }
 
@@ -31,8 +35,10 @@ MainWindow::~MainWindow()
     writeJson(dataPath + SETTINGS_PATH + SETTINGS_FILE, settings);
     writeJson(dataPath + DATABASE_PATH + DATABASE_FILE, mainBase->toJson());
     delete tableWidget;
-    delete tableDelegate;
+    delete backButton;
+    delete headerLabel;
     delete mainLayout;
+    delete topBarLayout;
     delete centralWidget();
     delete mainBase;
 }

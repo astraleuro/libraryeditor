@@ -15,10 +15,13 @@
 #define LIST_SEPARATOR '|'
 #define UNIQUEBY_FLAG "{uniqueby}"
 #define NEWESTBY_FLAG "{newestby}"
-#define NAME_FLAG "{name}"
+#define LABEL_FLAG "{label}"
 #define EDIT_FLAG "{edit}"
 #define DATE_FLAG "{date}"
 #define FILE_FLAG "{file}"
+#define ORDER_FLAG "{order}"
+#define BOOL_FLAG "{bool}"
+#define LABEL_POS 1
 
 enum JsonBaseItemType {
     Undefined,
@@ -57,9 +60,14 @@ public:
     bool merge(JsonBase &base, JsonBase &schema);
     JsonBaseItemType typeOf(int index);
     QStringList keysOf(int index);
+    QVector<int> indexesOf(int index);
     int keysCount(int index);
     QString keyAt(int index, int key);
+    QString keyAt(int index, QString key);
+    int parentIndex(int index);
+    bool isChildExist(int index, JsonBaseItemType type);
     QJsonObject toJson(int index);
+    QJsonValue value(int index);
 protected:
     int countOf(JsonBaseItem *root, QRegExp *regExp);
     void append(JsonBaseItem *root, QJsonObject json, int parentIndex);

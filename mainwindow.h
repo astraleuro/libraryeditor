@@ -3,14 +3,15 @@
 
 #include <QMainWindow>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLabel>
 
 #include <QJsonDocument>
 #include <QJsonValue>
 #include <QJsonParseError>
 
 #include "widgets/tablewidget.h"
-#include "widgets/tabledelegate.h"
-
 #include "modules/database/jsonbase.h"
 #include "modules/fsprocessor.h"
 
@@ -29,13 +30,18 @@ public:
     MainWindow(QString path, QWidget *parent = nullptr);
     ~MainWindow();
 
+protected slots:
+    void setBackButtonState(bool state) {backButton->setEnabled(state);};
+
 private:
     QString dataPath;
     JsonBase *mainBase = new JsonBase;
     JsonBase *mainSchema = new JsonBase;
     QJsonObject settings;
-    QLayout *mainLayout = NULL;
-    TableWidget *tableWidget;
-    TableDelegate *tableDelegate;
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    QHBoxLayout *topBarLayout = new QHBoxLayout;
+    TableWidget *tableWidget = new TableWidget();
+    QPushButton *backButton = new QPushButton("<");
+    QLabel *headerLabel = new QLabel();
 };
 #endif // MAINWINDOW_H

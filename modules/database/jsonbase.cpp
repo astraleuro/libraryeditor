@@ -89,6 +89,17 @@ QStringList JsonBase::keysOf(int index)
     return childs;
 }
 
+QVector<int> JsonBase::indexesOf(int index)
+{
+    JsonBaseItem *root = baseCache[index];
+    QVector<int> indexes;
+    if (root != nullptr)
+        if (root->type == Object || root->type == Array)
+            for (int i = 0; i < root->childKeys.count(); i++)
+                indexes.append(root->childItems[i]->currentIndex);
+    return indexes;
+}
+
 int JsonBase::keysCount(int index)
 {
     JsonBaseItem *root = baseCache[index];
@@ -107,12 +118,69 @@ QString JsonBase::keyAt(int index, int key)
     return "";
 }
 
+QString JsonBase::keyAt(int index, QString key)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr)
+        if ((root->type == Object || root->type == Array)) {
+            for (int i = 0; i < root->childKeys.count(); i++)
+                if (root->childKeys[i] == key) {
+                    if (root->childItems[i]->type == Value) {
+                        if (root->childItems[i]->value.isString())
+                            return root->childItems[i]->value.toString();
+                        else if (root->childItems[i]->value.isBool())
+                            return QString::number(root->childItems[i]->value.toBool());
+                        else if (root->childItems[i]->value.isDouble())
+                            return QString::number(root->childItems[i]->value.toDouble());
+                    } else if (root->childItems[i]->type == Array) {
+                        QString array;
+                        for (QString item : keysOf(root->childItems[i]->currentIndex))
+                            array += takeKey(root->childItems[i], item) + ", ";
+                        array.remove(array.count() - 2, 2);
+                        return array;
+                    }
+                    break;
+                }
+        }
+    return "...";
+}
+
+int JsonBase::parentIndex(int index)
+{
+    if (index > 0) {
+        JsonBaseItem *root = baseCache[index];
+        if (root != nullptr)
+            return root->parentIndex;
+    }
+    return -1;
+}
+
+bool JsonBase::isChildExist(int index, JsonBaseItemType type)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr)
+        if (root->type == Object || root->type == Array)
+            for (int i = 0; i < root->childItems.count(); i++)
+                if (root->childItems[i]->type == type)
+                    return true;
+    return false;
+}
+
 QJsonObject JsonBase::toJson(int index)
 {
     JsonBaseItem *root = baseCache[index];
     if (root != nullptr)
         return toJson(root).toObject();
     return QJsonObject();
+}
+
+QJsonValue JsonBase::value(int index)
+{
+    JsonBaseItem *root = baseCache[index];
+    if (root != nullptr)
+        if (root->type == Value)
+            return root->value;
+    return QJsonValue();
 }
 
 int JsonBase::countOf(JsonBaseItem *root, QRegExp *regExp)
@@ -372,7 +440,7 @@ JsonBaseItem *JsonBase::takeAt(JsonBaseItem *root, int key)
 
 QString JsonBase::takeKey(JsonBaseItem *root, QString key)
 {
-    if (root != NULL && !key.isEmpty() && root->type == Object) {
+    if (root != nullptr && !key.isEmpty() && root->type != Value) {
         for (int i = 0; i < root->childKeys.count(); i++)
             if (root->childKeys[i] == key && root->childItems[i] != NULL && root->childItems[i]->type == Value)
                 return root->childItems[i]->value.toString();
