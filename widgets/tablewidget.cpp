@@ -71,6 +71,7 @@ void TableWidget::showObject()
         if (pBase->typeOf(childIndexes[i]) == Value) {
             modifier = toString(pSchema->value(pSchema->indexOf(schemaIndex, childKeys[i])));
             newItemDelegate = rowDelegate(i, modifier);
+            newItemDelegate->setOrientation(RowOriented);
             newItemDelegate->setModifier(0, modifier);
             newItemDelegate->setData(0, toString(pBase->keyAt(baseIndex, childKeys[i])));
             setItem(i, 0, new QTableWidgetItem(modifier.split(LIST_SEPARATOR)[LABEL_POS]));
@@ -80,6 +81,7 @@ void TableWidget::showObject()
         } else {
             schema = pSchema->toJson(pSchema->indexOf(schemaIndex, "{" + childKeys[i] + "}"));
             newItemDelegate = rowDelegate(i);
+            newItemDelegate->setOrientation(RowOriented);
             newItemDelegate->setModifier(0, schema[LABEL_FLAG].toString());
             newItemDelegate->setData(0, childKeys[i]);
             if (columnCount() == 1) {
@@ -114,14 +116,13 @@ void TableWidget::showArray()
     appendRow(childIndexes.count());
     if (!childIndexes.isEmpty()) {
         if (childSchema.isObject()) {
-            appendCol(pBase->keysCount(childIndexes[0]) + 1);
+            appendCol(pBase->keysCount(childIndexes[0]));
             for (QString key : args)
                 if (!childSchema[key].isObject() && !childSchema[key].isArray())
                     labels.append(childSchema[key].toString().split(LIST_SEPARATOR)[LABEL_POS]);
                 else
                     labels.append(childSchema["{" + key + "}"].toObject()[LABEL_FLAG].toString());
 
-            labels.push_back("");
             setHorizontalHeaderLabels(labels);
         } else if (childSchema.toString() != "")
             appendCol(1);
@@ -131,6 +132,7 @@ void TableWidget::showArray()
     for (int i = 0; i < childIndexes.count(); i++) {
         if (pBase->typeOf(childIndexes[i]) == Value) {
             newItemDelegate = colDelegate(i, "");
+            newItemDelegate->setOrientation(ColOriented);
             newItemDelegate->setData(i, toString(pBase->value(pBase->indexOf(baseIndex, QString::number(i)))));
             setItem(i, 0, new QTableWidgetItem(newItemDelegate->takeData(i)));
             item(i, 0)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
@@ -138,15 +140,12 @@ void TableWidget::showArray()
             for (int j = 0; j < args.count(); j++) {
                 modifier = childSchema.toObject()[args[j]].toString();
                 newItemDelegate = colDelegate(j, modifier);
+                newItemDelegate->setOrientation(ColOriented);
                 newItemDelegate->setModifier(i, modifier);
                 newItemDelegate->setData(i, pBase->keyAt(childIndexes[i], args[j]));
                 setItem(i, j, new QTableWidgetItem(newItemDelegate->takeModifiedData(i)));
                 item(i, j)->setTextAlignment(Qt::AlignTop | Qt::AlignLeft);
             }
-            newItemDelegate = colDelegate(columnCount() - 1);
-            setItem(i, columnCount() - 1, new QTableWidgetItem("..."));
-            connect(newItemDelegate, SIGNAL(posActivated(int)), this, SLOT(activatePos(int)));
-            connected.push_back(newItemDelegate);
             verticalHeaderItem(i)->setText(QString::number(i + 1));
         }
     }
@@ -217,8 +216,9 @@ void TableWidget::adoptColsWidth()
                         width = max(width, fontMetrics.horizontalAdvance(item(i, j)->text()), AUTO_MAX_WIDTH);
                 if (showedType == ArrayShow)
                     width = max(width, fontMetrics.horizontalAdvance(horizontalHeaderItem(j)->text()), INT_MAX);
-            }
-            setColumnWidth(j, width + ADDITIONAL_WIDTH);
+                setColumnWidth(j, width + ADDITIONAL_WIDTH);
+            } else
+                setColumnWidth(j, width);
         }
     }
     connect(horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this, SLOT(showImages()));
@@ -268,6 +268,10 @@ void TableWidget::showImages()
                     item(i, j)->setToolTip(QDir::toNativeSeparators(itemPtr->takeModifiedData(i)));
                 if (height > 0)
                     setRowHeight(i, height);
+                }
+                if (j == 0) {
+                    connect((StandardItemDelegate*)itemDelegateForColumn(i), SIGNAL(posActivated(int)), this, SLOT(activatePos(int)));
+                    connected.push_back((StandardItemDelegate*)itemDelegateForColumn(i));
                 }
             }
 }

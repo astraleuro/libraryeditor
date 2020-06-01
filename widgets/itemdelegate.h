@@ -5,6 +5,9 @@
 #include <QItemDelegate>
 #include <QString>
 #include <QEvent>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QModelIndex>
 
 #include "modules/templates.h"
 
@@ -37,6 +40,7 @@ public:
 
 signals:
     void posActivated(int) const;
+    void fileChanged(int, QString path) const;
 
 protected:
     QVector<QString> d, m;
@@ -72,6 +76,7 @@ class FileItemDelegate : public StandardItemDelegate
 
 public:
     FileItemDelegate(QObject *parent = nullptr) : StandardItemDelegate(parent) {};
+    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
     ItemType itemType() {return FileItem;};
     QString takeModifiedData(int pos);
 };

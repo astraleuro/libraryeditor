@@ -3,11 +3,12 @@
 QWidget *StandardItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     int pos = 0;
-    if (orientation == RowOriented)
+    if (orientation == ColOriented)
         pos = index.row();
     if (m.size() > 0)
         if (m[pos].split(LIST_SEPARATOR)[TYPE_POS] == EDIT_FLAG)
-            return QItemDelegate::createEditor(parent, option, index);
+            if (orientation == ColOriented || (orientation == RowOriented && index.column() == 1))
+                return QItemDelegate::createEditor(parent, option, index);
     return nullptr;
 }
 
@@ -36,11 +37,13 @@ bool BoolItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
         int pos = 0;
         if (orientation == ColOriented)
             pos = index.row();
-        if (d[pos] == "0")
-            d[pos] = "1";
-        else
-            d[pos] = "0";
-        model->setData(index, QVariant(takeModifiedData(pos)));
+        if (orientation == ColOriented || (orientation == RowOriented && index.column() == 1)) {
+            if (d[pos] == "0")
+                d[pos] = "1";
+            else
+                d[pos] = "0";
+            model->setData(index, QVariant(takeModifiedData(pos)));
+        }
     }
 }
 
@@ -58,6 +61,27 @@ QWidget *ComplexItemDelegate::createEditor(QWidget *parent, const QStyleOptionVi
 QString ComplexItemDelegate::takeModifiedData(int pos)
 {
     return m[pos];
+}
+
+bool FileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    if (event->type() == QEvent::MouseButtonDblClick) {
+        if (orientation == RowOriented) {
+            if (index.column() == 1) {
+                QFileDialog dialog(nullptr,
+                                   "Выберите файл...",
+                                   QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
+                                   FILE_EXTENSIONS);
+                dialog.setFileMode(QFileDialog::ExistingFile);
+                dialog.setViewMode(QFileDialog::Detail);
+                dialog.setModal(true);
+                dialog.exec();
+                if (dialog.selectedFiles().count() == 1)
+                    fileChanged(index.row(), dialog.selectedFiles()[0]);
+            }
+        } else
+            posActivated(index.row());
+    }
 }
 
 QString FileItemDelegate::takeModifiedData(int pos)

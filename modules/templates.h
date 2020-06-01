@@ -3,6 +3,8 @@
 
 #include <QVector>
 
+#define FILE_EXTENSIONS "*.png, *.jpg"
+
 #define LIST_SEPARATOR '|'
 #define UNIQUEBY_FLAG "{uniqueby}"
 #define NEWESTBY_FLAG "{newestby}"
