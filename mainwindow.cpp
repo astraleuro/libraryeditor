@@ -2,6 +2,8 @@
 
 MainWindow::MainWindow(QString path, QWidget *parent) : QMainWindow(parent)
 {
+    setGeometry(0,0,700,500);
+
     dataPath = path;
     QJsonParseError jsonLog;
     if (checkPath(dataPath + SETTINGS_PATH, true))
@@ -19,27 +21,38 @@ MainWindow::MainWindow(QString path, QWidget *parent) : QMainWindow(parent)
     connect(tableWidget, SIGNAL(backExist(bool)), this, SLOT(setBackButtonState(bool)));
     connect(backButton, SIGNAL(released()), tableWidget, SLOT(goBack()));
 
+    QFont font;
+    QFontMetrics metrics(font);
+    backButton->setMinimumWidth(metrics.horizontalAdvance(backButton->text()) + ADDITIONAL_WIDTH);
+    backButton->setMaximumWidth(backButton->minimumWidth());
+
     topBarLayout->addWidget(backButton);
     topBarLayout->addWidget(headerLabel);
+    topBarLayout->setStretch(0, 0);
     topBarLayout->setStretch(1, 1);
 
+    tableWidget->setSettings(settings[SETTINGS_TABLEWIDGET].toObject());
+    tableWidget->setBasePath(dataPath + DATABASE_PATH + "/");
     tableWidget->connectBase(mainBase, mainSchema);
     tableWidget->showData();
 
     mainLayout->addLayout(topBarLayout);
     mainLayout->addWidget(tableWidget);
+
+    //setStatusBar(statusBar);
+    setMouseTracking(false);
 }
 
 MainWindow::~MainWindow()
 {
+    settings[SETTINGS_TABLEWIDGET] = tableWidget->takeSettings();
+
     writeJson(dataPath + SETTINGS_PATH + SETTINGS_FILE, settings);
     writeJson(dataPath + DATABASE_PATH + DATABASE_FILE, mainBase->toJson());
-    delete tableWidget;
-    delete backButton;
-    delete headerLabel;
-    delete mainLayout;
-    delete topBarLayout;
-    delete centralWidget();
-    delete mainBase;
+}
+
+void MainWindow::setStatusText(QString text)
+{
+    statusBar->showMessage(text, 5000);
 }
 

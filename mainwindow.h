@@ -6,6 +6,10 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <QStatusBar>
+
+#include <QFont>
+#include <QFontMetrics>
 
 #include <QJsonDocument>
 #include <QJsonValue>
@@ -22,6 +26,8 @@
 #define SCHEMA_FILE "/schema.json"
 #define SCHEMA_PATH "/database"
 
+#define SETTINGS_TABLEWIDGET "maintable"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -32,6 +38,7 @@ public:
 
 protected slots:
     void setBackButtonState(bool state) {backButton->setEnabled(state);};
+    void setStatusText(QString text);
 
 private:
     QString dataPath;
@@ -43,5 +50,6 @@ private:
     TableWidget *tableWidget = new TableWidget();
     QPushButton *backButton = new QPushButton("<");
     QLabel *headerLabel = new QLabel();
+    QStatusBar *statusBar = new QStatusBar;
 };
 #endif // MAINWINDOW_H

@@ -1,7 +1,21 @@
-#ifndef CACHEBASE_H
+#ifndef TEMPLATES_H
 #define TEMPLATES_H
 
 #include <QVector>
+
+#define LIST_SEPARATOR '|'
+#define UNIQUEBY_FLAG "{uniqueby}"
+#define NEWESTBY_FLAG "{newestby}"
+#define LABEL_FLAG "{label}"
+#define EDIT_FLAG "{edit}"
+#define DATE_FLAG "{date}"
+#define FILE_FLAG "{file}"
+#define ORDER_FLAG "{order}"
+#define BOOL_FLAG "{bool}"
+#define BOOL_POS 2
+#define LABEL_POS 1
+#define FILE_POS 2
+#define TYPE_POS 0
 
 template<class T>
 struct CacheItem {
@@ -11,6 +25,7 @@ struct CacheItem {
 
 template<class T>
 class CacheBase {
+
 public:
     int append(T* item)
     {
@@ -37,9 +52,11 @@ public:
         lastIndex = 0;
         items.clear();
     };
+
 protected:
     int lastIndex = 0;
     QVector<CacheItem<T>> items;
+
 };
 
 template<typename T>
@@ -50,6 +67,22 @@ int compare(T left, T right) {
         return -1;
     else
         return 0;
-}
+};
 
-#endif // CACHEBASE_H
+template<typename T>
+T min(T left, T right) {
+    if (left < right)
+        return left;
+    else
+        return right;
+};
+
+template<typename T>
+T max(T left, T right, T limit) {
+    if (left < right)
+        return min(right, limit);
+    else
+        return min(left, limit);
+};
+
+#endif // TEMPLATES_H

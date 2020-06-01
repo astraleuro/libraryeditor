@@ -18,14 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    widgets/tabledelegate.cpp \
+    widgets/itemdelegate.cpp \
     widgets/tablewidget.cpp \
     modules/fsprocessor.cpp \
     modules/database/jsonbase.cpp
 
 HEADERS += \
     mainwindow.h \
-    widgets/tabledelegate.h \
+    widgets/itemdelegate.h \
     widgets/tablewidget.h \
     modules/fsprocessor.h \
     modules/database/jsonbase.h \
@@ -37,3 +37,5 @@ FORMS +=
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES +=

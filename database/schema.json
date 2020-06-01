@@ -8,7 +8,7 @@
     "eras": [
         {
             "eraName": "{edit}|Название",
-            "eraImagePath": "{file}|Изображение|load/eras",
+            "eraImagePath": "{file}|Изображение|load/eras/",
             "lastUpdate": "{date}|Дата|yyyy-MM-dd"
         }
     ],
@@ -21,7 +21,7 @@
     "authors": [
         {
             "authorName": "{edit}|Имя",
-            "authorImagePath": "{file}|Изображение|load/authors",
+            "authorImagePath": "{file}|Изображение|load/authors/",
             "authorInfo": "{edit}|Информация",
             "lastUpdate": "{date}|Дата|yyyy-MM-dd"
         }
@@ -35,7 +35,7 @@
     "arts": [
         {
             "artEra": "{link}|Эпоха|eras|eraName",
-            "artPath": "{file}|Изображение|load/arts",
+            "artPath": "{file}|Изображение|load/arts/",
             "artInfo": "{edit}|Информация",
             "{artAuthors}": {
                 "{label}": "Авторы"
