@@ -13,8 +13,15 @@ void TableWidget::connectBase(JsonBase *base, JsonBase *schema)
 
 void TableWidget::showData()
 {   
+    showFilter(false);
+    initFilterHeader(QStringList());
+
+    strechableCol = -1;
+    stretchableMinWidth = 0;
+
     clearDelegates();
     clear();
+
     setColumnCount(0);
     setRowCount(0);
 
@@ -27,28 +34,22 @@ void TableWidget::showData()
     verticalHeader()->setVisible(true);
     horizontalHeader()->setVisible(true);
 
-    switch (pBase->typeOf(baseIndex)) {
-    case Object:
+    if (pBase->typeOf(baseIndex) == Object)
         showObject();
-        break;
-    case Array:
+    else
         showArray();
-        break;
-    default:
-        break;
-    }
-
-    adoptColsWidth();
-    showImages();
 
     if (baseIndex > 0)
         backExist(true);
     else
         backExist(false);
+
+    adoptColsWidth();
+    showImages();
 }
 
 void TableWidget::showObject()
-{
+{   
     showedType = ObjectShow;
     appendRow(childIndexes.count());
     if (pBase->isChildExist(baseIndex, Value)) {
@@ -64,6 +65,8 @@ void TableWidget::showObject()
             schema = pSchema->toJson(pSchema->indexOf(pSchema->parentIndex(schemaIndex), "{" + path.last() + "}"));
         orderArgs(schema[ORDER_FLAG].toString().split(LIST_SEPARATOR));
     }
+
+    horizontalHeader()->setStretchLastSection(true);
 
     QString label, modifier;
     StandardItemDelegate *newItemDelegate;
@@ -111,6 +114,7 @@ void TableWidget::showArray()
         childSchema = pSchema->toJson(pSchema->indexOf(schemaIndex, "0"));
     else
         childSchema = pSchema->value(pSchema->indexOf(schemaIndex, "0"));
+    horizontalHeader()->setStretchLastSection(false);
 
     showedType = ArrayShow;
     appendRow(childIndexes.count());
@@ -124,11 +128,16 @@ void TableWidget::showArray()
                     labels.append(childSchema["{" + key + "}"].toObject()[LABEL_FLAG].toString());
 
             setHorizontalHeaderLabels(labels);
+            initFilterHeader(labels);
+            showFilter(true);
         } else if (childSchema.toString() != "")
             appendCol(1);
     }
+    strechableCol = args.indexOf(arraySchema[STRETCH_FLAG].toString());
 
     StandardItemDelegate *newItemDelegate;
+    bool indexShow = arraySchema[INDEX_FLAG].toBool(false);
+    showIndex(indexShow);
     for (int i = 0; i < childIndexes.count(); i++) {
         if (pBase->typeOf(childIndexes[i]) == Value) {
             newItemDelegate = colDelegate(i, "");
@@ -146,9 +155,13 @@ void TableWidget::showArray()
                 setItem(i, j, new QTableWidgetItem(newItemDelegate->takeModifiedData(i)));
                 item(i, j)->setTextAlignment(Qt::AlignTop | Qt::AlignLeft);
             }
-            verticalHeaderItem(i)->setText(QString::number(i + 1));
+            if (indexShow)
+                verticalHeaderItem(i)->setText(QString::number(i + 1));
         }
     }
+
+    adoptColsWidth();
+    showImages();
 }
 
 void TableWidget::appendRow(int count)
@@ -204,13 +217,12 @@ void TableWidget::adoptColsWidth()
     if (columnCount() > 1) {
         int width;
         for (int j = 0; j < columnCount(); j++) {
-            width = 0;
-            if (showedType == ArrayShow) {
-                if (j != columnCount() - 1)
-                    width = settings[horizontalHeaderItem(j)->text()].toInt();
-            } else
+            width = -1;
+            if (showedType == ArrayShow && settings.keys().contains(horizontalHeaderItem(j)->text())) {
+                width = settings[horizontalHeaderItem(j)->text()].toInt();
+            } else if (showedType == ObjectShow && settings.keys().contains("{" + QString::number(j) + "}"))
                 width = settings["{" + QString::number(j) + "}"].toInt();
-            if (width == 0) {
+            if (width == -1) {
                 for (int i = 0; i < rowCount(); i++)
                     if (item(i, j) != nullptr)
                         width = max(width, fontMetrics.horizontalAdvance(item(i, j)->text()), AUTO_MAX_WIDTH);
@@ -219,6 +231,17 @@ void TableWidget::adoptColsWidth()
                 setColumnWidth(j, width + ADDITIONAL_WIDTH);
             } else
                 setColumnWidth(j, width);
+        }
+        if (strechableCol != -1) {
+            if (stretchableMinWidth == 0 || stretchableMinWidth > columnWidth(strechableCol))
+                stretchableMinWidth = columnWidth(strechableCol);
+            int colsWidth = 0;
+            for (int i = 0; i < columnCount(); i++)
+                if (i != strechableCol)
+                    colsWidth += columnWidth(i);
+            int newWidth = this->width() - colsWidth - 40;
+            if (this->width() > newWidth)
+                setColumnWidth(strechableCol, newWidth);
         }
     }
     connect(horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this, SLOT(showImages()));
@@ -229,10 +252,10 @@ void TableWidget::saveColsWidth()
     if (columnCount() > 1) {
         if (showedType == ArrayShow) {
             for (int i = 0; i < columnCount(); i++)
-                settings[horizontalHeaderItem(i)->text()] = columnWidth(i);
-        } else {
-            settings["{0}"] = columnWidth(0);
-            settings["{1}"] = columnWidth(1);
+                if (i != strechableCol)
+                    settings[horizontalHeaderItem(i)->text()] = columnWidth(i);
+                else
+                    settings[horizontalHeaderItem(i)->text()] = stretchableMinWidth;
         }
     }
 }
@@ -276,12 +299,18 @@ void TableWidget::showImages()
             }
 }
 
+void TableWidget::colResize(int col, int oldWidth, int newWidth)
+{
+    if (oldWidth != newWidth)
+        setColumnWidth(col, newWidth);
+}
+
 StandardItemDelegate *TableWidget::initDelegate(QString &modifier)
 {
     StandardItemDelegate *newDelegate;
     if (modifier == "complex")
         newDelegate = new ComplexItemDelegate(this);
-    else if ((modifier.contains(FILE_FLAG)))
+    else if (modifier.contains(FILE_FLAG))
         newDelegate = new FileItemDelegate(this);
     else if (modifier.contains(BOOL_FLAG))
         newDelegate = new BoolItemDelegate(this);
@@ -340,8 +369,15 @@ void TableWidget::goBack()
 
 void TableWidget::resizeEvent(QResizeEvent *event)
 {
-    if (columnCount() == 1)
-        setColumnWidth(0, event->size().width());
+    if (strechableCol != -1) {
+        int colsWidth = 0;
+        for (int i = 0; i < columnCount(); i++)
+            if (i != strechableCol)
+                colsWidth += columnWidth(i);
+        int newWidth = this->width() - colsWidth - 40;
+        if (newWidth >= stretchableMinWidth)
+            setColumnWidth(strechableCol, newWidth);
+    }
     QTableWidget::resizeEvent(event);
 }
 

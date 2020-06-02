@@ -3,7 +3,8 @@
         "{label}": "Эпохи",
         "{uniqueby}": "eraName",
         "{newestby}": "lastUpdate",
-        "{order}": "eraImagePath|eraName|lastUpdate"
+        "{order}": "eraImagePath|eraName|lastUpdate",
+        "{stretch}": "eraName"
     },
     "eras": [
         {
@@ -16,13 +17,14 @@
         "{label}": "Авторы",
         "{uniqueby}": "authorName",
         "{newestby}": "lastUpdate",
-        "{order}": "authorImagePath|authorName|authorInfo|lastUpdate"
+        "{order}": "authorImagePath|authorName|authorInfo|lastUpdate",
+        "{stretch}": "authorInfo"
     },
     "authors": [
         {
             "authorName": "{edit}|Имя",
             "authorImagePath": "{file}|Изображение|load/authors/",
-            "authorInfo": "{edit}|Информация",
+            "authorInfo": "{plain}|Информация",
             "lastUpdate": "{date}|Дата|yyyy-MM-dd"
         }
     ],
@@ -30,13 +32,14 @@
         "{label}": "Произведения искусства",
         "{uniqueby}": "artName",
         "{newestby}": "lastUpdate",
-        "{order}": "artPath|artName|artEra|isDomestic|artAuthors|artInfo|lastUpdate"
+        "{order}": "artPath|artName|artEra|isDomestic|artAuthors|artInfo|lastUpdate",
+        "{stretch}": "artInfo"
     },
     "arts": [
         {
             "artEra": "{link}|Эпоха|eras|eraName",
             "artPath": "{file}|Изображение|load/arts/",
-            "artInfo": "{edit}|Информация",
+            "artInfo": "{plain}|Информация",
             "{artAuthors}": {
                 "{label}": "Авторы"
             },

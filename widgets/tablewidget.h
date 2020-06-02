@@ -6,6 +6,7 @@
 #include <QHeaderView>
 #include <QImage>
 #include <QDir>
+#include <QScrollBar>
 
 #include "widgets/itemdelegate.h"
 #include "modules/database/jsonbase.h"
@@ -35,6 +36,10 @@ public:
 signals:
     void backExist(bool);
     void statusText(QString);
+    void initFilterHeader(QStringList);
+    void resizeStretchableCol(int);
+    void showFilter(bool);
+    void showIndex(bool);
 
 public slots:
     void goBack();
@@ -60,6 +65,7 @@ protected:
 public slots:
     void activatePos(int row);
     void showImages();
+    void colResize(int col, int oldWidth, int newWidth);
 
 private:
     JsonBase *pBase, *pSchema;
@@ -71,6 +77,8 @@ private:
     ShowType showedType = ObjectShow;
     QString basePath;
     QVector<StandardItemDelegate*> connected;
+    int strechableCol = -1;
+    int stretchableMinWidth = 0;
 };
 
 #endif // TABLEWIDGET_H

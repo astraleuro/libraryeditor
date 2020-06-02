@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QStatusBar>
+#include <QLineEdit>
 
 #include <QFont>
 #include <QFontMetrics>
@@ -36,9 +37,16 @@ public:
     MainWindow(QString path, QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 protected slots:
     void setBackButtonState(bool state) {backButton->setEnabled(state);};
     void setStatusText(QString text);
+    void initFilterHeader(QStringList labels);
+    void showFilter(bool what);
+    void showIndex(bool what);
+    void colResize(int col, int oldWidth, int newWidth);
 
 private:
     QString dataPath;
@@ -46,10 +54,18 @@ private:
     JsonBase *mainSchema = new JsonBase;
     QJsonObject settings;
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    QHBoxLayout *topBarLayout = new QHBoxLayout;
+    QHBoxLayout *doBarLayout = new QHBoxLayout;
+    QVBoxLayout *filterLayout = new QVBoxLayout;
     TableWidget *tableWidget = new TableWidget();
     QPushButton *backButton = new QPushButton("<");
+    QTableWidget *filterTable = new QTableWidget;
     QLabel *headerLabel = new QLabel();
     QStatusBar *statusBar = new QStatusBar;
+    QPushButton *addButton = new QPushButton("&Добавить");
+    QPushButton *delButton = new QPushButton("&Удалить");
+    QPushButton *chgButton = new QPushButton("&Изменить");
+    QPushButton *findButton = new QPushButton("&Поиск");
+    QPushButton *saveButton = new QPushButton("&Сохранить");
+    QLineEdit *findText = new QLineEdit();
 };
 #endif // MAINWINDOW_H

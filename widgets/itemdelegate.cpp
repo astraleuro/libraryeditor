@@ -6,8 +6,8 @@ QWidget *StandardItemDelegate::createEditor(QWidget *parent, const QStyleOptionV
     if (orientation == ColOriented)
         pos = index.row();
     if (m.size() > 0)
-        if (m[pos].split(LIST_SEPARATOR)[TYPE_POS] == EDIT_FLAG)
-            if (orientation == ColOriented || (orientation == RowOriented && index.column() == 1))
+        if (m[pos].split(LIST_SEPARATOR)[TYPE_POS] == EDIT_FLAG || m[pos].split(LIST_SEPARATOR)[TYPE_POS] == PLAIN_FLAG)
+            if ((orientation == ColOriented && !m[pos].contains(PLAIN_FLAG)) || (orientation == RowOriented && index.column() == 1))
                 return QItemDelegate::createEditor(parent, option, index);
     return nullptr;
 }
