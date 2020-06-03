@@ -2,70 +2,45 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QLabel>
-#include <QStatusBar>
-#include <QLineEdit>
+#include <QLayout>
+#include <QMessageBox>
 
-#include <QFont>
-#include <QFontMetrics>
+#include "defines.h"
+#include "widgets/welcomescreen.h"
+#include "widgets/mainlist.h"
+#include "widgets/arraylist.h"
 
-#include <QJsonDocument>
-#include <QJsonValue>
-#include <QJsonParseError>
-
-#include "widgets/tablewidget.h"
-#include "modules/database/jsonbase.h"
 #include "modules/fsprocessor.h"
-
-#define SETTINGS_FILE "/settings.json"
-#define SETTINGS_PATH ""
-#define DATABASE_FILE "/database.json"
-#define DATABASE_PATH "/database"
-#define SCHEMA_FILE "/schema.json"
-#define SCHEMA_PATH "/database"
-
-#define SETTINGS_TABLEWIDGET "maintable"
+#include "modules/jsonprocessor.h"
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QString path, QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr) : QMainWindow(parent) {};
+    MainWindow(QString config, QWidget *parent = nullptr);
     ~MainWindow();
 
-protected:
-    void resizeEvent(QResizeEvent *event);
-
 protected slots:
-    void setBackButtonState(bool state) {backButton->setEnabled(state);};
-    void setStatusText(QString text);
-    void initFilterHeader(QStringList labels);
-    void showFilter(bool what);
-    void showIndex(bool what);
-    void colResize(int col, int oldWidth, int newWidth);
+    void showWelcomeScreen();
+    void showMainList(QString fn, QJsonObject &data);
+    void showArrayList(JsonDataSections sec);
+    void takeMainListSettings();
+    void takeArrayListSettings();
+    void backFromArrayList();
+    void closeApp();
+
+protected:
+    void clearMainLayout();
 
 private:
-    QString dataPath;
-    JsonBase *mainBase = new JsonBase;
-    JsonBase *mainSchema = new JsonBase;
-    QJsonObject settings;
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    QHBoxLayout *doBarLayout = new QHBoxLayout;
-    QVBoxLayout *filterLayout = new QVBoxLayout;
-    TableWidget *tableWidget = new TableWidget();
-    QPushButton *backButton = new QPushButton("<");
-    QTableWidget *filterTable = new QTableWidget;
-    QLabel *headerLabel = new QLabel();
-    QStatusBar *statusBar = new QStatusBar;
-    QPushButton *addButton = new QPushButton("&Добавить");
-    QPushButton *delButton = new QPushButton("&Удалить");
-    QPushButton *chgButton = new QPushButton("&Изменить");
-    QPushButton *findButton = new QPushButton("&Поиск");
-    QPushButton *saveButton = new QPushButton("&Сохранить");
-    QLineEdit *findText = new QLineEdit();
+    WelcomeScreen *welcomeScreen = nullptr;
+    MainList *mainList = nullptr;
+    ArrayList *arrayList = nullptr;
+    QString configPath, jsonPath;
+    QJsonObject allSettings, jsonData;
 };
+
 #endif // MAINWINDOW_H

@@ -2,21 +2,16 @@
 
 #include <QApplication>
 #include <QStandardPaths>
-#include <stdio.h>
+#include <QDir>
+
+#include "defines.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    /*QString dataPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/libraryeditor";
-    for (QString arg : QApplication::arguments()) {
-        if (arg == "--portable") {
-            dataPath = QApplication::applicationDirPath();
-            break;
-        }
-    }*/
-    QString dataPath = QApplication::applicationDirPath();
-    MainWindow w(dataPath);
+    QDir configPath;
+    configPath.setPath(QDir::toNativeSeparators(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)));
+    MainWindow w(QDir::toNativeSeparators(configPath.path() + "/" + CONFIG_FILE));
     w.show();
-
     return a.exec();
 }

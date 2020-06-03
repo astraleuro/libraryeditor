@@ -1,4 +1,4 @@
-#include "fsprocessor.h"
+#include "modules/fsprocessor.h"
 
 QString toValidFileName(QString fn, LetterCase letterCase)
 {
@@ -111,26 +111,24 @@ bool checkPath(QString path, bool mk)
 
 bool readJson(QString path, QJsonObject &json, QJsonParseError &log)
 {
-    if (checkPath(path)) {
-        QFile file;
-        file.setFileName(path);
-        if (file.open(QIODevice::ReadOnly)) {
-            QJsonDocument jsonDoc;
-            jsonDoc = QJsonDocument::fromJson(file.readAll(), &log);
-            file.close();
-            if (log.error == QJsonParseError::NoError) {
-                json = jsonDoc.object();
-                return true;
-            }
+    QFile file;
+    file.setFileName(QDir::toNativeSeparators(path));
+    if (file.open(QIODevice::ReadOnly)) {
+        QJsonDocument jsonDoc;
+        jsonDoc = QJsonDocument::fromJson(file.readAll(), &log);
+        file.close();
+        if (log.error == QJsonParseError::NoError) {
+            json = jsonDoc.object();
+            return true;
         }
     }
     return false;
 }
 
-bool writeJson(QString path, QJsonObject json)
+bool writeJson(QString path, QJsonObject &json)
 {
     QFile file;
-    file.setFileName(path);
+    file.setFileName(QDir::toNativeSeparators(path));
     if (file.open(QIODevice::WriteOnly)) {
         QJsonDocument jsonDoc(json);
         if (file.write(jsonDoc.toJson()) != -1) {
@@ -141,20 +139,7 @@ bool writeJson(QString path, QJsonObject json)
     return false;
 }
 
-bool readJson(QString path, JsonBase &base, QJsonParseError &log)
+QString toNativeSeparators(QString path)
 {
-    if (checkPath(path)) {
-        QFile file;
-        file.setFileName(path);
-        if (file.open(QIODevice::ReadOnly)) {
-            QJsonDocument jsonDoc;
-            jsonDoc = QJsonDocument::fromJson(file.readAll(), &log);
-            file.close();
-            if (log.error == QJsonParseError::NoError) {
-                base.fromJson(jsonDoc.object());
-                return true;
-            }
-        }
-    }
-    return false;
+    return QDir::toNativeSeparators(path);
 }
