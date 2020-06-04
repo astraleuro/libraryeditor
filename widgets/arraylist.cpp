@@ -233,7 +233,7 @@ void ArrayList::adoptText(int row)
 void ArrayList::openItemEditor()
 {
     ItemEditor itemEditor;
-    itemEditor.initData(settings, section);
+    itemEditor.initData(allSettings, section);
     itemEditor.setModal(true);
     itemEditor.exec();
 }

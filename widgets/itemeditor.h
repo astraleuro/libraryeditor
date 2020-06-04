@@ -23,13 +23,17 @@ public:
     void getData();
     ~ItemEditor();
 
+signals:
+    void settingsModified();
+
 protected:
-    void hideWidgets(bool isArtsSection);
+    void adoptWidgets();
 
 private:
     Ui::ItemEditor *ui;
-    bool isSectionValid = false;
+    bool isAddDialog = true;
     JsonDataSections section;
+    QJsonObject allSettings, settings;
 };
 
 #endif // ITEMEDITOR_H
