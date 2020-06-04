@@ -9,6 +9,8 @@
 #include "templates.h"
 #include "defines.h"
 
+#include "modules/fsprocessor.h"
+
 namespace Ui {
 class MainList;
 }

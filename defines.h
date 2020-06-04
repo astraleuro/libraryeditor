@@ -6,6 +6,10 @@
 #define APPLICATION_NAME  "LEditor"
 #define APPLICATION_VERSION "0.1 alpha"
 
+#define PROGRAM_AUTHOR_NAME "Кирилл Зимин (astral.euro@gmail.com)"
+#define PROGRAM_NAME APPLICATION_NAME " - управление данными приложения «Пазлы-Живопись»\n" \
+    "Версия: " APPLICATION_VERSION "\n" "Автор: " PROGRAM_AUTHOR_NAME
+
 #define MAINWINDOW_TITLE APPLICATION_NAME " " APPLICATION_VERSION
 
 #define CONFIG_FILE APPLICATION_NAME ".conf"
@@ -45,7 +49,7 @@
 #define TEXT_COLS_H_KEY "textHeaderCols"
 #define TEXT_COLS_F_KEY "textFooterCols"
 
-#define ARTS_TEXT_COLS_H "artName" SEPARATOR "isDomestic" SEPARATOR "artEra" SEPARATOR "artAuthors" SEPARATOR "artInfo"
+#define ARTS_TEXT_COLS_H "artName" SEPARATOR "artAuthors" SEPARATOR "artEra" SEPARATOR "isDomestic" SEPARATOR "artInfo"
 #define ARTS_TEXT_COLS_F "lastUpdate"
 
 #define AUTHORS_TEXT_COLS_H "authorName" SEPARATOR "authorInfo"
@@ -71,11 +75,18 @@
     SEPARATOR "Информация" SEPARATOR "eraInfo" \
     SEPARATOR "Дата" SEPARATOR "lastUpdate"
 
-#define ARTS_RANK_KEY "ranks"
-#define ARTS_RANK "Отечественное искусство" SEPARATOR "0" \
+#define ARTS_AUTHORS_KEY_NAME "artAuthors"
+#define ARTS_RANK_KEY_NAME "isDomestic"
+
+#define ARTS_RANKS_KEY "ranks"
+#define ARTS_RANKS "Отечественное искусство" SEPARATOR "0" \
     SEPARATOR "Зарубежное искусство" SEPARATOR "1"
 
 #define LAST_PATH_KEY "lastPath"
+
+#define DATAFILE_TITLE "Файл данных"
+#define FILE_SIZE_MULT 1024
+#define FILE_SIZE_UNIT "KB"
 
 enum JsonDataSections {
     ArtsSection = 0,

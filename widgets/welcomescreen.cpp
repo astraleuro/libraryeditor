@@ -10,6 +10,8 @@ WelcomeScreen::WelcomeScreen(QWidget *parent) :
     connect(ui->createBase, SIGNAL(clicked()), this, SLOT(saveData()));
     connect(ui->openBase, SIGNAL(clicked()), this, SLOT(openData()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SIGNAL(closeApp()));
+
+    ui->programName->setText(PROGRAM_NAME);
 }
 
 WelcomeScreen::~WelcomeScreen()
@@ -30,7 +32,7 @@ void WelcomeScreen::saveData()
         QString fn = dialog.selectedFiles()[0];
         if (!fn.isEmpty())
             if (checkPath(fn.left(fn.count() - QString(BASE_EXTENSION).count()), true)) {
-                json = initObject();
+                json = initJsonObject();
                 if (writeJson(fn, json))
                     dataReady(fn, json);
             }

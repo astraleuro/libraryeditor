@@ -3,6 +3,8 @@
 MainWindow::MainWindow(QString config, QWidget *parent)
     : QMainWindow(parent)
 {
+    setMinimumSize(600, 400);
+
     configPath = config;
 
     QJsonParseError log;
@@ -12,7 +14,7 @@ MainWindow::MainWindow(QString config, QWidget *parent)
     setCentralWidget(new QWidget);
     delete centralWidget()->layout();
     centralWidget()->setLayout(mainLayout);
-    setWindowTitle(MAINWINDOW_TITLE);
+    setWindowTitle(APPLICATION_NAME);
     showWelcomeScreen();
 }
 

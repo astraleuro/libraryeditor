@@ -3,9 +3,12 @@
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QStringList>
 
 #include "defines.h"
 
-QJsonObject initObject();
+QJsonObject initJsonObject();
+QString stringArrayToString(QJsonArray data);
+QString takeRank(int rank, const QStringList &ranks);
 
 #endif // JSONPROCESSOR_H

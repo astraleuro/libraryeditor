@@ -143,3 +143,11 @@ QString toNativeSeparators(QString path)
 {
     return QDir::toNativeSeparators(path);
 }
+
+QString fileInfo(QString path)
+{
+    QFileInfo file(path);
+    if (file.isFile() && !file.isSymLink())
+        return file.fileName() + " " + QString::number(file.size() / FILE_SIZE_MULT) + QString(FILE_SIZE_UNIT);
+    return "";
+}

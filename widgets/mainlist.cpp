@@ -17,6 +17,8 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt)
     allSettings = opt;
     settings = allSettings[getClassName(this)].toObject();
 
+    ui->filesInfo->setText(QString(DATAFILE_TITLE) + ": " + fileInfo(jsonPath));
+
     if (settings[ARTS_KEY].toString().isEmpty()) {
         settings[ARTS_KEY] = ARTS_LABEL;
         ui->artsButton->setText(QString(ARTS_LABEL) +

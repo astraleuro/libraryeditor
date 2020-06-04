@@ -35,19 +35,6 @@ signals:
 
 };
 
-class ArrayListWidget : public QTableWidget
-{
-    Q_OBJECT
-
-public:
-    ArrayListWidget(QWidget *parent = nullptr) : QTableWidget(parent) {};
-    ~ArrayListWidget() {};
-
-protected:
-    void resizeEvent(QResizeEvent *event);
-
-};
-
 namespace Ui {
 class ArrayList;
 }
@@ -67,10 +54,11 @@ protected:
     void eraseTable();
     void addImageItem(int row, QJsonValue data);
     void addTextItem(int row, QJsonValue data);
+    QString jsonValueToText(QString key, QJsonValue value);
 
 protected slots:
     void adoptItems(int col, int oldSize, int newSize);
-    //void adoptText();
+    void adoptText(int row);
     void openItemEditor();
 
 signals:
@@ -85,7 +73,6 @@ private slots:
     void on_filterApplyButton_clicked();
     void on_sortApplyButton_clicked();
     void on_sortOrderButton_clicked();
-
     void on_editButton_clicked();
 
 private:
@@ -95,7 +82,7 @@ private:
     QString allFilesPath;
     JsonDataSections section;
     QString secFilesPath, imageKey, textColKeyF;
-    QStringList textColKeysH, textColLabels;
+    QStringList textColKeysH, textColLabels, ranks;
 };
 
 #endif // ARRAYLIST_H

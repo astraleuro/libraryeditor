@@ -99,7 +99,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="ArrayListWidget" name="arrayTable">
+       <widget class="QTableWidget" name="arrayTable">
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
@@ -223,13 +223,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>ArrayListWidget</class>
-   <extends>QTableWidget</extends>
-   <header location="global">widgets/arraylist.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>arrayTable</tabstop>
   <tabstop>addButton</tabstop>

@@ -6,9 +6,12 @@ ArrayList::ArrayList(QWidget *parent) :
     ui(new Ui::ArrayList)
 {
     ui->setupUi(this);
+    ArrayItemDelegate *delegate = new ArrayItemDelegate;
     connect(ui->saveButton, SIGNAL(clicked()), this, SIGNAL(saveData()));
     connect(ui->arrayTable->horizontalHeader(), SIGNAL(sectionResized(int , int, int)), this, SLOT(adoptItems(int, int, int)));
-    ui->arrayTable->setItemDelegate(new ArrayItemDelegate);
+    connect(delegate, SIGNAL(itemActivated(int)), this, SLOT(openItemEditor()));
+    delete ui->arrayTable->itemDelegate();
+    ui->arrayTable->setItemDelegate(delegate);
     ui->filterBox->setVisible(false);
     ui->sortBox->setVisible(false);
 }
@@ -35,6 +38,7 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         secOptions[TEXT_COLS_LABELS_KEY] = secOptions[TEXT_COLS_LABELS_KEY].toString(ARTS_TEXT_COLS_LABELS);
         secOptions[TEXT_COLS_H_KEY] = secOptions[TEXT_COLS_H_KEY].toString(ARTS_TEXT_COLS_H);
         secOptions[TEXT_COLS_F_KEY] = secOptions[TEXT_COLS_F_KEY].toString(ARTS_TEXT_COLS_F);
+        secOptions[ARTS_RANKS_KEY] = secOptions[ARTS_RANKS_KEY].toString(ARTS_RANKS);
         break;
     case AuthorsSection:
         ui->arrayBox->setTitle(settings[AUTHORS_KEY].toString());
@@ -59,6 +63,7 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     textColKeyF = secOptions[TEXT_COLS_F_KEY].toString();
     textColKeysH = secOptions[TEXT_COLS_H_KEY].toString().split(SEPARATOR);
     textColLabels = secOptions[TEXT_COLS_LABELS_KEY].toString().split(SEPARATOR);
+    ranks = secOptions[ARTS_RANKS_KEY].toString().split(SEPARATOR);
 
     if (secOptions[FILTER_VISIBLE_KEY].toBool(false))
         ui->filterButton->toggle();
@@ -123,7 +128,7 @@ void ArrayList::fillTable()
         for(int i = 0; i < jsonArray.count(); i++) {
             table->setRowCount(table->rowCount() + 1);
             addImageItem(i, jsonArray[i]);
-            table->setItem(i, 1, new QTableWidgetItem);
+            addTextItem(i, QJsonValue());
         }
         secOptions[IMAGE_WIDTH_KEY] = table->columnWidth(0);
         settingsModified();
@@ -140,9 +145,13 @@ void ArrayList::eraseTable()
 void ArrayList::addImageItem(int row, QJsonValue data)
 {
     QTableWidget *table = ui->arrayTable;
-    QTableWidgetItem *item = new QTableWidgetItem;
+    QTableWidgetItem *item;
+    if (table->item(row, 0) == nullptr)
+        item = new QTableWidgetItem;
+    else
+        item = table->item(row, 0);
     int size = table->columnWidth(0);
-    QImage image = QImage(secFilesPath + data[imageKey].toString()).scaled(size, size, Qt::KeepAspectRatio);
+    QImage image = QImage(secFilesPath + data[imageKey].toString()).scaledToWidth(size);
     item->setData(Qt::DecorationRole, image);
     item->setText(secFilesPath + data[imageKey].toString());
     table->setItem(row, 0, item);
@@ -151,13 +160,19 @@ void ArrayList::addImageItem(int row, QJsonValue data)
 
 void ArrayList::addTextItem(int row, QJsonValue data)
 {
-    QTableWidget *table = ui->arrayTable;
-    QJsonObject object = data.toObject();
-    QString str;
-    for (QString key : object.keys())
-        str += key + ": " + object[key].toString();
-    table->item(row, 1)->setText(str);
-    table->item(row, 1)->setTextAlignment(Qt::AlignTop | Qt::AlignLeft);
+    if (!data.isObject()) {
+        adoptText(row);
+    }
+}
+
+QString ArrayList::jsonValueToText(QString key, QJsonValue value)
+{
+    if (key == ARTS_AUTHORS_KEY_NAME)
+        return stringArrayToString(value.toArray());
+    else if (key == ARTS_RANK_KEY_NAME)
+        return takeRank(value.toInt(-1), ranks);
+    else
+        return value.toString();
 }
 
 void ArrayList::adoptItems(int col, int oldSize, int newSize)
@@ -168,50 +183,59 @@ void ArrayList::adoptItems(int col, int oldSize, int newSize)
         QImage image;
         for (int i = 0; i < table->rowCount(); i++) {
             image = QImage(table->item(i, 0)->text()).scaledToWidth(newSize);
-            table->item(i, 0)->setData(Qt::DecorationRole, image);
-            table->setRowHeight(i, image.height());
+            if (table->item(i, 0) != nullptr)
+                table->item(i, 0)->setData(Qt::DecorationRole, image);
+            if (image.height() != table->rowHeight(i)) {
+                table->setRowHeight(i, image.height());
+                adoptText(i);
+            }
         }
-        secOptions[IMAGE_WIDTH_KEY] = table->columnWidth(0);
-        settingsModified();
-    } else {
-        QString str;
-        QJsonObject item;
-        int rowsCountH;
-        bool enableFooter = false;
-        for (int i = 0; i < table->rowCount(); i++) {
-            item = jsonArray[i].toObject();
-            str.clear();
-            rowsCountH = rowsCountInHeight(table->rowHeight(i));
-            if (!textColKeyF.isEmpty() && rowsCountH > 1) {
-                rowsCountH--;
-                enableFooter = true;
-            }
-            for (int i = 0; i < textColKeysH.count() ; i++) {
-                if (rowsCountH > 0) {
-                    str += textColLabels[textColLabels.indexOf(textColKeysH[i]) - 1] + ": " +
-                            item[QString(textColKeysH[i])].toString() + "\n";
-                    rowsCountH--;
-                }
-            }
-            if (enableFooter)
-                str += textColLabels[textColLabels.indexOf(textColKeyF) - 1] + ": " +
-                        item[QString(textColKeyF)].toString() + "\n";
-            table->item(i, 1)->setText(str);
-            table->item(i, 1)->setTextAlignment(Qt::AlignTop | Qt::AlignLeft);
+        int savedColWidth = secOptions[IMAGE_WIDTH_KEY].toInt(-1);
+        if (savedColWidth == -1 || savedColWidth != table->columnWidth(0)) {
+            secOptions[IMAGE_WIDTH_KEY] = table->columnWidth(0);
+            settingsModified();
         }
     }
+}
+
+void ArrayList::adoptText(int row)
+{
+    QString str;
+    bool enableFooter = false;
+    int rowsCountH;
+    QTableWidget *table = ui->arrayTable;
+    QJsonObject item = jsonArray[row].toObject();
+
+    rowsCountH = rowsCountInHeight(table->rowHeight(row));
+    if (!textColKeyF.isEmpty() && rowsCountH > 1) {
+        rowsCountH--;
+        enableFooter = true;
+    }
+    for (int i = 0; i < textColKeysH.count() ; i++) {
+        if (rowsCountH > 0) {
+            str += textColLabels[textColLabels.indexOf(textColKeysH[i]) - 1] + ": " +
+                    jsonValueToText(textColKeysH[i], item[QString(textColKeysH[i])]) + "\n";
+            rowsCountH--;
+        }
+    }
+
+    if (enableFooter)
+        str += textColLabels[textColLabels.indexOf(textColKeyF) - 1] + ": " +
+                jsonValueToText(textColKeyF, item[QString(textColKeyF)]);
+
+    if (table->item(row, 1) == nullptr)
+        table->setItem(row, 1, new QTableWidgetItem(str));
+    else
+        table->item(row, 1)->setText(str);
+    table->item(row, 1)->setTextAlignment(Qt::AlignTop | Qt::AlignLeft);
 }
 
 void ArrayList::openItemEditor()
 {
     ItemEditor itemEditor;
+    itemEditor.initData(settings, section);
     itemEditor.setModal(true);
     itemEditor.exec();
-}
-
-void ArrayListWidget::resizeEvent(QResizeEvent *event)
-{
-    QTableWidget::resizeEvent(event);
 }
 
 void ArrayList::on_filterButton_toggled(bool checked)
