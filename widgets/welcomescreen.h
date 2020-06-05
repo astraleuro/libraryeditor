@@ -5,6 +5,7 @@
 #include <QFileDialog>
 
 #include "defines.h"
+#include "templates.h"
 #include "modules/fsprocessor.h"
 #include "modules/jsonprocessor.h"
 
@@ -18,18 +19,24 @@ class WelcomeScreen : public QWidget
 
 public:
     explicit WelcomeScreen(QWidget *parent = nullptr);
+    void initData(QJsonObject &opt, QString defaultPath);
     ~WelcomeScreen();
 
 signals:
+    void settingsChanged(QString, QJsonObject);
     void dataReady(QString, QJsonObject&);
     void closeApp();
 
 protected slots:
     void saveData();
-    void openData();
+    void openData(QString fn = "");
+
+private slots:
+    void on_openLastBase_clicked();
 
 private:
     Ui::WelcomeScreen *ui;
+    QJsonObject settings;
 };
 
 #endif // WELCOMESCREEN_H

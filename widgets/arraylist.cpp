@@ -29,6 +29,31 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     settings[AUTHORS_KEY] = settings[ARTS_KEY].toString(AUTHORS_LABEL);
     settings[ERAS_KEY] = settings[ARTS_KEY].toString(ERAS_LABEL);
 
+    settings[AL_FILTER_BUTTON_KEY] = settings[AL_FILTER_BUTTON_KEY].toString(AL_FILTER_BUTTON);
+    settings[AL_FILTER_APPLY_KEY] = settings[AL_FILTER_APPLY_KEY].toString(AL_FILTER_APPLY);
+    settings[AL_SORT_BUTTON_KEY] = settings[AL_SORT_BUTTON_KEY].toString(AL_SORT_BUTTON);
+    settings[AL_SORT_APPLY_KEY] = settings[AL_SORT_APPLY_KEY].toString(AL_SORT_APPLY);
+
+    settings[AL_ADD_BUTTON] = settings[AL_ADD_BUTTON].toString(AL_ADD_BUTTON);
+    settings[AL_SAVE_BUTTON] = settings[AL_SAVE_BUTTON].toString(AL_SAVE_BUTTON);
+    settings[AL_EDIT_BUTTON] = settings[AL_EDIT_BUTTON].toString(AL_EDIT_BUTTON);
+    settings[AL_DEL_BUTTON] = settings[AL_DEL_BUTTON].toString(AL_DEL_BUTTON);
+
+    settings[AL_SORT_ORDER_ASC_KEY] = settings[AL_SORT_ORDER_ASC_KEY].toString(AL_SORT_ORDER_ASC);
+    settings[AL_SORT_ORDER_DSC_KEY] = settings[AL_SORT_ORDER_DSC_KEY].toString(AL_SORT_ORDER_DSC);
+
+    ui->addButton->setText(settings[AL_ADD_BUTTON].toString());
+    ui->saveButton->setText(settings[AL_SAVE_BUTTON].toString());
+    ui->editButton->setText(settings[AL_EDIT_BUTTON].toString());
+    ui->removeButton->setText(settings[AL_DEL_BUTTON].toString());
+
+    ui->filterButton->setText(settings[AL_FILTER_BUTTON_KEY].toString());
+    ui->filterBox->setTitle(settings[AL_FILTER_BUTTON_KEY].toString());
+    ui->filterApplyButton->setText(settings[AL_SORT_APPLY_KEY].toString());
+    ui->sortButton->setText(settings[AL_SORT_BUTTON_KEY].toString());
+    ui->sortBox->setTitle(settings[AL_SORT_BUTTON_KEY].toString());
+    ui->sortApplyButton->setText(settings[AL_FILTER_APPLY_KEY].toString());
+
     switch (section) {
     case ArtsSection:
         ui->arrayBox->setTitle(settings[ARTS_KEY].toString());
@@ -39,6 +64,7 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         secOptions[TEXT_COLS_H_KEY] = secOptions[TEXT_COLS_H_KEY].toString(ARTS_TEXT_COLS_H);
         secOptions[TEXT_COLS_F_KEY] = secOptions[TEXT_COLS_F_KEY].toString(ARTS_TEXT_COLS_F);
         secOptions[ARTS_RANKS_KEY] = secOptions[ARTS_RANKS_KEY].toString(ARTS_RANKS);
+        ranks = secOptions[ARTS_RANKS_KEY].toString().split(SEPARATOR);
         break;
     case AuthorsSection:
         ui->arrayBox->setTitle(settings[AUTHORS_KEY].toString());
@@ -63,7 +89,6 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     textColKeyF = secOptions[TEXT_COLS_F_KEY].toString();
     textColKeysH = secOptions[TEXT_COLS_H_KEY].toString().split(SEPARATOR);
     textColLabels = secOptions[TEXT_COLS_LABELS_KEY].toString().split(SEPARATOR);
-    ranks = secOptions[ARTS_RANKS_KEY].toString().split(SEPARATOR);
 
     if (secOptions[FILTER_VISIBLE_KEY].toBool(false))
         ui->filterButton->toggle();
@@ -83,13 +108,18 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         secOptions[SORT_TEXT_KEY] = "";
     ui->sortCombo->setCurrentText(secOptions[SORT_TEXT_KEY].toString());
 
-    if (secOptions[SORT_ORDER_KEY].isUndefined() ||
-            (secOptions[SORT_ORDER_KEY].toString() != "А..Я" &&
-            secOptions[SORT_ORDER_KEY].toString() != "Я..А"))
-        secOptions[SORT_ORDER_KEY] = "А..Я";
-    ui->sortOrderButton->setText(secOptions[SORT_ORDER_KEY].toString());
+    if (!secOptions[SORT_ORDER_KEY].isBool())
+        secOptions[SORT_ORDER_KEY] = true;
 
-    settingsModified();
+    if (secOptions[SORT_ORDER_KEY].toBool()) {
+        sortOrder = true;
+        ui->sortOrderButton->setText(settings[AL_SORT_ORDER_ASC_KEY].toString());
+    } else {
+        sortOrder = false;
+        ui->sortOrderButton->setText(settings[AL_SORT_ORDER_DSC_KEY].toString());
+    }
+
+    settingsChanged(getClassName(this), takeSettings());
 
     fillTable();
 }
@@ -131,7 +161,7 @@ void ArrayList::fillTable()
             addTextItem(i, QJsonValue());
         }
         secOptions[IMAGE_WIDTH_KEY] = table->columnWidth(0);
-        settingsModified();
+        settingsChanged(getClassName(this), takeSettings());
     }
 }
 
@@ -193,7 +223,7 @@ void ArrayList::adoptItems(int col, int oldSize, int newSize)
         int savedColWidth = secOptions[IMAGE_WIDTH_KEY].toInt(-1);
         if (savedColWidth == -1 || savedColWidth != table->columnWidth(0)) {
             secOptions[IMAGE_WIDTH_KEY] = table->columnWidth(0);
-            settingsModified();
+            settingsChanged(getClassName(this), takeSettings());
         }
     }
 }
@@ -233,50 +263,53 @@ void ArrayList::adoptText(int row)
 void ArrayList::openItemEditor()
 {
     ItemEditor itemEditor;
+    connect(&itemEditor, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(settingsChanged(QString, QJsonObject)));
     itemEditor.initData(allSettings, section);
     itemEditor.setModal(true);
     itemEditor.exec();
+    disconnect(&itemEditor, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(settingsChanged(QString, QJsonObject)));
 }
 
 void ArrayList::on_filterButton_toggled(bool checked)
 {
     secOptions[FILTER_VISIBLE_KEY] = checked;
     ui->filterBox->setVisible(checked);
-    settingsModified();
+    settingsChanged(getClassName(this), takeSettings());
 }
 
 void ArrayList::on_sortButton_toggled(bool checked)
 {
     secOptions[SORT_VISIBLE_KEY] = checked;
     ui->sortBox->setVisible(checked);
-    settingsModified();
+    settingsChanged(getClassName(this), takeSettings());
 }
 
 void ArrayList::on_backButton_clicked()
 {
-    settingsModified();
+    settingsChanged(getClassName(this), takeSettings());
     goBack();
 }
 
 void ArrayList::on_filterApplyButton_clicked()
 {
     secOptions[FILTER_TEXT_KEY] = ui->filterEdit->text();
-    settingsModified();
+    settingsChanged(getClassName(this), takeSettings());
 }
 
 void ArrayList::on_sortApplyButton_clicked()
 {
     secOptions[SORT_TEXT_KEY] = ui->sortCombo->currentIndex();
-    secOptions[SORT_ORDER_KEY] = ui->sortOrderButton->text();
-    settingsModified();
+    secOptions[SORT_ORDER_KEY] = sortOrder;
+    settingsChanged(getClassName(this), takeSettings());
 }
 
 void ArrayList::on_sortOrderButton_clicked()
 {
-    if (ui->sortOrderButton->text() == "А..Я")
-        ui->sortOrderButton->setText("Я..А");
+    if (sortOrder)
+        ui->sortOrderButton->setText(settings[AL_SORT_ORDER_DSC_KEY].toString());
     else
-        ui->sortOrderButton->setText("А..Я");
+        ui->sortOrderButton->setText(settings[AL_SORT_ORDER_ASC_KEY].toString());
+    sortOrder = !sortOrder;
 }
 
 void ArrayList::on_editButton_clicked()

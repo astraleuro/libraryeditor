@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>347</height>
+    <width>528</width>
+    <height>351</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -25,7 +25,7 @@
      <item>
       <widget class="QPushButton" name="filterButton">
        <property name="text">
-        <string>Фильтр</string>
+        <string/>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -38,7 +38,7 @@
      <item>
       <widget class="QPushButton" name="sortButton">
        <property name="text">
-        <string>Сортировка</string>
+        <string/>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -50,7 +50,7 @@
    <item>
     <widget class="QGroupBox" name="filterBox">
      <property name="title">
-      <string>Фильтр</string>
+      <string/>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
@@ -59,7 +59,7 @@
       <item>
        <widget class="QPushButton" name="filterApplyButton">
         <property name="text">
-         <string>Применить</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -69,7 +69,7 @@
    <item>
     <widget class="QGroupBox" name="sortBox">
      <property name="title">
-      <string>Сортировка</string>
+      <string/>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
       <item>
@@ -85,7 +85,7 @@
       <item>
        <widget class="QPushButton" name="sortApplyButton">
         <property name="text">
-         <string>Применить</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -95,7 +95,7 @@
    <item>
     <widget class="QGroupBox" name="arrayBox">
      <property name="title">
-      <string>Массив</string>
+      <string/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -181,21 +181,21 @@
      <item>
       <widget class="QPushButton" name="addButton">
        <property name="text">
-        <string>Добавить</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="saveButton">
        <property name="text">
-        <string>Сохранить</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="editButton">
        <property name="text">
-        <string>Изменить</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -215,7 +215,7 @@
      <item>
       <widget class="QPushButton" name="removeButton">
        <property name="text">
-        <string>Удалить</string>
+        <string/>
        </property>
       </widget>
      </item>

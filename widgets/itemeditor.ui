@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>745</width>
-    <height>620</height>
+    <width>600</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QGroupBox" name="groupBox_6">
+      <widget class="QGroupBox" name="imageBox">
        <property name="title">
-        <string>Изображение</string>
+        <string/>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
-         <widget class="QGraphicsView" name="graphicsView">
+         <widget class="QGraphicsView" name="imageView">
           <property name="styleSheet">
            <string notr="true">background-color: rgb(0, 0, 0);</string>
           </property>
@@ -37,7 +37,7 @@
        <item>
         <widget class="QGroupBox" name="nameBox">
          <property name="title">
-          <string>Название</string>
+          <string/>
          </property>
          <property name="flat">
           <bool>false</bool>
@@ -59,7 +59,23 @@
            <number>9</number>
           </property>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="nameEdit"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="eraImageBox">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QGraphicsView" name="eraImageView">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -67,7 +83,7 @@
        <item>
         <widget class="QGroupBox" name="rankBox">
          <property name="title">
-          <string>Категория</string>
+          <string/>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <property name="leftMargin">
@@ -91,11 +107,11 @@
        <item>
         <widget class="QGroupBox" name="eraBox">
          <property name="title">
-          <string>Эпоха</string>
+          <string/>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QComboBox" name="comboBox_2"/>
+           <widget class="QComboBox" name="eraCombo"/>
           </item>
          </layout>
         </widget>
@@ -103,7 +119,7 @@
        <item>
         <widget class="QGroupBox" name="authorsBox">
          <property name="title">
-          <string>Авторы</string>
+          <string/>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
@@ -172,13 +188,13 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="otherInfoBox">
+        <widget class="QGroupBox" name="authorInfoBox">
          <property name="title">
-          <string>Информация</string>
+          <string/>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+           <widget class="QPlainTextEdit" name="authorInfoText"/>
           </item>
          </layout>
         </widget>
@@ -192,35 +208,68 @@
      <item>
       <widget class="QGroupBox" name="artInfoBox">
        <property name="title">
-        <string>Информация</string>
+        <string/>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit"/>
+         <widget class="QPlainTextEdit" name="artInfoText"/>
         </item>
        </layout>
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,1,0,0">
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="templateButton">
          <property name="text">
-          <string>Шаблон</string>
+          <string/>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="dontCloseCheck">
          <property name="text">
-          <string>Сохранить</string>
+          <string/>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="addEditButton">
          <property name="text">
-          <string>Отмена</string>
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cancelButton">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>

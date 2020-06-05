@@ -20,13 +20,12 @@ QString stringArrayToString(QJsonArray data)
 
 QString takeRank(int rank, const QStringList &ranks)
 {
-    if (ranks.count() > rank + 1) {
-        if (rank == 0)
-            return ranks[0];
-        else if (rank == 1)
-            return ranks[2];
-        else
-            return ranks[rank + 2];
+    bool isOk;
+    int current;
+    for (int i = 0; i < ranks.count(); i++) {
+        current = ranks[i].toInt(&isOk);
+        if (isOk && current == rank && i > 0)
+            return ranks[i - 1];
     }
     return "";
 }

@@ -12,12 +12,12 @@ int main(int argc, char *argv[])
 
     QString configPath;
     if (!QApplication::arguments().contains("--portable"))
-        configPath = QDir::toNativeSeparators(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
+        configPath = toNativeSeparators(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
     else
-        configPath = QDir::toNativeSeparators(QApplication::applicationDirPath());
+        configPath = toNativeSeparators(QApplication::applicationDirPath());
 
     checkPath(configPath, true);
-    MainWindow w(QDir::toNativeSeparators(configPath + "/" + CONFIG_FILE));
+    MainWindow w(configPath);
     w.show();
 
     return a.exec();

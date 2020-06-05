@@ -3,6 +3,8 @@
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonParseError>
 #include <QStringList>
 
 #include "defines.h"

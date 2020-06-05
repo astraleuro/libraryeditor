@@ -4,17 +4,12 @@
 #include <QWidget>
 #include <QTableWidget>
 #include <QItemDelegate>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QWindow>
 
 #include "defines.h"
 #include "templates.h"
-
 #include "modules/fsprocessor.h"
 #include "modules/jsonprocessor.h"
 #include "modules/txtprocessor.h"
-
 #include "widgets/itemeditor.h"
 
 class ArrayItemDelegate : public QItemDelegate
@@ -47,7 +42,6 @@ public:
     explicit ArrayList(QWidget *parent = nullptr);
     void initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDataSections &sec);
     ~ArrayList();
-    QJsonObject takeSettings();
 
 protected:
     void fillTable();
@@ -55,18 +49,18 @@ protected:
     void addImageItem(int row, QJsonValue data);
     void addTextItem(int row, QJsonValue data);
     QString jsonValueToText(QString key, QJsonValue value);
+    QJsonObject takeSettings();
 
-protected slots:
-    void adoptItems(int col, int oldSize, int newSize);
-    void adoptText(int row);
-    void openItemEditor();
 
 signals:
-    void settingsModified();
+    void settingsChanged(QString, QJsonObject);
     void saveData();
     void goBack();
 
 private slots:
+    void adoptItems(int col, int oldSize, int newSize);
+    void adoptText(int row);
+    void openItemEditor();
     void on_filterButton_toggled(bool checked);
     void on_sortButton_toggled(bool checked);
     void on_backButton_clicked();
@@ -83,6 +77,7 @@ private:
     JsonDataSections section;
     QString secFilesPath, imageKey, textColKeyF;
     QStringList textColKeysH, textColLabels, ranks;
+    bool sortOrder = true;
 };
 
 #endif // ARRAYLIST_H

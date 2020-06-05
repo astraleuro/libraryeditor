@@ -2,10 +2,10 @@
 #define ITEMEDITOR_H
 
 #include <QDialog>
+#include <QResizeEvent>
 
 #include "defines.h"
 #include "templates.h"
-
 #include "modules/jsonprocessor.h"
 
 namespace Ui {
@@ -23,17 +23,20 @@ public:
     void getData();
     ~ItemEditor();
 
-signals:
-    void settingsModified();
-
 protected:
-    void adoptWidgets();
+    void resizeEvent(QResizeEvent *event);
+
+signals:
+    void settingsChanged(QString, QJsonObject);
+
+private slots:
+    void on_cancelButton_clicked();
 
 private:
     Ui::ItemEditor *ui;
     bool isAddDialog = true;
     JsonDataSections section;
-    QJsonObject allSettings, settings;
+    QJsonObject allSettings, settings, itemTemplate;
 };
 
 #endif // ITEMEDITOR_H

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>406</width>
-    <height>378</height>
+    <width>408</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Создать</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -56,7 +56,20 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Открыть</string>
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="openLastBase">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>
@@ -76,7 +89,7 @@
    <item>
     <widget class="QPushButton" name="closeButton">
      <property name="text">
-      <string>Выход</string>
+      <string/>
      </property>
     </widget>
    </item>

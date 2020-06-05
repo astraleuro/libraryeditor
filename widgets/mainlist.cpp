@@ -43,17 +43,12 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt)
         ui->erasButton->setText(settings[ERAS_KEY].toString() +
                                 " (" + QString::number(data[ERAS_KEY].toArray().count()) + ")");
 
-    settingsModified();
+    settingsChanged(getClassName(this), settings);
 }
 
 MainList::~MainList()
 {
     delete ui;
-}
-
-QJsonObject MainList::takeSettings()
-{
-    return settings;
 }
 
 void MainList::on_artsButton_clicked()

@@ -151,3 +151,23 @@ QString fileInfo(QString path)
         return file.fileName() + " " + QString::number(file.size() / FILE_SIZE_MULT) + QString(FILE_SIZE_UNIT);
     return "";
 }
+
+QString takeFileName(QString path)
+{
+    QString separator = QDir::toNativeSeparators("/");
+    int sepIndex = path.lastIndexOf(separator);
+    if (sepIndex != -1)
+        return path.right(path.count() - sepIndex - 1);
+    else
+        return path;
+}
+
+QString takeDirPath(QString path)
+{
+    QString separator = QDir::toNativeSeparators("/");
+    int sepIndex = path.lastIndexOf(separator);
+    if (sepIndex != -1)
+        return path.left(sepIndex);
+    else
+        return path;
+}

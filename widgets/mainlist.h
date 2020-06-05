@@ -2,10 +2,6 @@
 #define MAINLIST_H
 
 #include <QWidget>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QJsonArray>
-
 #include "templates.h"
 #include "defines.h"
 
@@ -23,10 +19,12 @@ public:
     explicit MainList(QWidget *parent = nullptr);
     void initData(QString fn, QJsonObject &data, QJsonObject &opt);
     ~MainList();
+
+protected:
     QJsonObject takeSettings();
 
 signals:
-    void settingsModified();
+    void settingsChanged(QString, QJsonObject);
     void goBack();
     void showArrayList(JsonDataSections section);
     void saveData();
