@@ -18,14 +18,23 @@ QString stringArrayToString(QJsonArray data)
     return str;
 }
 
-QString takeRank(int rank, const QStringList &ranks)
+
+QStringList stringArrayToList(QJsonArray data)
 {
-    bool isOk;
-    int current;
-    for (int i = 0; i < ranks.count(); i++) {
-        current = ranks[i].toInt(&isOk);
-        if (isOk && current == rank && i > 0)
-            return ranks[i - 1];
+    QStringList list;
+    for (int i = 0; i < data.count(); i++)
+        list.append(data[i].toString());
+    return list;
+}
+
+QStringList objectArrayToList(QJsonArray data, QString key)
+{
+    QStringList list;
+    QJsonObject object;
+    for (int i = 0; i < data.count(); i++) {
+        object = data[i].toObject();
+        if (object.contains(key))
+            list.append(object[key].toString());
     }
-    return "";
+    return list;
 }

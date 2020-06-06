@@ -39,11 +39,11 @@ void WelcomeScreen::initData(QJsonObject &opt, QString defaultPath)
     if (!checkPath(settings[WELCOME_LAST_PATH_KEY].toString()))
         settings[WELCOME_LAST_PATH_KEY] = defaultPath;
 
-    settingsChanged(getClassName(this), settings);
 }
 
 WelcomeScreen::~WelcomeScreen()
 {
+    settingsChanged(getClassName(this), settings);
     delete ui;
 }
 
@@ -64,7 +64,6 @@ void WelcomeScreen::saveData()
                 if (writeJson(fn, json)) {
                     settings[WELCOME_LAST_FILE_KEY] = fn;
                     settings[WELCOME_LAST_PATH_KEY] = takeDirPath(fn);
-                    settingsChanged(getClassName(this), settings);
                     dataReady(fn, json);
                 }
             }
@@ -92,7 +91,6 @@ void WelcomeScreen::openData(QString fn)
             if (readJson(fn, json, log))
                 if (log.error == QJsonParseError::NoError) {
                     settings[WELCOME_LAST_FILE_KEY] = fn;
-                    settingsChanged(getClassName(this), settings);
                     dataReady(fn, json);
                 }
         }

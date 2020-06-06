@@ -28,6 +28,8 @@ protected slots:
     void showArrayList(JsonDataSections sec);
     void saveSettings(QString key, QJsonObject keySettings);
     void backFromArrayList();
+    void sendEras(QString key);
+    void sendAuthors(QString key);
     void closeApp();
 
 protected:
@@ -40,7 +42,7 @@ private:
     MainList *mainList = nullptr;
     ArrayList *arrayList = nullptr;
     QString configPath, jsonPath, defaultPath;
-    QJsonObject allSettings, settings, jsonData;
+    QJsonObject allSettings, settings, jsonData, errorsMsg;
 };
 
 #endif // MAINWINDOW_H

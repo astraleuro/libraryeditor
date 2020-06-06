@@ -16,12 +16,10 @@
 
 #define BASE_EXTENSION ".ledb"
 #define BASE_EXTENSION_FILTER "*" BASE_EXTENSION
+#define IMAGE_EXTENSION_FILTER "*.jpg, *.png"
 
 #define OPENFILE_TITLE "Открыть..."
 #define SAVEFILE_TITLE "Сохранить..."
-
-#define MSGBOX_TITLE "Внимание!"
-#define MSG_SETTINGS_WRITE_ERROR "Ошибка записи настроек программы в файл:\n"
 
 #define ARTS_KEY "arts"
 #define ARTS_LABEL "Предметы искусства"
@@ -74,8 +72,19 @@
 #define ERAS_TEXT_COLS_LABELS "Название" SEPARATOR "eraName" \
     SEPARATOR "Дата" SEPARATOR "lastUpdate"
 
-#define ARTS_AUTHORS_KEY_NAME "artAuthors"
-#define ARTS_RANK_KEY_NAME "isDomestic"
+#define ARTS_NAME_KEY "artName"
+#define ARTS_AUTHORS_KEY "artAuthors"
+#define ARTS_RANK_KEY "isDomestic"
+#define ARTS_ERA_KEY "artEra"
+#define ARTS_INFO_KEY "artInfo"
+#define ARTS_DATE_KEY "lastUpdate"
+
+#define AUTHORS_NAME_KEY "authorName"
+#define AUTHORS_INFO_KEY "authorInfo"
+#define AUTHORS_DATE_KEY "lastUpdate"
+
+#define ERAS_NAME_KEY "eraName"
+#define ERAS_DATE_KEY "lastUpdate"
 
 #define ARTS_RANKS_KEY "ranks"
 #define ARTS_RANKS "Отечественное искусство" SEPARATOR "0" \
@@ -84,6 +93,14 @@
 #define DATAFILE_TITLE "Файл данных"
 #define FILE_SIZE_MULT 1024
 #define FILE_SIZE_UNIT "KB"
+
+#define EDITOR_ADD_TITLE_KEY "addWindowTitle"
+#define EDITOR_ADD_TITLE "Добавить..."
+#define EDITOR_EDIT_TITLE_KEY "editWindowTitle"
+#define EDITOR_EDIT_TITLE "Изменить..."
+
+#define EDITOR_OPENFILE_TITLE_KEY "openFileTitle"
+#define EDITOR_OPENFILE_TITLE "Изменить..."
 
 #define EDITOR_ARTS_NAME_BOX_KEY "artNameBox"
 #define EDITOR_ARTS_NAME_BOX "Название произведения искусства"
@@ -107,10 +124,6 @@
 #define EDITOR_ERAS_NAME_BOX "Название эпохи"
 #define EDITOR_ERAS_IMAGE_BOX_KEY "eraImageBox"
 #define EDITOR_ERAS_IMAGE_BOX "Изображение"
-#define EDITOR_ADD_TITLE_KEY "editorAddTitle"
-#define EDITOR_ADD_TITLE "Добавление..."
-#define EDITOR_EDIT_TITLE_KEY "editorEditTitle"
-#define EDITOR_EDIT_TITLE "Изменение..."
 #define EDITOR_TEMPLATE_BUTTON_KEY "templateButton"
 #define EDITOR_TEMPLATE_BUTTON "Шаблон"
 #define EDITOR_ADD_BUTTON_KEY "addButton"
@@ -121,6 +134,8 @@
 #define EDITOR_CANCEL_BUTTON "Отмена"
 #define EDITOR_ARTS_TEMPLATE_KEY "artTemplate"
 #define EDITOR_AUTHORS_TEMPLATE_KEY "authorTemplate"
+#define EDITOR_IMAGE_STYLE_KEY "imageStyle"
+#define EDITOR_IMAGE_STYLE "background-color: rgb(0, 0, 0);"
 #define EDITOR_ARTS_WIDTH_KEY "artWidth"
 #define EDITOR_ARTS_WIDTH 700
 #define EDITOR_ARTS_HEIGHT_KEY "artHeight"
@@ -171,6 +186,54 @@
 #define AL_EDIT_BUTTON "Изменить"
 #define AL_DEL_BUTTON_KEY "delButton"
 #define AL_DEL_BUTTON "Удалить"
+
+#define EDITOR_TEMPLATE_SAVE_KEY "saveTemplate"
+#define EDITOR_TEMPLATE_SAVE "Сохранить"
+#define EDITOR_TEMPLATE_CLEAR_KEY "clearTemplate"
+#define EDITOR_TEMPLATE_CLEAR "Очистить"
+
+#define EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraNameKey"
+#define EDITOR_ERAS_KEY_FOR_ARTS_LIST "eraName"
+#define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorNameKey"
+#define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST "authorName"
+
+#define CHOOSER_TITLE_KEY "chooseListTitle"
+#define CHOOSER_TITLE "Выберите..."
+
+#define CHOOSER_SEARCH_BOX_KEY "searchBox"
+#define CHOOSER_SEARCH_BOX "Поиск"
+
+#define CHOOSER_SEARCH_BUTTON_KEY "searchButton"
+#define CHOOSER_SEARCH_BUTTON "Найти"
+
+#define CHOOSER_DONE_BUTTON_KEY "doneButton"
+#define CHOOSER_DONE_BUTTON "Выбрать"
+
+#define CHOOSER_CANCEL_BUTTON_KEY "cancelButton"
+#define CHOOSER_CANCEL_BUTTON "Отмена"
+
+#define ERRORS_SUBSECTION_KEY "AppErrors"
+
+#define ERRORS_TITLE_KEY "msgTitle"
+#define ERRORS_TITLE "Внимание!"
+
+#define ERRORS_FILE_ON_BASESUBDIR_KEY "fileOnBaseSubdir"
+#define ERRORS_FILE_ON_BASESUBDIR "Выбранный файл находится в директории текущей базы!"
+
+#define ERRORS_SAVE_CONFIG_KEY "saveConfig"
+#define ERRORS_SAVE_CONFIG "Ошибка сохранения настроек программы в файл:\n"
+
+//#define ERRORS_
+//#define ERRORS_
+
+//#define ERRORS_
+//#define ERRORS_
+
+//#define ERRORS_
+//#define ERRORS_
+
+
+#define RESOURCE_QUESTION ":/question.png"
 
 enum JsonDataSections {
     ArtsSection = 0,

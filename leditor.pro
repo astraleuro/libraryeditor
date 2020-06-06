@@ -20,8 +20,10 @@ SOURCES += \
     mainwindow.cpp \
     modules/fsprocessor.cpp \
     modules/jsonprocessor.cpp \
+    modules/tableprocessor.cpp \
     modules/txtprocessor.cpp \
     widgets/arraylist.cpp \
+    widgets/chooselist.cpp \
     widgets/itemeditor.cpp \
     widgets/mainlist.cpp \
     widgets/welcomescreen.cpp
@@ -31,15 +33,18 @@ HEADERS += \
     mainwindow.h \
     modules/fsprocessor.h \
     modules/jsonprocessor.h \
+    modules/tableprocessor.h \
     modules/txtprocessor.h \
     templates.h \
     widgets/arraylist.h \
+    widgets/chooselist.h \
     widgets/itemeditor.h \
     widgets/mainlist.h \
     widgets/welcomescreen.h
 
 FORMS += \
     widgets/arraylist.ui \
+    widgets/chooselist.ui \
     widgets/itemeditor.ui \
     widgets/mainlist.ui \
     widgets/welcomescreen.ui
@@ -48,3 +53,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resources/resources.qrc

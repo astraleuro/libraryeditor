@@ -23,3 +23,51 @@ QString truncateByWidth(QString str, int width)
     } else
         return str;
 }
+
+QString takeRank(int rank, const QStringList &ranks)
+{
+    bool isOk;
+    int current;
+    for (int i = 0; i < ranks.count(); i++) {
+        current = ranks[i].toInt(&isOk);
+        if (isOk && current == rank && i > 0)
+            return ranks[i - 1];
+    }
+    return "";
+}
+
+QStringList takeRanksList(QStringList &ranks)
+{
+    bool isOk;
+    int current;
+    QStringList sorted = reserveList(ranksCount(ranks));
+    for (int i = 0; i < ranks.count(); i++) {
+        current = ranks[i].toInt(&isOk);
+        if (isOk && i > 0) {
+            sorted[current] = ranks[i - 1];
+        }
+    }
+    return QStringList(sorted);
+}
+
+int ranksCount(QStringList &ranks)
+{
+    bool isOk;
+    int current = 0;
+    int biggest = 0;
+    for (int i = 0; i < ranks.count(); i++) {
+        current = ranks[i].toInt(&isOk);
+        if (isOk && biggest < current)
+            biggest = current;
+    }
+    return biggest + 1;
+}
+
+QStringList reserveList(int count)
+{
+    QStringList newList;
+    for (int i = 0; i < count; i++)
+        newList.append("");
+    return newList;
+
+}

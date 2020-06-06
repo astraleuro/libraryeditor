@@ -56,11 +56,15 @@ signals:
     void settingsChanged(QString, QJsonObject);
     void saveData();
     void goBack();
+    void readyForEras(QString);
+    void readyForAuthors(QString);
+    void sendEras(QStringList &list);
+    void sendAuthors(QStringList &list);
 
 private slots:
     void adoptItems(int col, int oldSize, int newSize);
     void adoptText(int row);
-    void openItemEditor();
+    void openItemEditor(int index = -1);
     void on_filterButton_toggled(bool checked);
     void on_sortButton_toggled(bool checked);
     void on_backButton_clicked();
@@ -68,6 +72,7 @@ private slots:
     void on_sortApplyButton_clicked();
     void on_sortOrderButton_clicked();
     void on_editButton_clicked();
+    void on_addButton_clicked();
 
 private:
     Ui::ArrayList *ui;
@@ -78,6 +83,8 @@ private:
     QString secFilesPath, imageKey, textColKeyF;
     QStringList textColKeysH, textColLabels, ranks;
     bool sortOrder = true;
+    ItemEditor itemEditor;
+    ArrayItemDelegate *delegate;
 };
 
 #endif // ARRAYLIST_H

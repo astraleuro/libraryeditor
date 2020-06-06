@@ -6,5 +6,9 @@
 
 int rowsCountInHeight(int height);
 QString truncateByWidth(QString str,int width);
+QString takeRank(int rank, const QStringList &ranks);
+QStringList takeRanksList(QStringList &ranks);
+int ranksCount(QStringList &ranks);
+QStringList reserveList(int count);
 
 #endif // TXTPROCESSOR_H

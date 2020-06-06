@@ -11,6 +11,7 @@
 
 QJsonObject initJsonObject();
 QString stringArrayToString(QJsonArray data);
-QString takeRank(int rank, const QStringList &ranks);
+QStringList stringArrayToList(QJsonArray data);
+QStringList objectArrayToList(QJsonArray data, QString key);
 
 #endif // JSONPROCESSOR_H
