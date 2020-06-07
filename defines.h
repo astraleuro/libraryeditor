@@ -16,7 +16,7 @@
 
 #define BASE_EXTENSION ".ledb"
 #define BASE_EXTENSION_FILTER "*" BASE_EXTENSION
-#define IMAGE_EXTENSION_FILTER "*.jpg, *.png"
+#define IMAGE_EXTENSION_FILTER "*.jpg *.png" SEPARATOR "*.jpg" SEPARATOR "*.png"
 
 #define OPENFILE_TITLE "Открыть..."
 #define SAVEFILE_TITLE "Сохранить..."
@@ -98,10 +98,8 @@
 #define EDITOR_ADD_TITLE "Добавить..."
 #define EDITOR_EDIT_TITLE_KEY "editWindowTitle"
 #define EDITOR_EDIT_TITLE "Изменить..."
-
 #define EDITOR_OPENFILE_TITLE_KEY "openFileTitle"
-#define EDITOR_OPENFILE_TITLE "Изменить..."
-
+#define EDITOR_OPENFILE_TITLE "Выберите..."
 #define EDITOR_ARTS_NAME_BOX_KEY "artNameBox"
 #define EDITOR_ARTS_NAME_BOX "Название произведения искусства"
 #define EDITOR_ARTS_AUTHORS_BOX_KEY "artAuthorsBox"
@@ -148,6 +146,17 @@
 #define EDITOR_ERAS_WIDTH 400
 #define EDITOR_ERAS_HEIGHT_KEY "eraHeight"
 #define EDITOR_ERAS_HEIGHT 400
+#define EDITOR_TEMPLATE_SAVE_KEY "saveTemplate"
+#define EDITOR_TEMPLATE_SAVE "Сохранить"
+#define EDITOR_TEMPLATE_CLEAR_KEY "clearTemplate"
+#define EDITOR_TEMPLATE_CLEAR "Очистить"
+#define EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraNameKey"
+#define EDITOR_ERAS_KEY_FOR_ARTS_LIST "eraName"
+#define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorNameKey"
+#define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST "authorName"
+
+#define DATE_FORMAT_KEY "lastUpdateFormat"
+#define DATE_FORMAT "yyyy-MM-dd"
 
 #define WELCOME_LAST_FILE_KEY "lastFile"
 #define WELCOME_LAST_PATH_KEY "lastPath"
@@ -177,7 +186,6 @@
 #define AL_SORT_ORDER_ASC "А..Я"
 #define AL_SORT_ORDER_DSC_KEY "sortOrderDsc"
 #define AL_SORT_ORDER_DSC "Я..А"
-
 #define AL_ADD_BUTTON_KEY "addButton"
 #define AL_ADD_BUTTON "Добавить"
 #define AL_SAVE_BUTTON_KEY "saveButton"
@@ -187,51 +195,26 @@
 #define AL_DEL_BUTTON_KEY "delButton"
 #define AL_DEL_BUTTON "Удалить"
 
-#define EDITOR_TEMPLATE_SAVE_KEY "saveTemplate"
-#define EDITOR_TEMPLATE_SAVE "Сохранить"
-#define EDITOR_TEMPLATE_CLEAR_KEY "clearTemplate"
-#define EDITOR_TEMPLATE_CLEAR "Очистить"
-
-#define EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraNameKey"
-#define EDITOR_ERAS_KEY_FOR_ARTS_LIST "eraName"
-#define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorNameKey"
-#define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST "authorName"
-
 #define CHOOSER_TITLE_KEY "chooseListTitle"
 #define CHOOSER_TITLE "Выберите..."
-
 #define CHOOSER_SEARCH_BOX_KEY "searchBox"
 #define CHOOSER_SEARCH_BOX "Поиск"
-
 #define CHOOSER_SEARCH_BUTTON_KEY "searchButton"
 #define CHOOSER_SEARCH_BUTTON "Найти"
-
 #define CHOOSER_DONE_BUTTON_KEY "doneButton"
 #define CHOOSER_DONE_BUTTON "Выбрать"
-
 #define CHOOSER_CANCEL_BUTTON_KEY "cancelButton"
 #define CHOOSER_CANCEL_BUTTON "Отмена"
 
 #define ERRORS_SUBSECTION_KEY "AppErrors"
-
 #define ERRORS_TITLE_KEY "msgTitle"
 #define ERRORS_TITLE "Внимание!"
-
 #define ERRORS_FILE_ON_BASESUBDIR_KEY "fileOnBaseSubdir"
 #define ERRORS_FILE_ON_BASESUBDIR "Выбранный файл находится в директории текущей базы!"
-
 #define ERRORS_SAVE_CONFIG_KEY "saveConfig"
 #define ERRORS_SAVE_CONFIG "Ошибка сохранения настроек программы в файл:\n"
-
-//#define ERRORS_
-//#define ERRORS_
-
-//#define ERRORS_
-//#define ERRORS_
-
-//#define ERRORS_
-//#define ERRORS_
-
+#define ERRORS_FILE_ALREADY_EXIST_KEY "fileAlreadyExist"
+#define ERRORS_FILE_ALREADY_EXIST "Файл с таким именем уже существует!"
 
 #define RESOURCE_QUESTION ":/question.png"
 

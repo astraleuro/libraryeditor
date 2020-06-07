@@ -10,6 +10,8 @@
 #include <QResizeEvent>
 #include <QFileDialog>
 #include <QMouseEvent>
+#include <QMessageBox>
+#include <QDate>
 
 #include "defines.h"
 #include "templates.h"
@@ -32,7 +34,8 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    //void mouseReleaseEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 
 signals:
     void clicked();
@@ -62,6 +65,7 @@ public slots:
     void recieveAuthors(QStringList &list);
 
 protected:
+    bool isValidDateFormat(QString format);
     int findEraIndex(QString key);
     void fillWidgets();
     void fillRanks();
@@ -87,12 +91,12 @@ private slots:
 private:
     Ui::ItemEditor *ui;
     JsonDataSections section;
-    QJsonObject allSettings, settings, itemTemplate, currentItem;
+    QJsonObject allSettings, settings, itemTemplate, currentItem, errorsMsg;
     QImage image;
     ImageView *imageView;
     QStringList artRanks;
     int itemIndex = -1;
-    QString allFilesPath, secFilesPath;
+    QString allFilesPath, secFilesPath, currentFilePath;
     QMenu templateMenu;
     QAction *saveTemplateA, *clearTemplateA;
     QFileDialog dialog;

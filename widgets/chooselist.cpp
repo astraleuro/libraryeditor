@@ -17,6 +17,7 @@ void ChooseList::initData(QJsonObject &opt, QStringList &list)
 {
     tableFromList(ui->chooseTable, list, 1);
     settings = opt[getClassName(this)].toObject();
+    errorsMsg = opt[ERRORS_SUBSECTION_KEY].toObject();
 
     settings[CHOOSER_TITLE_KEY] = settings[CHOOSER_TITLE_KEY].toString(CHOOSER_TITLE);
     settings[CHOOSER_SEARCH_BOX_KEY] = settings[CHOOSER_SEARCH_BOX_KEY].toString(CHOOSER_SEARCH_BOX);

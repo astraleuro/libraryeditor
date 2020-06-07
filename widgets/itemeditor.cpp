@@ -9,6 +9,7 @@ ItemEditor::ItemEditor(QWidget *parent) :
     saveTemplateA = new QAction;
     clearTemplateA = new QAction;
 
+    dialog.setNameFilters(QString(IMAGE_EXTENSION_FILTER).split(SEPARATOR));
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setModal(true);
@@ -40,9 +41,14 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
     settings[EDITOR_CANCEL_BUTTON_KEY] = settings[EDITOR_CANCEL_BUTTON_KEY].toString(EDITOR_CANCEL_BUTTON);
     settings[EDITOR_TEMPLATE_BUTTON_KEY] = settings[EDITOR_TEMPLATE_BUTTON_KEY].toString(EDITOR_TEMPLATE_BUTTON);
     settings[EDITOR_OPENFILE_TITLE_KEY] = settings[EDITOR_OPENFILE_TITLE_KEY].toString(EDITOR_OPENFILE_TITLE);
+    settings[DATE_FORMAT_KEY] = settings[DATE_FORMAT_KEY].toString(DATE_FORMAT);
+    if (!isValidDateFormat(settings[DATE_FORMAT_KEY].toString()))
+        settings[DATE_FORMAT_KEY] = DATE_FORMAT;
 
     ui->templateButton->setText(settings[EDITOR_TEMPLATE_BUTTON_KEY].toString());
     ui->cancelButton->setText(settings[EDITOR_CANCEL_BUTTON_KEY].toString());
+
+    errorsMsg = allSettings[ERRORS_SUBSECTION_KEY].toObject();
 
     switch (section) {
     case ArtsSection:
@@ -175,6 +181,16 @@ void ItemEditor::recieveAuthors(QStringList &list)
     authors.sort(Qt::CaseInsensitive);
 }
 
+bool ItemEditor::isValidDateFormat(QString format)
+{
+    QDate date;
+    date = QDate::fromString(format);
+    if (date.isValid())
+        return true;
+    else
+        return false;
+}
+
 void ItemEditor::recieveEras(QStringList &list)
 {
     eras = list;
@@ -215,9 +231,12 @@ void ItemEditor::fillWidgets()
         break;
     }
 
-    if (itemIndex != -1)
-        imageView->initData(toNativeSeparators(secFilesPath + "/" +
-            currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]].toString()));
+    if (itemIndex != -1) {
+        currentFilePath = toNativeSeparators(secFilesPath + "/" +
+                currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]].toString());
+        imageView->initData(currentFilePath);
+    } else
+        currentFilePath = "";
 }
 
 void ItemEditor::fillRanks()
@@ -249,6 +268,7 @@ void ItemEditor::clearWidgets()
     ui->authorInfoText->setPlainText("");
     ui->authorTable->clear();
     ui->authorTable->setRowCount(0);
+    currentFilePath = "";
     imageView->initData();
 }
 
@@ -308,10 +328,28 @@ void ItemEditor::replaceAuthors(QStringList &list)
 
 void ItemEditor::openNewImage()
 {
-    QString fn;
+    QString fn, translit;
+    QMessageBox msg(QMessageBox::Warning, errorsMsg[ERRORS_TITLE_KEY].toString(), "", QMessageBox::Close);
+    msg.setModal(true);
+    bool isOk = true;
     dialog.exec();
     if (dialog.result() == QDialog::Accepted && !dialog.selectedFiles().isEmpty()) {
         fn = dialog.selectedFiles()[0];
+        if (fn.contains(allFilesPath)) {
+            msg.setText(errorsMsg[ERRORS_FILE_ON_BASESUBDIR_KEY].toString());
+            isOk = false;
+        } else {
+            translit = toValidFileName(takeFileName(fn));
+            if (checkPath(secFilesPath + translit)) {
+                msg.setText(errorsMsg[ERRORS_FILE_ALREADY_EXIST_KEY].toString());
+                isOk = false;
+            }
+        }
+        if (isOk) {
+            imageView->initData(fn);
+            currentFilePath = fn;
+        } else
+            msg.exec();
     }
 }
 
@@ -340,12 +378,19 @@ void ImageView::resizeEvent(QResizeEvent *event)
     }
 }
 
-void ImageView::mouseReleaseEvent(QMouseEvent *event)
+void ImageView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    QLabel::mouseDoubleClickEvent(event);
+    if (event->button() == Qt::LeftButton)
+        clicked();
+}
+
+/*void ImageView::mouseReleaseEvent(QMouseEvent *event)
 {
     QLabel::mouseReleaseEvent(event);
     if (event->button() == Qt::LeftButton)
         clicked();
-}
+}*/
 
 void ItemEditor::on_authorDelButton_clicked()
 {
@@ -360,6 +405,30 @@ void ItemEditor::on_authorAddButton_clicked()
 
 void ItemEditor::on_addEditButton_clicked()
 {
+    QDate date;
+    currentItem = QJsonObject();
+    switch (section) {
+    case ArtsSection:
+        currentItem[ARTS_NAME_KEY] = ui->nameEdit->text();
+        currentItem[ARTS_INFO_KEY] = ui->artInfoText->toPlainText();
+        currentItem[ARTS_RANK_KEY] = ui->rankCombo->currentIndex();
+        currentItem[ARTS_AUTHORS_KEY] = tableToArray(ui->authorTable);
+        currentItem[ARTS_ERA_KEY] = ui->eraCombo->currentText();
+        currentItem[ARTS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
+        break;
+    case AuthorsSection:
+        currentItem[AUTHORS_NAME_KEY] = ui->nameEdit->text();
+        currentItem[AUTHORS_INFO_KEY] = ui->artInfoText->toPlainText();
+        currentItem[AUTHORS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
+        break;
+    case ErasSection:
+        currentItem[ERAS_NAME_KEY] = ui->nameEdit->text();
+        currentItem[ERAS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
+        break;
+    }
+
+    currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]] = currentFilePath;
+
     if (!ui->dontCloseCheck->isChecked())
         close();
     else

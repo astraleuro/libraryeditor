@@ -59,7 +59,7 @@ private slots:
 
 private:
     Ui::ChooseList *ui;
-    QJsonObject settings;
+    QJsonObject settings, errorsMsg;
     ChooseItemDelegate *tableDelegate;
 };
 
