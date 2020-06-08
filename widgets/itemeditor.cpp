@@ -161,6 +161,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
 
 void ItemEditor::editData(int index, QJsonObject data)
 {
+    ui->dontCloseCheck->setCheckState(Qt::Unchecked);
     isImageChanged = false;
     itemIndex = index;
     currentItem = data;
@@ -196,9 +197,9 @@ void ItemEditor::itemUniqueCheckFail()
 
 void ItemEditor::itemUniqueCheckOk()
 {
-    if (!ui->dontCloseCheck->isChecked())
+    if (!ui->dontCloseCheck->isChecked()) {
         close();
-    else {
+    } else {
         currentItem = QJsonObject();
         fillWidgets();
     }
@@ -369,7 +370,6 @@ void ItemEditor::clearWidgets()
     ui->authorTable->clear();
     ui->authorTable->setRowCount(0);
     currentFilePath = "";
-    itemIndex = -1;
     imageView->initData();
 }
 
@@ -467,8 +467,11 @@ void ItemEditor::openNewImage()
 
 void ItemEditor::on_cancelButton_clicked()
 {
+    currentItem = QJsonObject();
+    itemIndex = -1;
+    ui->dontCloseCheck->setCheckState(Qt::Unchecked);
     settingsChanged(getClassName(this), settings);
-    ui->aaImageBox->setGeometry(ui->aaImageBox->x(), ui->aaImageBox->y(), 0, 0);
+    //ui->aaImageBox->setGeometry(ui->aaImageBox->x(), ui->aaImageBox->y(), 0, 0);
     close();
 }
 

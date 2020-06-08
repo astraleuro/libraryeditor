@@ -8,6 +8,7 @@ ArrayList::ArrayList(QWidget *parent) :
     ui->setupUi(this);
     delegate = new ArrayItemDelegate;
 
+    ui->arrayTable->horizontalHeader()->setVisible(true);
     connect(ui->arrayTable->horizontalHeader(), SIGNAL(sectionResized(int , int, int)), this, SLOT(adoptItems(int, int, int)));
     connect(delegate, SIGNAL(itemActivated(int)), this, SLOT(openItemEditor(int)));
     connect(&itemEditor, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(settingsChanged(QString, QJsonObject)));
