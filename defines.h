@@ -242,6 +242,28 @@
 #define ERRORS_DATA_CHANGED "Данные изменены! Сохранить?"
 #define ERRORS_ALREADY_SAVED_KEY "alreadySaved"
 #define ERRORS_ALREADY_SAVED "Данные уже сохранены!"
+#define ERRORS_SAVE_BEFORE_KEY "saveBefore"
+#define ERRORS_SAVE_BEFORE "Сначала сохраните данные!"
+
+#define EXPORT_TITLE_KEY "title"
+#define EXPORT_TITLE "Экспорт базы данных в JSON"
+#define EXPORT_PREFIX_LABEL_KEY "prefixLabel"
+#define EXPORT_PREFIX_LABEL "Префикс пути к файлам:"
+#define EXPORT_PREFIX_KEY "prefixStr"
+#define EXPORT_PREFIX "https://pro-prof.com/artists-puzzle/load"
+#define EXPORT_SAVE_KEY "exportButton"
+#define EXPORT_SAVE "Экспортировать"
+#define EXPORT_CANCEL_KEY "cancelButton"
+#define EXPORT_CANCEL "Отмена"
+
+#define EXPORT_PATH_PREFIX_KEY "filesPathModifier"
+#define EXPORT_PATH_PREFIX ""
+
+#define EXPORT_LAST_PATH_KEY "lastPath"
+#define EXPORT_LAST_PATH ""
+
+#define EDITOR_LAST_PATH_KEY "lastPath"
+#define EDITOR_LAST_PATH ""
 
 #define RESOURCE_QUESTION ":/question.png"
 

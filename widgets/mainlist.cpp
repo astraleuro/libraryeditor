@@ -7,6 +7,8 @@ MainList::MainList(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->saveButton->setHiddenMenu(&exportMenu);
+
+    connect(&exportDialog, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(saveSettings(QString, QJsonObject)));
 }
 
 void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool changed)
@@ -47,6 +49,8 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
                                 " (" + QString::number(data[ERAS_KEY].toArray().count()) + ")");
 
     exportAction = exportMenu.addAction(settings[ML_EXPORT_TO_JSON_KEY].toString(), this, SLOT(exportToJson()));
+
+    exportDialog.initData(fn, data, opt);
 
     settingsChanged(getClassName(this), settings);
 }
@@ -113,8 +117,22 @@ void MainList::on_goBackButton_clicked()
 
 void MainList::exportToJson()
 {
-    exportDialog.setModal(true);
-    exportDialog.exec();
+    if (!isChanged) {
+        exportDialog.setModal(true);
+        exportDialog.exec();
+    } else {
+        QMessageBox msg(QMessageBox::Information, errorsMsg[ERRORS_TITLE_KEY].toString(),
+                        errorsMsg[ERRORS_SAVE_BEFORE].toString(), QMessageBox::Save | QMessageBox::Ignore);
+        msg.setModal(true);
+        msg.exec();
+        if (msg.result() == QMessageBox::Save) {
+            saveImages();
+            isChanged = false;
+            dataSaved();
+            exportDialog.setModal(true);
+            exportDialog.exec();
+        }
+    }
 }
 
 void MenuButton::setHiddenMenu(QMenu *m)

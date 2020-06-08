@@ -16,6 +16,7 @@ MainWindow::MainWindow(QString path, QWidget *parent)
     errorsMsg = allSettings[ERRORS_SUBSECTION_KEY].toObject();
     errorsMsg[ERRORS_TITLE_KEY] = errorsMsg[ERRORS_TITLE_KEY].toString(ERRORS_TITLE);
 
+    errorsMsg[ERRORS_SAVE_BEFORE_KEY] = errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(ERRORS_SAVE_BEFORE);
     errorsMsg[ERRORS_ALREADY_SAVED_KEY] = errorsMsg[ERRORS_ALREADY_SAVED_KEY].toString(ERRORS_ALREADY_SAVED);
     errorsMsg[ERRORS_SAVE_CONFIG_KEY] = errorsMsg[ERRORS_SAVE_CONFIG_KEY].toString(ERRORS_SAVE_CONFIG);
     errorsMsg[ERRORS_FILE_ON_BASESUBDIR_KEY] = errorsMsg[ERRORS_FILE_ON_BASESUBDIR_KEY].toString(ERRORS_FILE_ON_BASESUBDIR);
