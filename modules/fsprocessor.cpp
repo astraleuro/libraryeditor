@@ -165,6 +165,7 @@ QString takeFileName(QString path)
 
 QString takeDirPath(QString path)
 {
+    path = toNativeSeparators(path);
     QString separator = QDir::toNativeSeparators("/");
     int sepIndex = path.lastIndexOf(separator);
     if (sepIndex != -1)
@@ -211,4 +212,14 @@ QString takeFileExt(QString fn)
 {
     int dot = fn.lastIndexOf('.');
     return fn.right(fn.count() - dot - 1);
+}
+
+QString takeValidSeparator(QString path)
+{
+    if (path.contains("/"))
+        return "/";
+    else if (path.contains("\\"))
+        return "\\";
+    else
+        return toNativeSeparators("/");
 }

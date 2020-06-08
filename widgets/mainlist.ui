@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>414</width>
-    <height>314</height>
+    <width>416</width>
+    <height>316</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -113,7 +113,7 @@
     </spacer>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
      <item>
       <widget class="QPushButton" name="goBackButton">
        <property name="text">
@@ -125,6 +125,13 @@
       <widget class="MenuButton" name="saveButton">
        <property name="text">
         <string>Сохранить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="mergeButton">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

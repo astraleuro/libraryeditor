@@ -347,7 +347,6 @@ void ArrayList::on_sortButton_toggled(bool checked)
 
 void ArrayList::on_backButton_clicked()
 {
-
     goBack();
 }
 

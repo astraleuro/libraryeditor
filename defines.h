@@ -18,8 +18,10 @@
 #define BASE_EXTENSION_FILTER "*" BASE_EXTENSION
 #define IMAGE_EXTENSION_FILTER "*.jpg *.png" SEPARATOR "*.jpg" SEPARATOR "*.png"
 
-#define OPENFILE_TITLE "Открыть..."
-#define SAVEFILE_TITLE "Сохранить..."
+#define WELCOME_OPENFILE_TITLE_KEY "openFileTitle"
+#define WELCOME_OPENFILE_TITLE "Открыть..."
+#define WELCOME_SAVEFILE_TITLE_KEY "saveFileTitle"
+#define WELCOME_SAVEFILE_TITLE "Сохранить..."
 
 #define ARTS_KEY "arts"
 #define ARTS_LABEL "Предметы искусства"
@@ -158,20 +160,16 @@
 #define EDITOR_ERAS_UNIQUE "eraName"
 #define EDITOR_ARTS_RANK_TYPE_KEY "rankType"
 #define EDITOR_ARTS_RANK_TYPE "bool"
-
 #define EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraNameKey"
 #define EDITOR_ERAS_KEY_FOR_ARTS_LIST "eraName"
 #define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorNameKey"
 #define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST "authorName"
-
 #define AL_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraRemoveNameKey"
 #define AL_ERAS_KEY_FOR_ARTS_LIST "artEra"
 #define AL_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorRemoveNameKey"
 #define AL_AUTHORS_KEY_FOR_ARTS_LIST "artAuthors"
-
 #define DATE_FORMAT_KEY "lastUpdateFormat"
 #define DATE_FORMAT "yyyy-MM-dd"
-
 #define WELCOME_LAST_FILE_KEY "lastFile"
 #define WELCOME_LAST_PATH_KEY "lastPath"
 #define WELCOME_CREATE_BUTTON_KEY "createButton"
@@ -182,12 +180,10 @@
 #define WELCOME_OPEN_BUTTON "Открыть..."
 #define WELCOME_LAST_BUTTON "Открыть "
 #define WELCOME_EXIT_BUTTON "Выход"
-
 #define MAIN_WIDTH_KEY "mainWidth"
 #define MAIN_WIDTH 600
 #define MAIN_HEIGHT_KEY "mainHeight"
 #define MAIN_HEIGHT 400
-
 #define AL_FILTER_BUTTON_KEY "filterButton"
 #define AL_FILTER_BUTTON "Фильтр"
 #define AL_FILTER_APPLY_KEY "filterApply"
@@ -206,7 +202,6 @@
 #define AL_EDIT_BUTTON "Изменить"
 #define AL_DEL_BUTTON_KEY "delButton"
 #define AL_DEL_BUTTON "Удалить"
-
 #define CHOOSER_TITLE_KEY "chooseListTitle"
 #define CHOOSER_TITLE "Выберите..."
 #define CHOOSER_SEARCH_BOX_KEY "searchBox"
@@ -217,10 +212,12 @@
 #define CHOOSER_DONE_BUTTON "Выбрать"
 #define CHOOSER_CANCEL_BUTTON_KEY "cancelButton"
 #define CHOOSER_CANCEL_BUTTON "Отмена"
-
 #define ML_EXPORT_TO_JSON_KEY "exportToJsonButton"
 #define ML_EXPORT_TO_JSON "Экспорт в JSON"
-
+#define ML_SAVE_BUTTON_KEY "saveButton"
+#define ML_SAVE_BUTTON "Сохранить"
+#define ML_MERGE_BUTTON_KEY "mergeButton"
+#define ML_MERGE_BUTTON "Объеденить"
 #define ERRORS_SUBSECTION_KEY "AppErrors"
 #define ERRORS_TITLE_KEY "msgTitle"
 #define ERRORS_TITLE "Внимание!"
@@ -244,26 +241,33 @@
 #define ERRORS_ALREADY_SAVED "Данные уже сохранены!"
 #define ERRORS_SAVE_BEFORE_KEY "saveBefore"
 #define ERRORS_SAVE_BEFORE "Сначала сохраните данные!"
-
-#define EXPORT_TITLE_KEY "title"
+#define EXPORT_TITLE_KEY "exportTitle"
 #define EXPORT_TITLE "Экспорт базы данных в JSON"
 #define EXPORT_PREFIX_LABEL_KEY "prefixLabel"
-#define EXPORT_PREFIX_LABEL "Префикс пути к файлам:"
-#define EXPORT_PREFIX_KEY "prefixStr"
+#define EXPORT_PREFIX_LABEL "Префикс пути к файлам"
+#define EXPORT_PREFIX_KEY "prefixData"
 #define EXPORT_PREFIX "https://pro-prof.com/artists-puzzle/load"
 #define EXPORT_SAVE_KEY "exportButton"
 #define EXPORT_SAVE "Экспортировать"
 #define EXPORT_CANCEL_KEY "cancelButton"
 #define EXPORT_CANCEL "Отмена"
-
-#define EXPORT_PATH_PREFIX_KEY "filesPathModifier"
-#define EXPORT_PATH_PREFIX ""
-
+#define EXPORT_ANNOTATION_KEY "exportAnnotation"
+#define EXPORT_ANNOTATION "Внимание! В директории сохранения JSON-файла будут созданы три подкаталога с файлами основных разделов"
+#define EXPORT_WIDTH_KEY "width"
+#define EXPORT_WIDTH 600
+#define EXPORT_HEIGHT_KEY "height"
+#define EXPORT_HEIGHT 200
+#define EXPORT_FILE_DIALOG_TITLE_KEY "fileDialogTitle"
+#define EXPORT_FILE_DIALOG_TITLE "Экспорт..."
 #define EXPORT_LAST_PATH_KEY "lastPath"
 #define EXPORT_LAST_PATH ""
-
+#define ERRORS_JOBISDON_DIALOG_KEY "jobisDone"
+#define ERRORS_JOBISDON_DIALOG "Данные экспортированы!"
+#define JSON_EXTENSION ".json"
 #define EDITOR_LAST_PATH_KEY "lastPath"
 #define EDITOR_LAST_PATH ""
+#define ERRORS_JOBISDONOT_DIALOG_KEY "jobisDoNot"
+#define ERRORS_JOBISDONOT_DIALOG "Что-то пошло не по плану!"
 
 #define RESOURCE_QUESTION ":/question.png"
 

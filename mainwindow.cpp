@@ -15,7 +15,7 @@ MainWindow::MainWindow(QString path, QWidget *parent)
 
     errorsMsg = allSettings[ERRORS_SUBSECTION_KEY].toObject();
     errorsMsg[ERRORS_TITLE_KEY] = errorsMsg[ERRORS_TITLE_KEY].toString(ERRORS_TITLE);
-
+    errorsMsg[ERRORS_JOBISDONOT_DIALOG_KEY] = errorsMsg[ERRORS_JOBISDONOT_DIALOG_KEY].toString(ERRORS_JOBISDONOT_DIALOG);
     errorsMsg[ERRORS_SAVE_BEFORE_KEY] = errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(ERRORS_SAVE_BEFORE);
     errorsMsg[ERRORS_ALREADY_SAVED_KEY] = errorsMsg[ERRORS_ALREADY_SAVED_KEY].toString(ERRORS_ALREADY_SAVED);
     errorsMsg[ERRORS_SAVE_CONFIG_KEY] = errorsMsg[ERRORS_SAVE_CONFIG_KEY].toString(ERRORS_SAVE_CONFIG);
@@ -26,12 +26,14 @@ MainWindow::MainWindow(QString path, QWidget *parent)
     errorsMsg[ERRORS_DATA_SAVED_KEY] = errorsMsg[ERRORS_DATA_SAVED_KEY].toString(ERRORS_DATA_SAVED);
     errorsMsg[ERRORS_DATA_UNSAVED_KEY] = errorsMsg[ERRORS_DATA_UNSAVED_KEY].toString(ERRORS_DATA_UNSAVED);
     errorsMsg[ERRORS_DATA_CHANGED_KEY] = errorsMsg[ERRORS_DATA_CHANGED_KEY].toString(ERRORS_DATA_CHANGED);
+    errorsMsg[ERRORS_JOBISDON_DIALOG_KEY] = errorsMsg[ERRORS_JOBISDON_DIALOG_KEY].toString(ERRORS_JOBISDON_DIALOG);
+    errorsMsg[ERRORS_SAVE_BEFORE_KEY] = errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(ERRORS_SAVE_BEFORE);
     allSettings[ERRORS_SUBSECTION_KEY] = errorsMsg;
 
     settings[MAIN_WIDTH_KEY] = settings[MAIN_WIDTH_KEY].toInt(MAIN_WIDTH);
     settings[MAIN_HEIGHT_KEY] = settings[MAIN_HEIGHT_KEY].toInt(MAIN_HEIGHT);
     setMinimumSize(MAIN_WIDTH, MAIN_HEIGHT);
-    setGeometry(0, 0,
+    setGeometry(x(), y(),
                 settings[MAIN_WIDTH_KEY].toInt(),
                 settings[MAIN_HEIGHT_KEY].toInt());
 

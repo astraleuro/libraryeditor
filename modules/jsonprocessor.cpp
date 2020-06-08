@@ -91,3 +91,16 @@ QJsonArray clearKeyInObjectArray(QString subkey, QString key, QJsonArray array)
     }
     return array;
 }
+
+QJsonArray modifyObjectsKeyInArray(QString prefix, QString key, QJsonArray array)
+{
+    QJsonObject item;
+    for (int i = 0; i < array.count(); i++) {
+        item = array[i].toObject();
+        if (item.contains(key)) {
+            item[key] = prefix + item[key].toString();
+            array[i] = item;
+        }
+    }
+    return array;
+}

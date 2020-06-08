@@ -25,5 +25,6 @@ bool writeJson(QString path, QJsonObject& json);
 QString fileInfo(QString path);
 QString takeFileName(QString path);
 QString takeDirPath(QString path);
+QString takeValidSeparator(QString path);
 
 #endif // FSPROCESSOR_H

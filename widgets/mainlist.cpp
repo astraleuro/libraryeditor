@@ -21,6 +21,11 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
     isChanged = changed;
 
     settings[ML_EXPORT_TO_JSON_KEY] = settings[ML_EXPORT_TO_JSON_KEY].toString(ML_EXPORT_TO_JSON);
+    settings[ML_SAVE_BUTTON_KEY] = settings[ML_SAVE_BUTTON_KEY].toString(ML_SAVE_BUTTON);
+    settings[ML_MERGE_BUTTON_KEY] = settings[ML_MERGE_BUTTON_KEY].toString(ML_MERGE_BUTTON);
+
+    ui->saveButton->setText(settings[ML_SAVE_BUTTON_KEY].toString());
+    ui->mergeButton->setText(settings[ML_MERGE_BUTTON_KEY].toString());
 
     ui->filesInfo->setText(QString(DATAFILE_TITLE) + ": " + fileInfo(jsonPath));
 
@@ -122,7 +127,7 @@ void MainList::exportToJson()
         exportDialog.exec();
     } else {
         QMessageBox msg(QMessageBox::Information, errorsMsg[ERRORS_TITLE_KEY].toString(),
-                        errorsMsg[ERRORS_SAVE_BEFORE].toString(), QMessageBox::Save | QMessageBox::Ignore);
+                        errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(), QMessageBox::Save | QMessageBox::Ignore);
         msg.setModal(true);
         msg.exec();
         if (msg.result() == QMessageBox::Save) {

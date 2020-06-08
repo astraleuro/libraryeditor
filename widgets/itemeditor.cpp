@@ -6,8 +6,6 @@ ItemEditor::ItemEditor(QWidget *parent) :
     ui(new Ui::ItemEditor)
 {
     ui->setupUi(this);
-    //saveTemplateA = new QAction;
-    //clearTemplateA = new QAction;
 
     dialog.setNameFilters(QString(IMAGE_EXTENSION_FILTER).split(SEPARATOR));
     dialog.setFileMode(QFileDialog::ExistingFile);
@@ -36,6 +34,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
         settings[EDITOR_ARTS_RANK_TYPE_KEY] = EDITOR_ARTS_RANK_TYPE;
     }
 
+    settings[EDITOR_LAST_PATH_KEY] = settings[EDITOR_LAST_PATH_KEY].toString(EDITOR_LAST_PATH);
     settings[EDITOR_ARTS_UNIQUE_KEY] = settings[EDITOR_ARTS_UNIQUE_KEY].toString(EDITOR_ARTS_UNIQUE);
     settings[EDITOR_AUTHORS_UNIQUE_KEY] = settings[EDITOR_AUTHORS_UNIQUE_KEY].toString(EDITOR_AUTHORS_UNIQUE);
     settings[EDITOR_ERAS_UNIQUE_KEY] = settings[EDITOR_ERAS_UNIQUE_KEY].toString(EDITOR_ERAS_UNIQUE);
@@ -78,7 +77,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
         settings[EDITOR_ARTS_HEIGHT_KEY] = settings[EDITOR_ARTS_HEIGHT_KEY].toInt(EDITOR_ARTS_HEIGHT);
         itemTemplate = settings[EDITOR_ARTS_TEMPLATE_KEY].toObject();
         setMinimumSize(EDITOR_ARTS_WIDTH, EDITOR_ARTS_HEIGHT);
-        setGeometry(0, 0,
+        setGeometry(x(), y(),
                     settings[EDITOR_ARTS_WIDTH_KEY].toInt(),
                     settings[EDITOR_AUTHORS_HEIGHT_KEY].toInt());
         ui->nameBox->setTitle(settings[EDITOR_ARTS_NAME_BOX_KEY].toString());
@@ -143,8 +142,6 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
         ui->templateButton->setEnabled(false);
         break;
     }
-
-    checkPath(tmpFilePath, true);
 
     ui->dontCloseCheck->setChecked(false);
 
@@ -274,9 +271,8 @@ bool ItemEditor::isFirstStageCheckOk()
 
 bool ItemEditor::isValidDateFormat(QString format)
 {
-    QDate date;
-    date = QDate::fromString(format);
-    if (date.isValid())
+    QString date = QDate::currentDate().toString(format);
+    if (!date.isEmpty())
         return true;
     else
         return false;
@@ -446,13 +442,17 @@ void ItemEditor::openNewImage()
     QMessageBox msg(QMessageBox::Warning, errorsMsg[ERRORS_TITLE_KEY].toString(), "", QMessageBox::Close);
     msg.setModal(true);
     bool isOk = true;
+    if (checkPath(settings[EDITOR_LAST_PATH_KEY].toString()))
+        dialog.setDirectory(settings[EDITOR_LAST_PATH_KEY].toString());
     dialog.exec();
     if (dialog.result() == QDialog::Accepted && !dialog.selectedFiles().isEmpty()) {
         fn = dialog.selectedFiles()[0];
+        settings[EDITOR_LAST_PATH_KEY] = takeDirPath(fn);
         if (fn.contains(allFilesPath)) {
             msg.setText(errorsMsg[ERRORS_FILE_ON_BASESUBDIR_KEY].toString());
             isOk = false;
         } else {
+            checkPath(tmpFilePath, true);
             valid = toFileNameWithIndex(toValidFileName(takeFileName(fn), LowerCase), QStringList({secFilesPath, tmpFilePath}));
             QFile file;
             file.copy(fn, tmpFilePath + valid);
@@ -471,7 +471,6 @@ void ItemEditor::on_cancelButton_clicked()
     itemIndex = -1;
     ui->dontCloseCheck->setCheckState(Qt::Unchecked);
     settingsChanged(getClassName(this), settings);
-    //ui->aaImageBox->setGeometry(ui->aaImageBox->x(), ui->aaImageBox->y(), 0, 0);
     close();
 }
 
