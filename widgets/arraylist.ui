@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
-    <height>351</height>
+    <width>534</width>
+    <height>357</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -128,7 +128,7 @@
          <bool>false</bool>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderCascadingSectionResizes">
          <bool>true</bool>
@@ -157,7 +157,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1,1,0,0">
      <item>
       <widget class="QPushButton" name="backButton">
        <property name="text">
@@ -180,13 +180,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="addButton">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="saveButton">
        <property name="text">
         <string/>
        </property>
@@ -227,7 +220,6 @@
   <tabstop>arrayTable</tabstop>
   <tabstop>addButton</tabstop>
   <tabstop>editButton</tabstop>
-  <tabstop>saveButton</tabstop>
   <tabstop>filterButton</tabstop>
   <tabstop>sortButton</tabstop>
   <tabstop>filterEdit</tabstop>

@@ -4,7 +4,7 @@
 #define SEPARATOR "|"
 
 #define APPLICATION_NAME  "LEditor"
-#define APPLICATION_VERSION "0.1 alpha"
+#define APPLICATION_VERSION "0.8 alpha"
 
 #define PROGRAM_AUTHOR_NAME "Кирилл Зимин (astral.euro@gmail.com)"
 #define PROGRAM_NAME APPLICATION_NAME " - управление данными приложения «Пазлы-Живопись»\n" \
@@ -87,8 +87,8 @@
 #define ERAS_DATE_KEY "lastUpdate"
 
 #define ARTS_RANKS_KEY "ranks"
-#define ARTS_RANKS "Отечественное искусство" SEPARATOR "0" \
-    SEPARATOR "Зарубежное искусство" SEPARATOR "1"
+#define ARTS_RANKS "Отечественное искусство" SEPARATOR "1" \
+    SEPARATOR "Зарубежное искусство" SEPARATOR "0"
 
 #define DATAFILE_TITLE "Файл данных"
 #define FILE_SIZE_MULT 1024
@@ -150,10 +150,24 @@
 #define EDITOR_TEMPLATE_SAVE "Сохранить"
 #define EDITOR_TEMPLATE_CLEAR_KEY "clearTemplate"
 #define EDITOR_TEMPLATE_CLEAR "Очистить"
+#define EDITOR_ARTS_UNIQUE_KEY "artUniqueKey"
+#define EDITOR_ARTS_UNIQUE "artName"
+#define EDITOR_AUTHORS_UNIQUE_KEY "authorUniqueKey"
+#define EDITOR_AUTHORS_UNIQUE "authorName"
+#define EDITOR_ERAS_UNIQUE_KEY "eraUniqueKey"
+#define EDITOR_ERAS_UNIQUE "eraName"
+#define EDITOR_ARTS_RANK_TYPE_KEY "rankType"
+#define EDITOR_ARTS_RANK_TYPE "bool"
+
 #define EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraNameKey"
 #define EDITOR_ERAS_KEY_FOR_ARTS_LIST "eraName"
 #define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorNameKey"
 #define EDITOR_AUTHORS_KEY_FOR_ARTS_LIST "authorName"
+
+#define AL_ERAS_KEY_FOR_ARTS_LIST_KEY "artEraRemoveNameKey"
+#define AL_ERAS_KEY_FOR_ARTS_LIST "artEra"
+#define AL_AUTHORS_KEY_FOR_ARTS_LIST_KEY "artAuthorRemoveNameKey"
+#define AL_AUTHORS_KEY_FOR_ARTS_LIST "artAuthors"
 
 #define DATE_FORMAT_KEY "lastUpdateFormat"
 #define DATE_FORMAT "yyyy-MM-dd"
@@ -188,8 +202,6 @@
 #define AL_SORT_ORDER_DSC "Я..А"
 #define AL_ADD_BUTTON_KEY "addButton"
 #define AL_ADD_BUTTON "Добавить"
-#define AL_SAVE_BUTTON_KEY "saveButton"
-#define AL_SAVE_BUTTON "Сохранить"
 #define AL_EDIT_BUTTON_KEY "editButton"
 #define AL_EDIT_BUTTON "Изменить"
 #define AL_DEL_BUTTON_KEY "delButton"
@@ -206,15 +218,30 @@
 #define CHOOSER_CANCEL_BUTTON_KEY "cancelButton"
 #define CHOOSER_CANCEL_BUTTON "Отмена"
 
+#define ML_EXPORT_TO_JSON_KEY "exportToJsonButton"
+#define ML_EXPORT_TO_JSON "Экспорт в JSON"
+
 #define ERRORS_SUBSECTION_KEY "AppErrors"
 #define ERRORS_TITLE_KEY "msgTitle"
 #define ERRORS_TITLE "Внимание!"
 #define ERRORS_FILE_ON_BASESUBDIR_KEY "fileOnBaseSubdir"
 #define ERRORS_FILE_ON_BASESUBDIR "Выбранный файл находится в директории текущей базы!"
 #define ERRORS_SAVE_CONFIG_KEY "saveConfig"
-#define ERRORS_SAVE_CONFIG "Ошибка сохранения настроек программы в файл:\n"
+#define ERRORS_SAVE_CONFIG "Ошибка записи настроек программы в файл:\n"
 #define ERRORS_FILE_ALREADY_EXIST_KEY "fileAlreadyExist"
 #define ERRORS_FILE_ALREADY_EXIST "Файл с таким именем уже существует!"
+#define ERRORS_CHECK_PREFIX_KEY "firstCheckPrefix"
+#define ERRORS_CHECK_PREFIX "Заполните раздел"
+#define ERRORS_ITEM_ALREADY_EXIST_KEY "itemAlreadyExist"
+#define ERRORS_ITEM_ALREADY_EXIST "Такая запись уже есть!"
+#define ERRORS_DATA_SAVED_KEY "dataSaved"
+#define ERRORS_DATA_SAVED "Данные успешно записаны!"
+#define ERRORS_DATA_UNSAVED_KEY "dataUnsaved"
+#define ERRORS_DATA_UNSAVED "Ошибка записи данных в:\n"
+#define ERRORS_DATA_CHANGED_KEY "saveBeforeClose"
+#define ERRORS_DATA_CHANGED "Данные изменены! Сохранить?"
+#define ERRORS_ALREADY_SAVED_KEY "alreadySaved"
+#define ERRORS_ALREADY_SAVED "Данные уже сохранены!"
 
 #define RESOURCE_QUESTION ":/question.png"
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>412</width>
-    <height>312</height>
+    <width>414</width>
+    <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -122,7 +122,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="saveButton">
+      <widget class="MenuButton" name="saveButton">
        <property name="text">
         <string>Сохранить</string>
        </property>
@@ -132,6 +132,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MenuButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/mainlist.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>artsButton</tabstop>
   <tabstop>authorsButton</tabstop>

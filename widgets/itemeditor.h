@@ -19,7 +19,6 @@
 #include "modules/jsonprocessor.h"
 #include "modules/txtprocessor.h"
 #include "modules/tableprocessor.h"
-
 #include "widgets/chooselist.h"
 
 class ItemEditor;
@@ -29,20 +28,20 @@ class ImageView : public QLabel
     Q_OBJECT
 
 public:
-    explicit ImageView(QWidget *parent = nullptr) : QLabel(parent) {editor = (ItemEditor*)parent;};
+    explicit ImageView(QWidget *parent = nullptr) : QLabel(parent) {};
     void initData(QString path = "");
+    bool isValid();
 
 protected:
     void resizeEvent(QResizeEvent *event);
-    //void mouseReleaseEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
 signals:
     void clicked();
 
 private:
+    QString fn;
     QImage origImage;
-    ItemEditor *editor;
 };
 
 namespace Ui {
@@ -58,6 +57,9 @@ public:
     void initData(QJsonObject &opt, JsonDataSections &sec, QString path, QStringList ranks = QStringList());
     void editData(int index, QJsonObject data);
     void addData();
+    void itemUniqueCheckFail();
+    void itemUniqueCheckOk();
+    QJsonObject takeItem();
     ~ItemEditor();
 
 public slots:
@@ -65,6 +67,7 @@ public slots:
     void recieveAuthors(QStringList &list);
 
 protected:
+    bool isFirstStageCheckOk();
     bool isValidDateFormat(QString format);
     int findEraIndex(QString key);
     void fillWidgets();
@@ -74,6 +77,7 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 signals:
+    void itemUniqueCheck(QJsonValue, QString, int);
     void settingsChanged(QString, QJsonObject);
     void readyForEras(QString);
     void readyForAuthors(QString);
@@ -90,6 +94,7 @@ private slots:
 
 private:
     Ui::ItemEditor *ui;
+    bool isImageOk, isNameOk, isRankOk, isEraOk, isAuthorsOk, isInfoOk;
     JsonDataSections section;
     QJsonObject allSettings, settings, itemTemplate, currentItem, errorsMsg;
     QImage image;
@@ -102,6 +107,9 @@ private:
     QFileDialog dialog;
     QStringList eras, authors;
     ChooseList authorsList;
+    bool isImageChanged = false;
+    QString rankType;
+    QString tmpFilePath;
 };
 
 #endif // ITEMEDITOR_H

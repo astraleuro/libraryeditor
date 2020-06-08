@@ -41,27 +41,31 @@ class ArrayList : public QWidget
 public:
     explicit ArrayList(QWidget *parent = nullptr);
     void initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDataSections &sec);
+    QJsonArray takeData();
+    JsonDataSections takeSection();
     ~ArrayList();
 
 protected:
     void fillTable();
     void eraseTable();
     void addImageItem(int row, QJsonValue data);
-    void addTextItem(int row, QJsonValue data);
     QString jsonValueToText(QString key, QJsonValue value);
     QJsonObject takeSettings();
-
+    void changeItem(QJsonObject data, int row);
 
 signals:
+    void dataChanged();
     void settingsChanged(QString, QJsonObject);
-    void saveData();
     void goBack();
     void readyForEras(QString);
     void readyForAuthors(QString);
-    void sendEras(QStringList &list);
-    void sendAuthors(QStringList &list);
+    void sendEras(QStringList&);
+    void sendAuthors(QStringList&);
+    void removeAuthorsInArts(QString, QString);
+    void clearEraInArts(QString, QString);
 
 private slots:
+    void itemUniqueCheck(QJsonValue value, QString key, int index);
     void adoptItems(int col, int oldSize, int newSize);
     void adoptText(int row);
     void openItemEditor(int index = -1);
@@ -73,6 +77,7 @@ private slots:
     void on_sortOrderButton_clicked();
     void on_editButton_clicked();
     void on_addButton_clicked();
+    void on_removeButton_clicked();
 
 private:
     Ui::ArrayList *ui;
@@ -80,7 +85,7 @@ private:
     QJsonArray jsonArray;
     QString allFilesPath;
     JsonDataSections section;
-    QString secFilesPath, imageKey, textColKeyF;
+    QString secFilesPath, tmpFilesPath, imageKey, textColKeyF;
     QStringList textColKeysH, textColLabels, ranks;
     bool sortOrder = true;
     ItemEditor itemEditor;

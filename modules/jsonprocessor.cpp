@@ -38,3 +38,56 @@ QStringList objectArrayToList(QJsonArray data, QString key)
     }
     return list;
 }
+
+void removeArraySelectedItems(QJsonArray &array, QList<QTableWidgetItem *> range)
+{
+    for (int i = range.count() - 1; i >= 0; i--)
+        if (0 == range[i]->column())
+            array.removeAt(range[i]->row());
+}
+
+QStringList takeListByObjectKey(QString key, QJsonArray array)
+{
+    QStringList list;
+    QString item;
+    for (int i = 0; i < array.count(); i++) {
+        item = array[i].toObject()[key].toString();
+        if (!item.isEmpty())
+            list.append(item);
+    }
+    return list;
+}
+
+
+QJsonArray removeKeyInObjectArray(QString subkey, QString key, QJsonArray array)
+{
+    QJsonArray subArray;
+    QJsonObject object;
+    for (int i = 0; i < array.count(); i++) {
+        object = array[i].toObject();
+        subArray = object[key].toArray();
+        if (subArray.contains(subkey)) {
+            for (int j = 0; j < subArray.count(); j++)
+                if (subArray[j].toString() == subkey) {
+                    subArray.removeAt(j);
+                    object[key] = subArray;
+                    array[i] = object;
+                    break;
+                }
+        }
+    }
+    return array;
+}
+
+QJsonArray clearKeyInObjectArray(QString subkey, QString key, QJsonArray array)
+{
+    QJsonObject object;
+    for (int i = 0; i < array.count(); i++) {
+        object = array[i].toObject();
+        if (object[key] == subkey) {
+            object[key] = "";
+            array[i] = object;
+        }
+    }
+    return array;
+}

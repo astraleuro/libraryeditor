@@ -6,8 +6,8 @@ ItemEditor::ItemEditor(QWidget *parent) :
     ui(new Ui::ItemEditor)
 {
     ui->setupUi(this);
-    saveTemplateA = new QAction;
-    clearTemplateA = new QAction;
+    //saveTemplateA = new QAction;
+    //clearTemplateA = new QAction;
 
     dialog.setNameFilters(QString(IMAGE_EXTENSION_FILTER).split(SEPARATOR));
     dialog.setFileMode(QFileDialog::ExistingFile);
@@ -29,6 +29,16 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
     section = sec;
     allFilesPath = path;
 
+    settings[EDITOR_ARTS_RANK_TYPE_KEY] = settings[EDITOR_ARTS_RANK_TYPE_KEY].toString(EDITOR_ARTS_RANK_TYPE);
+    rankType = settings[EDITOR_ARTS_RANK_TYPE_KEY].toString();
+    if (rankType != "bool" && rankType != "int") {
+        rankType = EDITOR_ARTS_RANK_TYPE;
+        settings[EDITOR_ARTS_RANK_TYPE_KEY] = EDITOR_ARTS_RANK_TYPE;
+    }
+
+    settings[EDITOR_ARTS_UNIQUE_KEY] = settings[EDITOR_ARTS_UNIQUE_KEY].toString(EDITOR_ARTS_UNIQUE);
+    settings[EDITOR_AUTHORS_UNIQUE_KEY] = settings[EDITOR_AUTHORS_UNIQUE_KEY].toString(EDITOR_AUTHORS_UNIQUE);
+    settings[EDITOR_ERAS_UNIQUE_KEY] = settings[EDITOR_ERAS_UNIQUE_KEY].toString(EDITOR_ERAS_UNIQUE);
     settings[EDITOR_ADD_TITLE_KEY] = settings[EDITOR_ADD_TITLE_KEY].toString(EDITOR_ADD_TITLE);
     settings[EDITOR_EDIT_TITLE_KEY] = settings[EDITOR_EDIT_TITLE_KEY].toString(EDITOR_EDIT_TITLE);
     settings[EDITOR_TEMPLATE_SAVE_KEY] = settings[EDITOR_TEMPLATE_SAVE_KEY].toString(EDITOR_TEMPLATE_SAVE);
@@ -54,6 +64,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
     case ArtsSection:
         artRanks = takeRanksList(ranks);
         secFilesPath = toNativeSeparators(allFilesPath  + "/" + QString(ARTS_KEY) + "/");
+        tmpFilePath = toNativeSeparators(allFilesPath  + "/." + QString(ARTS_KEY) + "/");
         settings[EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY] = settings[EDITOR_ERAS_KEY_FOR_ARTS_LIST_KEY].toString(EDITOR_ERAS_KEY_FOR_ARTS_LIST);
         settings[EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY] = settings[EDITOR_AUTHORS_KEY_FOR_ARTS_LIST_KEY].toString(EDITOR_AUTHORS_KEY_FOR_ARTS_LIST);
         settings[EDITOR_ARTS_NAME_BOX_KEY] = settings[EDITOR_ARTS_NAME_BOX_KEY].toString(EDITOR_ARTS_NAME_BOX);
@@ -86,6 +97,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
         break;
     case AuthorsSection:
         secFilesPath = toNativeSeparators(allFilesPath  + "/" + QString(AUTHORS_KEY) + "/");
+        tmpFilePath = toNativeSeparators(allFilesPath  + "/." + QString(AUTHORS_KEY) + "/");
         settings[EDITOR_AUTHORS_NAME_BOX_KEY] = settings[EDITOR_AUTHORS_NAME_BOX_KEY].toString(EDITOR_AUTHORS_NAME_BOX);
         settings[EDITOR_AUTHORS_INFO_BOX_KEY] = settings[EDITOR_AUTHORS_INFO_BOX_KEY].toString(EDITOR_AUTHORS_INFO_BOX);
         settings[EDITOR_AUTHORS_IMAGE_BOX_KEY] = settings[EDITOR_AUTHORS_IMAGE_BOX_KEY].toString(EDITOR_AUTHORS_IMAGE_BOX);
@@ -110,6 +122,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
         break;
     case ErasSection:
         secFilesPath = toNativeSeparators(allFilesPath  + "/" + QString(ERAS_KEY) + "/");
+        tmpFilePath = toNativeSeparators(allFilesPath  + "/." + QString(ERAS_KEY) + "/");
         settings[EDITOR_ERAS_NAME_BOX_KEY] = settings[EDITOR_ERAS_NAME_BOX_KEY].toString(EDITOR_ERAS_NAME_BOX);
         settings[EDITOR_ERAS_IMAGE_BOX_KEY] = settings[EDITOR_ERAS_IMAGE_BOX_KEY].toString(EDITOR_ERAS_IMAGE_BOX);
         settings[EDITOR_ERAS_WIDTH_KEY] = settings[EDITOR_ERAS_WIDTH_KEY].toInt(EDITOR_ERAS_WIDTH);
@@ -131,6 +144,8 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
         break;
     }
 
+    checkPath(tmpFilePath, true);
+
     ui->dontCloseCheck->setChecked(false);
 
     saveTemplateA = templateMenu.addAction(settings[EDITOR_TEMPLATE_SAVE_KEY].toString(), this, SLOT(saveTemplate()));
@@ -146,6 +161,7 @@ void ItemEditor::initData(QJsonObject &opt, JsonDataSections &sec, QString path,
 
 void ItemEditor::editData(int index, QJsonObject data)
 {
+    isImageChanged = false;
     itemIndex = index;
     currentItem = data;
 
@@ -158,6 +174,7 @@ void ItemEditor::editData(int index, QJsonObject data)
 
 void ItemEditor::addData()
 {
+    isImageChanged = true;
     itemIndex = -1;
     setWindowTitle(settings[EDITOR_ADD_TITLE_KEY].toString());
     ui->addEditButton->setText(settings[EDITOR_ADD_BUTTON_KEY].toString());
@@ -169,9 +186,34 @@ void ItemEditor::addData()
     fillWidgets();
 }
 
+void ItemEditor::itemUniqueCheckFail()
+{
+    QMessageBox msg(QMessageBox::Warning, errorsMsg[ERRORS_TITLE_KEY].toString(),
+                    errorsMsg[ERRORS_ITEM_ALREADY_EXIST_KEY].toString(), QMessageBox::Close);
+    msg.setModal(true);
+    msg.exec();
+}
+
+void ItemEditor::itemUniqueCheckOk()
+{
+    if (!ui->dontCloseCheck->isChecked())
+        close();
+    else {
+        currentItem = QJsonObject();
+        fillWidgets();
+    }
+}
+
+QJsonObject ItemEditor::takeItem()
+{
+    return currentItem;
+}
+
 ItemEditor::~ItemEditor()
 {
     settingsChanged(getClassName(this), settings);
+    delete saveTemplateA;
+    delete clearTemplateA;
     delete ui;
 }
 
@@ -179,6 +221,54 @@ void ItemEditor::recieveAuthors(QStringList &list)
 {
     authors = list;
     authors.sort(Qt::CaseInsensitive);
+}
+
+bool ItemEditor::isFirstStageCheckOk()
+{
+    isImageOk = false;
+    isNameOk = false;
+    isRankOk = false;
+    isEraOk = false;
+    isAuthorsOk = false;
+    isInfoOk = false;
+
+    if (isImageChanged) {
+        if (imageView->isValid())
+            isImageOk = true;
+    } else
+        isImageOk = true;
+
+    if (ui->nameEdit->text().count() > 0)
+        isNameOk = true;
+
+    if (section == ArtsSection) {
+        if (ui->rankCombo->currentIndex() != -1)
+            isRankOk = true;
+
+        if (ui->eraCombo->currentIndex() != -1)
+            isEraOk = true;
+
+        if (ui->authorTable->rowCount() > 0)
+            isAuthorsOk = true;
+
+        if (ui->artInfoText->toPlainText().count() > 0)
+            isInfoOk = true;
+    } else {
+        isRankOk = true;
+        isEraOk = true;
+        isAuthorsOk = true;
+        if (section == AuthorsSection) {
+            if (ui->authorInfoText->toPlainText().count() > 0)
+                isInfoOk = true;
+        } else
+            isInfoOk = true;
+    }
+
+    //if (isImageOk && isNameOk && isRankOk && isEraOk && isAuthorsOk && isInfoOk)
+    if (isImageOk && isNameOk && isRankOk)
+        return true;
+    else
+        return false;
 }
 
 bool ItemEditor::isValidDateFormat(QString format)
@@ -219,8 +309,15 @@ void ItemEditor::fillWidgets()
         fillAuthors();
         ui->nameEdit->setText(currentItem[ARTS_NAME_KEY].toString(itemTemplate[ARTS_NAME_KEY].toString()));
         ui->artInfoText->setPlainText(currentItem[ARTS_INFO_KEY].toString(itemTemplate[ARTS_INFO_KEY].toString()));
-        ui->rankCombo->setCurrentIndex(currentItem[ARTS_RANK_KEY].toInt(itemTemplate[ARTS_RANK_KEY].toInt(-1)));
         ui->eraCombo->setCurrentIndex(findEraIndex(currentItem[ARTS_ERA_KEY].toString(itemTemplate[ARTS_ERA_KEY].toString())));
+        if (currentItem[ARTS_RANK_KEY].isBool()) {
+            bool rank = currentItem[ARTS_RANK_KEY].toBool();
+            if (rank)
+                ui->rankCombo->setCurrentIndex(1);
+            else
+                ui->rankCombo->setCurrentIndex(0);
+        } else
+            ui->rankCombo->setCurrentIndex(currentItem[ARTS_RANK_KEY].toInt(itemTemplate[ARTS_RANK_KEY].toInt(-1)));
         break;
     case AuthorsSection:
         ui->nameEdit->setText(currentItem[AUTHORS_NAME_KEY].toString(itemTemplate[AUTHORS_NAME_KEY].toString()));
@@ -232,8 +329,11 @@ void ItemEditor::fillWidgets()
     }
 
     if (itemIndex != -1) {
-        currentFilePath = toNativeSeparators(secFilesPath + "/" +
-                currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]].toString());
+        currentFilePath = currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]].toString();
+        if (checkPath(secFilesPath + currentFilePath))
+            currentFilePath = toNativeSeparators(secFilesPath + currentFilePath);
+        else if (checkPath(tmpFilePath + currentFilePath))
+                 currentFilePath = toNativeSeparators(tmpFilePath + currentFilePath);
         imageView->initData(currentFilePath);
     } else
         currentFilePath = "";
@@ -269,6 +369,7 @@ void ItemEditor::clearWidgets()
     ui->authorTable->clear();
     ui->authorTable->setRowCount(0);
     currentFilePath = "";
+    itemIndex = -1;
     imageView->initData();
 }
 
@@ -319,6 +420,19 @@ void ItemEditor::saveTemplate()
 void ItemEditor::clearTemplate()
 {
     itemTemplate = QJsonObject();
+    switch (section) {
+    case ArtsSection:
+        settings[EDITOR_ARTS_TEMPLATE_KEY] = itemTemplate;
+        settingsChanged(getClassName(this), settings);
+        break;
+    case AuthorsSection:
+        settings[EDITOR_AUTHORS_TEMPLATE_KEY] = itemTemplate;
+        settingsChanged(getClassName(this), settings);
+        settingsChanged(getClassName(this), settings);
+        break;
+    case ErasSection:
+        break;
+    }
 }
 
 void ItemEditor::replaceAuthors(QStringList &list)
@@ -328,7 +442,7 @@ void ItemEditor::replaceAuthors(QStringList &list)
 
 void ItemEditor::openNewImage()
 {
-    QString fn, translit;
+    QString fn, valid;
     QMessageBox msg(QMessageBox::Warning, errorsMsg[ERRORS_TITLE_KEY].toString(), "", QMessageBox::Close);
     msg.setModal(true);
     bool isOk = true;
@@ -339,15 +453,13 @@ void ItemEditor::openNewImage()
             msg.setText(errorsMsg[ERRORS_FILE_ON_BASESUBDIR_KEY].toString());
             isOk = false;
         } else {
-            translit = toValidFileName(takeFileName(fn));
-            if (checkPath(secFilesPath + translit)) {
-                msg.setText(errorsMsg[ERRORS_FILE_ALREADY_EXIST_KEY].toString());
-                isOk = false;
-            }
+            valid = toFileNameWithIndex(toValidFileName(takeFileName(fn), LowerCase), QStringList({secFilesPath, tmpFilePath}));
+            QFile file;
+            file.copy(fn, tmpFilePath + valid);
         }
         if (isOk) {
-            imageView->initData(fn);
-            currentFilePath = fn;
+            imageView->initData(tmpFilePath + valid);
+            currentFilePath = tmpFilePath + valid;
         } else
             msg.exec();
     }
@@ -362,11 +474,20 @@ void ItemEditor::on_cancelButton_clicked()
 
 void ImageView::initData(QString path)
 {
+    fn = path;
     if (checkPath(path))
         origImage.load(path);
     else
         origImage.load(RESOURCE_QUESTION);
     setPixmap(QPixmap::fromImage(origImage.scaled(width(), height(), Qt::KeepAspectRatio)));
+}
+
+bool ImageView::isValid()
+{
+    if (checkPath(fn))
+        return true;
+    else
+        return false;
 }
 
 void ImageView::resizeEvent(QResizeEvent *event)
@@ -385,13 +506,6 @@ void ImageView::mouseDoubleClickEvent(QMouseEvent *event)
         clicked();
 }
 
-/*void ImageView::mouseReleaseEvent(QMouseEvent *event)
-{
-    QLabel::mouseReleaseEvent(event);
-    if (event->button() == Qt::LeftButton)
-        clicked();
-}*/
-
 void ItemEditor::on_authorDelButton_clicked()
 {
     removeTableSelectedItems(ui->authorTable, ui->authorTable->selectedItems());
@@ -405,32 +519,81 @@ void ItemEditor::on_authorAddButton_clicked()
 
 void ItemEditor::on_addEditButton_clicked()
 {
-    QDate date;
-    currentItem = QJsonObject();
-    switch (section) {
-    case ArtsSection:
-        currentItem[ARTS_NAME_KEY] = ui->nameEdit->text();
-        currentItem[ARTS_INFO_KEY] = ui->artInfoText->toPlainText();
-        currentItem[ARTS_RANK_KEY] = ui->rankCombo->currentIndex();
-        currentItem[ARTS_AUTHORS_KEY] = tableToArray(ui->authorTable);
-        currentItem[ARTS_ERA_KEY] = ui->eraCombo->currentText();
-        currentItem[ARTS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
-        break;
-    case AuthorsSection:
-        currentItem[AUTHORS_NAME_KEY] = ui->nameEdit->text();
-        currentItem[AUTHORS_INFO_KEY] = ui->artInfoText->toPlainText();
-        currentItem[AUTHORS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
-        break;
-    case ErasSection:
-        currentItem[ERAS_NAME_KEY] = ui->nameEdit->text();
-        currentItem[ERAS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
-        break;
+    if (isFirstStageCheckOk()) {
+        QDate date;
+        QJsonValue value;
+        QString uniqueKey;
+        currentItem = QJsonObject();
+        switch (section) {
+        case ArtsSection:
+            currentItem[ARTS_NAME_KEY] = ui->nameEdit->text();
+            currentItem[ARTS_INFO_KEY] = ui->artInfoText->toPlainText();
+            if (rankType == "int")
+                currentItem[ARTS_RANK_KEY] = ui->rankCombo->currentIndex();
+            else {
+                if (ui->rankCombo->currentIndex() == 0)
+                    currentItem[ARTS_RANK_KEY] = false;
+                else
+                    currentItem[ARTS_RANK_KEY] = true;
+            }
+            currentItem[ARTS_AUTHORS_KEY] = tableToArray(ui->authorTable);
+            currentItem[ARTS_ERA_KEY] = ui->eraCombo->currentText();
+            currentItem[ARTS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
+            uniqueKey = settings[EDITOR_ARTS_UNIQUE_KEY].toString();
+            break;
+        case AuthorsSection:
+            currentItem[AUTHORS_NAME_KEY] = ui->nameEdit->text();
+            currentItem[AUTHORS_INFO_KEY] = ui->authorInfoText->toPlainText();
+            currentItem[AUTHORS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
+            uniqueKey = settings[EDITOR_AUTHORS_UNIQUE_KEY].toString();
+            break;
+        case ErasSection:
+            currentItem[ERAS_NAME_KEY] = ui->nameEdit->text();
+            currentItem[ERAS_DATE_KEY] = date.currentDate().toString(settings[DATE_FORMAT_KEY].toString());
+            uniqueKey = settings[EDITOR_ERAS_UNIQUE_KEY].toString();
+            break;
+        }
+
+        currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]] = takeFileName(currentFilePath);
+
+        value = currentItem.value(uniqueKey).toString();
+        itemUniqueCheck(value, uniqueKey, itemIndex);
+    } else {
+        QString text, prefix;
+        prefix = errorsMsg[ERRORS_CHECK_PREFIX_KEY].toString();
+        switch (section) {
+        case ArtsSection:
+            if (!isImageOk)
+                text += prefix + ": \"" + ui->aaImageBox->title() + "\"\n";
+            if (!isNameOk)
+                text += prefix + ": \"" + ui->nameBox->title() + "\"\n";
+            if (!isRankOk)
+                text += prefix + ": \"" + ui->rankBox->title() + "\"\n";
+            /*if (!isEraOk)
+                text += prefix + ": \"" + ui->eraBox->title() + "\"\n";
+            if (!isAuthorsOk)
+                text += prefix + ": \"" + ui->authorsBox->title() + "\"\n";
+            if (!isInfoOk)
+                text += prefix + ": \"" + ui->artInfoBox->title() + "\"\n";*/
+            break;
+        case AuthorsSection:
+            if (!isImageOk)
+                text += prefix + ": \"" + ui->aaImageBox->title() + "\"\n";
+            if (!isNameOk)
+                text += prefix + ": \"" + ui->nameBox->title() + "\"\n";
+            /*if (!isInfoOk)
+                text += prefix + ": \"" + ui->authorInfoBox->title() + "\"\n";*/
+            break;
+        case ErasSection:
+            if (!isImageOk)
+                text += prefix + ": \"" + ui->eraImageBox->title() + "\"\n";
+            if (!isNameOk)
+                text += prefix + ": \"" + ui->nameBox->title() + "\"\n";
+            break;
+        }
+        QMessageBox msg(QMessageBox::Warning, errorsMsg[ERRORS_TITLE_KEY].toString(), text, QMessageBox::Close);
+        msg.setModal(true);
+        msg.exec();
     }
 
-    currentItem[QString(FILE_SECTION_KEY).split(SEPARATOR)[section]] = currentFilePath;
-
-    if (!ui->dontCloseCheck->isChecked())
-        close();
-    else
-        fillWidgets();
 }

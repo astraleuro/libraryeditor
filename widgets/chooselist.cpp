@@ -36,6 +36,7 @@ void ChooseList::initData(QJsonObject &opt, QStringList &list)
 
 void ChooseList::checkByList(QStringList list)
 {
+    ui->chooseTable->clearSelection();
     for (int i = 0; i < ui->chooseTable->rowCount(); i++)
         if (list.contains(ui->chooseTable->item(i, 1)->text()))
             checkRow(i);
@@ -52,7 +53,7 @@ ChooseList::~ChooseList()
 int ChooseList::searchItem(const QString &phrase, int row)
 {
     for (int i = row; i < ui->chooseTable->rowCount(); i++)
-        if (ui->chooseTable->item(i, 1)->text().contains(phrase))
+        if (ui->chooseTable->item(i, 1)->text().toLower().contains(phrase.toLower()))
             return i;
     return -1;
 }
@@ -60,17 +61,19 @@ int ChooseList::searchItem(const QString &phrase, int row)
 void ChooseList::checkRow(int row)
 {
     ui->chooseTable->item(row, 0)->setText("+");
+    ui->chooseTable->item(row, 0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 }
 
 void ChooseList::uncheckRow(int row)
 {
-    ui->chooseTable->item(row, 0)->setText("");
+    ui->chooseTable->item(row, 0)->setText(" ");
+    ui->chooseTable->item(row, 0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 }
 
 void ChooseList::toggleRow(int row)
 {
     if (ui->chooseTable->item(row, 0)->text() == "+")
-        ui->chooseTable->item(row, 0)->setText("");
+        ui->chooseTable->item(row, 0)->setText(" ");
     else
         ui->chooseTable->item(row, 0)->setText("+");
 }

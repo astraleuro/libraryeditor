@@ -4,7 +4,8 @@
 void removeTableSelectedItems(QTableWidget *table, QList<QTableWidgetItem *> range)
 {
     for (int i = range.count() - 1; i >= 0; i--)
-        table->removeRow(table->row(range[i]));
+        if (0 == table->column(range[i]))
+            table->removeRow(table->row(range[i]));
 }
 
 void tableFromList(QTableWidget *table, QStringList &list, int col)

@@ -49,6 +49,7 @@ WelcomeScreen::~WelcomeScreen()
 
 void WelcomeScreen::saveData()
 {
+    QString dir;
     QJsonObject json;
     QFileDialog dialog(nullptr, SAVEFILE_TITLE, "", BASE_EXTENSION_FILTER);
     dialog.setDefaultSuffix(BASE_EXTENSION);
@@ -58,15 +59,20 @@ void WelcomeScreen::saveData()
     dialog.exec();
     if (dialog.result() == QDialog::Accepted && !dialog.selectedFiles().isEmpty()) {
         QString fn = dialog.selectedFiles()[0];
-        if (!fn.isEmpty())
-            if (checkPath(fn.left(fn.count() - QString(BASE_EXTENSION).count()), true)) {
+        if (!fn.isEmpty()) {
+            dir = fn.left(fn.count() - QString(BASE_EXTENSION).count());
+            if (checkPath(toNativeSeparators(dir + "/" + ARTS_KEY), true) &&
+                checkPath(toNativeSeparators(dir + "/" + AUTHORS_KEY), true) &&
+                checkPath(toNativeSeparators(dir + "/" + ERAS_KEY), true)) {
                 json = initJsonObject();
+
                 if (writeJson(fn, json)) {
                     settings[WELCOME_LAST_FILE_KEY] = fn;
                     settings[WELCOME_LAST_PATH_KEY] = takeDirPath(fn);
                     dataReady(fn, json);
                 }
             }
+        }
     }
 }
 

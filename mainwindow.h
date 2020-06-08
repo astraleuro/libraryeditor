@@ -31,8 +31,14 @@ protected slots:
     void sendEras(QString key);
     void sendAuthors(QString key);
     void closeApp();
+    void setSaved();
+    void setChanged();
+    void saveImages();
+    void removeAuthorsInArts(QString subkey, QString key);
+    void clearEraInArts(QString subkey, QString key);
 
 protected:
+    void removeUnused(QString path);
     void resizeEvent(QResizeEvent *event);
     void clearMainLayout();
 
@@ -43,6 +49,7 @@ private:
     ArrayList *arrayList = nullptr;
     QString configPath, jsonPath, defaultPath;
     QJsonObject allSettings, settings, jsonData, errorsMsg;
+    bool isChanged = false;
 };
 
 #endif // MAINWINDOW_H

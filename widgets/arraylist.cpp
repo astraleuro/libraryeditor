@@ -8,16 +8,14 @@ ArrayList::ArrayList(QWidget *parent) :
     ui->setupUi(this);
     delegate = new ArrayItemDelegate;
 
-    connect(ui->saveButton, SIGNAL(clicked()), this, SIGNAL(saveData()));
     connect(ui->arrayTable->horizontalHeader(), SIGNAL(sectionResized(int , int, int)), this, SLOT(adoptItems(int, int, int)));
     connect(delegate, SIGNAL(itemActivated(int)), this, SLOT(openItemEditor(int)));
     connect(&itemEditor, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(settingsChanged(QString, QJsonObject)));
-
     connect(&itemEditor, SIGNAL(readyForEras(QString)), this, SIGNAL(readyForEras(QString)));
     connect(this, SIGNAL(sendEras(QStringList&)), &itemEditor, SLOT(recieveEras(QStringList&)));
-
     connect(&itemEditor, SIGNAL(readyForAuthors(QString)), this, SIGNAL(readyForAuthors(QString)));
     connect(this, SIGNAL(sendAuthors(QStringList&)), &itemEditor, SLOT(recieveAuthors(QStringList&)));
+    connect(&itemEditor, SIGNAL(itemUniqueCheck(QJsonValue, QString, int)), this, SLOT(itemUniqueCheck(QJsonValue, QString, int)));
 
     delete ui->arrayTable->itemDelegate();
     ui->arrayTable->setItemDelegate(delegate);
@@ -47,7 +45,6 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     settings[AL_SORT_APPLY_KEY] = settings[AL_SORT_APPLY_KEY].toString(AL_SORT_APPLY);
 
     settings[AL_ADD_BUTTON] = settings[AL_ADD_BUTTON].toString(AL_ADD_BUTTON);
-    settings[AL_SAVE_BUTTON] = settings[AL_SAVE_BUTTON].toString(AL_SAVE_BUTTON);
     settings[AL_EDIT_BUTTON] = settings[AL_EDIT_BUTTON].toString(AL_EDIT_BUTTON);
     settings[AL_DEL_BUTTON] = settings[AL_DEL_BUTTON].toString(AL_DEL_BUTTON);
 
@@ -55,7 +52,6 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     settings[AL_SORT_ORDER_DSC_KEY] = settings[AL_SORT_ORDER_DSC_KEY].toString(AL_SORT_ORDER_DSC);
 
     ui->addButton->setText(settings[AL_ADD_BUTTON].toString());
-    ui->saveButton->setText(settings[AL_SAVE_BUTTON].toString());
     ui->editButton->setText(settings[AL_EDIT_BUTTON].toString());
     ui->removeButton->setText(settings[AL_DEL_BUTTON].toString());
 
@@ -71,6 +67,7 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         ui->arrayBox->setTitle(settings[ARTS_KEY].toString());
         jsonArray = jsonData[ARTS_KEY].toArray();
         secFilesPath = toNativeSeparators(allFilesPath + "/" + QString(ARTS_KEY) + "/");
+        tmpFilesPath = toNativeSeparators(allFilesPath + "/." + QString(ARTS_KEY) + "/");
         secOptions = settings[ARTS_OPTIONS_KEY].toObject();
         secOptions[TEXT_COLS_LABELS_KEY] = secOptions[TEXT_COLS_LABELS_KEY].toString(ARTS_TEXT_COLS_LABELS);
         secOptions[TEXT_COLS_H_KEY] = secOptions[TEXT_COLS_H_KEY].toString(ARTS_TEXT_COLS_H);
@@ -82,19 +79,23 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         ui->arrayBox->setTitle(settings[AUTHORS_KEY].toString());
         jsonArray = jsonData[AUTHORS_KEY].toArray();
         secFilesPath = toNativeSeparators(allFilesPath + "/" + QString(AUTHORS_KEY) + "/");
+        tmpFilesPath = toNativeSeparators(allFilesPath + "/." + QString(AUTHORS_KEY) + "/");
         secOptions = settings[AUTHORS_OPTIONS_KEY].toObject();
         secOptions[TEXT_COLS_LABELS_KEY] = secOptions[TEXT_COLS_LABELS_KEY].toString(AUTHORS_TEXT_COLS_LABELS);
         secOptions[TEXT_COLS_H_KEY] = secOptions[TEXT_COLS_H_KEY].toString(AUTHORS_TEXT_COLS_H);
         secOptions[TEXT_COLS_F_KEY] = secOptions[TEXT_COLS_F_KEY].toString(AUTHORS_TEXT_COLS_F);
+        settings[AL_AUTHORS_KEY_FOR_ARTS_LIST_KEY] = settings[AL_AUTHORS_KEY_FOR_ARTS_LIST_KEY].toString(AL_AUTHORS_KEY_FOR_ARTS_LIST);
         break;
     case ErasSection:
         ui->arrayBox->setTitle(settings[ERAS_KEY].toString());
         jsonArray = jsonData[ERAS_KEY].toArray();
         secFilesPath = toNativeSeparators(allFilesPath + "/" + QString(ERAS_KEY) + "/");
+        tmpFilesPath = toNativeSeparators(allFilesPath + "/." + QString(ERAS_KEY) + "/");
         secOptions = settings[ERAS_OPTIONS_KEY].toObject();
         secOptions[TEXT_COLS_LABELS_KEY] = secOptions[TEXT_COLS_LABELS_KEY].toString(ERAS_TEXT_COLS_LABELS);
         secOptions[TEXT_COLS_H_KEY] = secOptions[TEXT_COLS_H_KEY].toString(ERAS_TEXT_COLS_H);
         secOptions[TEXT_COLS_F_KEY] = secOptions[TEXT_COLS_F_KEY].toString(ERAS_TEXT_COLS_F);
+        settings[AL_ERAS_KEY_FOR_ARTS_LIST_KEY] = settings[AL_ERAS_KEY_FOR_ARTS_LIST_KEY].toString(AL_ERAS_KEY_FOR_ARTS_LIST);
         break;
     }
 
@@ -137,6 +138,16 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     fillTable();
 }
 
+QJsonArray ArrayList::takeData()
+{
+    return jsonArray;
+}
+
+JsonDataSections ArrayList::takeSection()
+{
+    return section;
+}
+
 ArrayList::~ArrayList()
 {
     settingsChanged(getClassName(this), takeSettings());
@@ -161,6 +172,37 @@ QJsonObject ArrayList::takeSettings()
     return settings;
 }
 
+void ArrayList::changeItem(QJsonObject data, int row)
+{
+    if (row == -1) {
+        jsonArray.append(data);
+        ui->arrayTable->insertRow(ui->arrayTable->rowCount());
+        addImageItem(ui->arrayTable->rowCount() - 1, data);
+        adoptText(ui->arrayTable->rowCount() - 1);
+    } else {
+        jsonArray[row] = data;
+        addImageItem(row, data);
+        adoptText(row);
+    }
+}
+
+void ArrayList::itemUniqueCheck(QJsonValue value, QString key, int index)
+{
+    bool isUnique = true;
+    for (int i = 0; i < jsonArray.count(); i++)
+        if (jsonArray[i].toObject()[key] == value && index != i) {
+            isUnique = false;
+            break;
+        }
+    if (isUnique) {
+        changeItem(itemEditor.takeItem(), index);
+        itemEditor.itemUniqueCheckOk();
+        dataChanged();
+    } else {
+        itemEditor.itemUniqueCheckFail();
+    }
+}
+
 void ArrayList::fillTable()
 {
     if (!jsonData.isEmpty()) {
@@ -172,7 +214,7 @@ void ArrayList::fillTable()
         for(int i = 0; i < jsonArray.count(); i++) {
             table->setRowCount(table->rowCount() + 1);
             addImageItem(i, jsonArray[i]);
-            addTextItem(i, QJsonValue());
+            adoptText(i);
         }
         secOptions[IMAGE_WIDTH_KEY] = table->columnWidth(0);
     }
@@ -187,34 +229,42 @@ void ArrayList::eraseTable()
 
 void ArrayList::addImageItem(int row, QJsonValue data)
 {
+    QImage image;
     QTableWidget *table = ui->arrayTable;
     QTableWidgetItem *item;
+    int size = table->columnWidth(0);
     if (table->item(row, 0) == nullptr)
         item = new QTableWidgetItem;
     else
         item = table->item(row, 0);
-    int size = table->columnWidth(0);
-    QImage image = QImage(secFilesPath + data[imageKey].toString()).scaledToWidth(size);
+    if (checkPath(secFilesPath + data[imageKey].toString())) {
+        image = QImage(secFilesPath + data[imageKey].toString()).scaledToWidth(size);
+        item->setText(secFilesPath + data[imageKey].toString());
+    } else if (checkPath(tmpFilesPath + data[imageKey].toString())) {
+        image = QImage(tmpFilesPath + data[imageKey].toString()).scaledToWidth(size);
+        item->setText(tmpFilesPath + data[imageKey].toString());
+    } else {
+        image = QImage(RESOURCE_QUESTION).scaledToWidth(size);
+        item->setText(RESOURCE_QUESTION);
+    }
     item->setData(Qt::DecorationRole, image);
-    item->setText(secFilesPath + data[imageKey].toString());
     table->setItem(row, 0, item);
     table->setRowHeight(row, image.height());
-}
-
-void ArrayList::addTextItem(int row, QJsonValue data)
-{
-    if (!data.isObject()) {
-        adoptText(row);
-    }
 }
 
 QString ArrayList::jsonValueToText(QString key, QJsonValue value)
 {
     if (key == ARTS_AUTHORS_KEY)
         return stringArrayToString(value.toArray());
-    else if (key == ARTS_RANK_KEY)
-        return takeRank(value.toInt(-1), ranks);
-    else
+    else if (key == ARTS_RANK_KEY) {
+        if (value.isBool()) {
+            if (value.toBool())
+                return takeRank(1, ranks);
+            else
+                return takeRank(0, ranks);
+        } else
+            return takeRank(value.toInt(-1), ranks);
+    } else
         return value.toString();
 }
 
@@ -296,6 +346,7 @@ void ArrayList::on_sortButton_toggled(bool checked)
 
 void ArrayList::on_backButton_clicked()
 {
+
     goBack();
 }
 
@@ -328,4 +379,33 @@ void ArrayList::on_editButton_clicked()
 void ArrayList::on_addButton_clicked()
 {
     openItemEditor();
+}
+
+void ArrayList::on_removeButton_clicked()
+{
+    QString key;
+    int index = -1;
+    switch (section) {
+    case ArtsSection:
+        break;
+    case AuthorsSection:
+        key = settings[AL_AUTHORS_KEY_FOR_ARTS_LIST_KEY].toString();
+        for (int i = 0; i < ui->arrayTable->selectedItems().count(); i++)
+            if (index < ui->arrayTable->selectedItems()[i]->row()) {
+                index = ui->arrayTable->selectedItems()[i]->row();
+                removeAuthorsInArts(jsonArray[ui->arrayTable->selectedItems()[i]->row()].toObject()[AUTHORS_NAME_KEY].toString(), key);
+            }
+        break;
+    case ErasSection:
+        key = settings[AL_ERAS_KEY_FOR_ARTS_LIST_KEY].toString();
+        for (int i = 0; i < ui->arrayTable->selectedItems().count(); i++)
+            if (index < ui->arrayTable->selectedItems()[i]->row()) {
+                index = ui->arrayTable->selectedItems()[i]->row();
+                clearEraInArts(jsonArray[ui->arrayTable->selectedItems()[i]->row()].toObject()[ERAS_NAME_KEY].toString(), key);
+            }
+        break;
+    }
+    removeArraySelectedItems(jsonArray, ui->arrayTable->selectedItems());
+    removeTableSelectedItems(ui->arrayTable, ui->arrayTable->selectedItems());
+    dataChanged();
 }

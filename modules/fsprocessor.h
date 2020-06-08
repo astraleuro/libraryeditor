@@ -17,6 +17,8 @@ enum LetterCase {
 QString toNativeSeparators(QString path);
 QString toTranslit(QString str, LetterCase letterCase = NoModify);
 QString toValidFileName(QString fn, LetterCase letterCase = NoModify);
+QString toFileNameWithIndex(QString fn, QStringList paths);
+QString takeFileExt(QString fn);
 bool checkPath(QString path, bool mk = false);
 bool readJson(QString path, QJsonObject& json, QJsonParseError &log);
 bool writeJson(QString path, QJsonObject& json);

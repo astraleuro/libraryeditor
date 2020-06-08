@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>406</width>
-    <height>406</height>
+    <width>412</width>
+    <height>412</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -53,8 +53,11 @@
      <attribute name="horizontalHeaderVisible">
       <bool>false</bool>
      </attribute>
+     <attribute name="horizontalHeaderMinimumSectionSize">
+      <number>30</number>
+     </attribute>
      <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>14</number>
+      <number>30</number>
      </attribute>
      <attribute name="horizontalHeaderStretchLastSection">
       <bool>true</bool>

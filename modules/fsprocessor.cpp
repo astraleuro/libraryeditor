@@ -154,6 +154,7 @@ QString fileInfo(QString path)
 
 QString takeFileName(QString path)
 {
+    path = toNativeSeparators(path);
     QString separator = QDir::toNativeSeparators("/");
     int sepIndex = path.lastIndexOf(separator);
     if (sepIndex != -1)
@@ -170,4 +171,44 @@ QString takeDirPath(QString path)
         return path.left(sepIndex);
     else
         return path;
+}
+
+QString toFileNameWithIndex(QString fn, QStringList paths)
+{
+    QFile test;
+    QString result;
+    QString ext = takeFileExt(fn);
+    QString name = fn.left(fn.count() - ext.count() - 1);
+
+    QString sep = toNativeSeparators("/");
+    for (int i = 0; i < paths.count(); i++) {
+        paths[i] = toNativeSeparators(paths[i]);
+        if (paths[i][paths[i].count() - 1] != sep)
+            paths[i] += sep;
+    }
+
+    int index = 0;
+    QString suffix = "";
+    bool isOk;
+    do {
+        if (index != 0)
+            suffix = QString::number(index);
+        isOk = true;
+        for (int i = 0; i < paths.count(); i++)
+            if (test.exists(paths[i] + name + suffix + "." + ext)) {
+                isOk = false;
+                break;
+            }
+        if (isOk)
+            return name + suffix + "." + ext;
+        index++;
+    } while (!isOk);
+
+    return "";
+}
+
+QString takeFileExt(QString fn)
+{
+    int dot = fn.lastIndexOf('.');
+    return fn.right(fn.count() - dot - 1);
 }
