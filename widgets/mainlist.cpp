@@ -8,7 +8,7 @@ MainList::MainList(QWidget *parent) :
     ui->setupUi(this);
     ui->saveButton->setHiddenMenu(&exportMenu);
 
-    connect(&exportDialog, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(saveSettings(QString, QJsonObject)));
+    connect(&exportDialog, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(settingsChanged(QString, QJsonObject)));
 }
 
 void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool changed)

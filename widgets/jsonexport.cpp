@@ -43,11 +43,14 @@ void JsonExport::initData(QString fn, QJsonObject &data, QJsonObject &opt)
 
 JsonExport::~JsonExport()
 {
+    settingsChanged(getClassName(this), settings);
     delete ui;
 }
 
 void JsonExport::on_exportButton_clicked()
 {
+    settings[EXPORT_PREFIX_KEY] = ui->prefixEdit->text();
+
     bool isNotOk = true;
     QString dir;
     QJsonObject json;
@@ -69,13 +72,15 @@ void JsonExport::on_exportButton_clicked()
                 checkPath(toNativeSeparators(dir + "/" + ERAS_KEY), true)) {
                 QString pathPrefix = ui->prefixEdit->text();
                 QString separator = takeValidSeparator(ui->prefixEdit->text());
-                jsonData[ARTS_KEY] = modifyObjectsKeyInArray(pathPrefix + separator + ARTS_KEY + separator,
+                if (pathPrefix[pathPrefix.count() - 1] != separator)
+                    pathPrefix += separator;
+                jsonData[ARTS_KEY] = modifyObjectsKeyInArray(pathPrefix + ARTS_KEY + separator,
                             QString(FILE_SECTION_KEY).split(SEPARATOR)[0],
                             jsonData[ARTS_KEY].toArray());
-                jsonData[AUTHORS_KEY] = modifyObjectsKeyInArray(pathPrefix + separator + AUTHORS_KEY + separator,
+                jsonData[AUTHORS_KEY] = modifyObjectsKeyInArray(pathPrefix + AUTHORS_KEY + separator,
                             QString(FILE_SECTION_KEY).split(SEPARATOR)[1],
                             jsonData[AUTHORS_KEY].toArray());
-                jsonData[ERAS_KEY] = modifyObjectsKeyInArray(pathPrefix + separator + ERAS_KEY + separator,
+                jsonData[ERAS_KEY] = modifyObjectsKeyInArray(pathPrefix + ERAS_KEY + separator,
                             QString(FILE_SECTION_KEY).split(SEPARATOR)[2],
                             jsonData[ERAS_KEY].toArray());
 
