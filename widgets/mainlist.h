@@ -12,6 +12,7 @@
 #include "defines.h"
 #include "modules/fsprocessor.h"
 #include "widgets/jsonexport.h"
+#include "modules/txtprocessor.h"
 
 class MenuButton : public QPushButton
 {
@@ -48,6 +49,9 @@ signals:
     void goBack();
     void showArrayList(JsonDataSections section);
 
+protected:
+    void updateInfo();
+
 private slots:
     void on_artsButton_clicked();
     void on_authorsButton_clicked();
@@ -58,6 +62,7 @@ private slots:
 
 private:
     Ui::MainList *ui;
+    QString jsonFile;
     QJsonObject allSettings, settings, jsonData, errorsMsg;
     QString jsonPath;
     bool isChanged = false;

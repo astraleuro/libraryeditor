@@ -3,6 +3,7 @@
 
 #include <QFont>
 #include <QFontMetrics>
+#include <QDate>
 
 int rowsCountInHeight(int height);
 QString truncateByWidth(QString str,int width);
@@ -11,5 +12,6 @@ QStringList takeRanksList(QStringList &ranks);
 int ranksCount(QStringList &ranks);
 QStringList reserveList(int count);
 QString takeValidSeparator(QString str);
+bool isValidDateFormat(QString format);
 
 #endif // TXTPROCESSOR_H

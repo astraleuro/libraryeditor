@@ -20,5 +20,6 @@ QStringList takeListByObjectKey(QString key, QJsonArray array);
 QJsonArray clearKeyInObjectArray(QString subkey, QString key, QJsonArray array);
 QJsonArray removeKeyInObjectArray(QString subkey, QString key, QJsonArray array);
 QJsonArray modifyObjectsKeyInArray(QString prefix, QString key, QJsonArray array);
+QJsonArray bubbleSortByKey(QJsonArray array, QString key, bool order, QVector<int> &swaps);
 
 #endif // JSONPROCESSOR_H

@@ -68,7 +68,6 @@ public slots:
 
 protected:
     bool isFirstStageCheckOk();
-    bool isValidDateFormat(QString format);
     int findEraIndex(QString key);
     void fillWidgets();
     void fillRanks();

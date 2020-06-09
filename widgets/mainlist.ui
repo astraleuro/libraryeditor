@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>416</width>
-    <height>316</height>
+    <width>420</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,17 +15,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QLabel" name="pathInfo">
        <property name="text">
-        <string>?</string>
+        <string>pathInfo</string>
        </property>
       </widget>
      </item>

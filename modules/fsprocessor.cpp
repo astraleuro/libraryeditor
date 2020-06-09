@@ -144,14 +144,6 @@ QString toNativeSeparators(QString path)
     return QDir::toNativeSeparators(path);
 }
 
-QString fileInfo(QString path)
-{
-    QFileInfo file(path);
-    if (file.isFile() && !file.isSymLink())
-        return file.fileName() + " " + QString::number(file.size() / FILE_SIZE_MULT) + QString(FILE_SIZE_UNIT);
-    return "";
-}
-
 QString takeFileName(QString path)
 {
     path = toNativeSeparators(path);
@@ -222,4 +214,70 @@ QString takeValidSeparator(QString path)
         return "\\";
     else
         return toNativeSeparators("/");
+}
+
+QString takeHumanReadableSize(int size)
+{
+    QString textSize = QString::number(size);
+    QStringList mults = QString(FILE_SIZE_MULT).split(SEPARATOR);
+    QStringList units = QString(FILE_SIZE_UNIT).split(SEPARATOR);
+    if (mults.count() == units.count()) {
+        for (int i = 0; i < mults.count(); i++) {
+            size /= mults[i].toInt();
+            textSize = QString::number(size);
+            if (textSize.count() <= 4) {
+                textSize += units[i];
+                break;
+            }
+        }
+    }
+    return textSize;
+}
+
+int fileSize(QString path)
+{
+    QFileInfo file(path);
+    if (file.isFile() && !file.isSymLink())
+        return file.size();
+    return 0;
+}
+
+int dirSize(QString path)
+{
+    int size = 0;
+    QDir dir(path);
+    QFileInfoList file = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Dirs | QDir::Files);
+    for (int i = 0; i < file.count(); i++)
+        if (file[i].isFile())
+            size += file[i].size();
+        else if (file[i].isDir())
+            size += dirSize(file[i].absoluteFilePath());
+
+    return size;
+}
+
+QString lastModified(QString path, QString format)
+{
+    QFileInfo file(path);
+    return file.lastModified().toString(format);
+}
+
+QString fileCreated(QString path, QString format)
+{
+    QFileInfo file(path);
+    return file.birthTime().toString(format);
+}
+
+int filesCount(QString path)
+{
+    int size = 0;
+    QDir dir(path);
+    QFileInfoList file = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Dirs | QDir::Files);
+    for (int i = 0; i < file.count(); i++)
+        if (file[i].isFile())
+            size++;
+        else if (file[i].isDir())
+            size += filesCount(file[i].absoluteFilePath());
+
+    return size;
 }

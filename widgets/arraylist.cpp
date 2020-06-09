@@ -39,29 +39,25 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     settings[ARTS_KEY] = settings[ARTS_KEY].toString(ARTS_LABEL);
     settings[AUTHORS_KEY] = settings[AUTHORS_KEY].toString(AUTHORS_LABEL);
     settings[ERAS_KEY] = settings[ERAS_KEY].toString(ERAS_LABEL);
-
     settings[AL_FILTER_BUTTON_KEY] = settings[AL_FILTER_BUTTON_KEY].toString(AL_FILTER_BUTTON);
     settings[AL_FILTER_APPLY_KEY] = settings[AL_FILTER_APPLY_KEY].toString(AL_FILTER_APPLY);
     settings[AL_SORT_BUTTON_KEY] = settings[AL_SORT_BUTTON_KEY].toString(AL_SORT_BUTTON);
-    settings[AL_SORT_APPLY_KEY] = settings[AL_SORT_APPLY_KEY].toString(AL_SORT_APPLY);
-
     settings[AL_ADD_BUTTON] = settings[AL_ADD_BUTTON].toString(AL_ADD_BUTTON);
     settings[AL_EDIT_BUTTON] = settings[AL_EDIT_BUTTON].toString(AL_EDIT_BUTTON);
     settings[AL_DEL_BUTTON] = settings[AL_DEL_BUTTON].toString(AL_DEL_BUTTON);
-
     settings[AL_SORT_ORDER_ASC_KEY] = settings[AL_SORT_ORDER_ASC_KEY].toString(AL_SORT_ORDER_ASC);
     settings[AL_SORT_ORDER_DSC_KEY] = settings[AL_SORT_ORDER_DSC_KEY].toString(AL_SORT_ORDER_DSC);
+    settings[AL_SORT_ENABLE_TITLE_KEY] = settings[AL_SORT_ENABLE_TITLE_KEY].toString(AL_SORT_ENABLE_TITLE);
 
+    ui->sortEnable->setText(settings[AL_SORT_ENABLE_TITLE_KEY].toString());
     ui->addButton->setText(settings[AL_ADD_BUTTON].toString());
     ui->editButton->setText(settings[AL_EDIT_BUTTON].toString());
     ui->removeButton->setText(settings[AL_DEL_BUTTON].toString());
-
     ui->filterButton->setText(settings[AL_FILTER_BUTTON_KEY].toString());
     ui->filterBox->setTitle(settings[AL_FILTER_BUTTON_KEY].toString());
-    ui->filterApplyButton->setText(settings[AL_SORT_APPLY_KEY].toString());
+    ui->filterApplyButton->setText(settings[AL_FILTER_APPLY_KEY].toString());
     ui->sortButton->setText(settings[AL_SORT_BUTTON_KEY].toString());
     ui->sortBox->setTitle(settings[AL_SORT_BUTTON_KEY].toString());
-    ui->sortApplyButton->setText(settings[AL_FILTER_APPLY_KEY].toString());
 
     switch (section) {
     case ArtsSection:
@@ -100,9 +96,12 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         break;
     }
 
+    secOptions[SORT_ORDER_KEY] = secOptions[SORT_ORDER_KEY].toBool(1);
+
     textColKeyF = secOptions[TEXT_COLS_F_KEY].toString();
     textColKeysH = secOptions[TEXT_COLS_H_KEY].toString().split(SEPARATOR);
     textColLabels = secOptions[TEXT_COLS_LABELS_KEY].toString().split(SEPARATOR);
+    fillSortBox();
 
     if (secOptions[FILTER_VISIBLE_KEY].toBool(false))
         ui->filterButton->toggle();
@@ -118,10 +117,6 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     else
         secOptions[SORT_VISIBLE_KEY] = false;
 
-    if (secOptions[SORT_TEXT_KEY].isUndefined())
-        secOptions[SORT_TEXT_KEY] = "";
-    ui->sortCombo->setCurrentText(secOptions[SORT_TEXT_KEY].toString());
-
     if (!secOptions[SORT_ORDER_KEY].isBool())
         secOptions[SORT_ORDER_KEY] = true;
 
@@ -135,8 +130,19 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
 
     itemEditor.initData(allSettings, section, allFilesPath, ranks);
     itemEditor.setModal(true);
-
     fillTable();
+
+    connect(ui->sortEnable, SIGNAL(stateChanged(int)), this, SLOT(sortStateChanged(int)));
+    connect(ui->sortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(sortStateChanged()));
+
+    secOptions[AL_SORT_ENABLE_CHECK_KEY] = secOptions[AL_SORT_ENABLE_CHECK_KEY].toBool(AL_SORT_ENABLE_CHECK);
+    if (secOptions[AL_SORT_ENABLE_CHECK_KEY].toBool())
+        ui->sortEnable->setCheckState(Qt::Checked);
+    else
+        ui->sortEnable->setCheckState(Qt::Unchecked);
+
+    sortStateChanged(ui->sortEnable->isChecked());
+    //on_filterApplyButton_clicked();
 }
 
 QJsonArray ArrayList::takeData()
@@ -151,6 +157,9 @@ JsonDataSections ArrayList::takeSection()
 
 ArrayList::~ArrayList()
 {
+    secOptions[SORT_TEXT_KEY] = ui->sortCombo->currentIndex();
+    secOptions[SORT_ORDER_KEY] = sortOrder;
+
     settingsChanged(getClassName(this), takeSettings());
     delete delegate;
     delete ui;
@@ -185,6 +194,92 @@ void ArrayList::changeItem(QJsonObject data, int row)
         addImageItem(row, data);
         adoptText(row);
     }
+
+    sortStateChanged(ui->sortEnable->isChecked());
+    //on_filterApplyButton_clicked();
+}
+
+QString ArrayList::jsonValueToText(QString key, QJsonValue value)
+{
+    if (key == ARTS_AUTHORS_KEY)
+        return stringArrayToString(value.toArray());
+    else if (key == ARTS_RANK_KEY) {
+        if (value.isBool()) {
+            if (value.toBool())
+                return takeRank(1, ranks);
+            else
+                return takeRank(0, ranks);
+        } else
+            return takeRank(value.toInt(-1), ranks);
+    } else
+        return value.toString();
+}
+
+void ArrayList::fillSortBox()
+{
+    ui->sortCombo->clear();
+    for (int i = 0; i < textColLabels.count(); i += 2)
+        ui->sortCombo->addItem(textColLabels[i], textColLabels[i + 1]);
+
+    if (secOptions[SORT_TEXT_KEY].isUndefined())
+        secOptions[SORT_TEXT_KEY] = 0;
+
+    if (secOptions[SORT_TEXT_KEY].toInt() >= 0 && secOptions[SORT_TEXT_KEY].toInt() < ui->sortCombo->count())
+        ui->sortCombo->setCurrentIndex(secOptions[SORT_TEXT_KEY].toInt());
+}
+
+void ArrayList::reorderItems(QVector<int> &order)
+{
+    QTableWidget *table = ui->arrayTable;
+    QVector<QVariant> images;
+    QVector<QString> texts;
+    QVector<int> heights;
+
+    images.resize(table->rowCount());
+    texts.resize(table->rowCount());
+    heights.resize(table->rowCount());
+
+    for (int i = 0; i < table->rowCount(); i++) {
+        images[i] = table->item(i, 0)->data(Qt::DecorationRole);
+        texts[i] = table->item(i, 0)->text();
+    }
+
+    for (int i = 0; i < order.count(); i++)
+        heights[i] = table->rowHeight(order[i]);
+
+    for (int i = 0; i < order.count(); i++) {
+        table->item(i, 0)->setData(Qt::DecorationRole, images[order[i]]);
+        table->item(i, 0)->setText(texts[i]);
+        table->setRowHeight(i, heights[i]);
+        adoptText(i);
+    }
+}
+
+void ArrayList::sortStateChanged(int state)
+{
+    QFont font = ui->sortButton->font();
+
+    secOptions[SORT_TEXT_KEY] = ui->sortCombo->currentIndex();
+    secOptions[SORT_ORDER_KEY] = sortOrder;
+    secOptions[AL_SORT_ENABLE_CHECK_KEY] = ui->sortEnable->isChecked();
+
+    if (state > 0) {
+        font.setBold(true);
+        ui->sortButton->setIcon(QIcon(":/check.png"));
+        QVector<int> swaps;
+        jsonArray = bubbleSortByKey(jsonArray, ui->sortCombo->itemData(ui->sortCombo->currentIndex()).toString(), sortOrder, swaps);
+        for (int i = 0; i < ui->arrayTable->rowCount(); i++)
+            ui->arrayTable->showRow(i);
+        reorderItems(swaps);
+        ui->sortCombo->setEnabled(true);
+        ui->sortOrderButton->setEnabled(true);
+    } else {
+        font.setBold(false);
+        ui->sortButton->setIcon(QIcon());
+        ui->sortCombo->setEnabled(false);
+        ui->sortOrderButton->setEnabled(false);
+    }
+    on_filterApplyButton_clicked();
 }
 
 void ArrayList::itemUniqueCheck(QJsonValue value, QString key, int index)
@@ -253,22 +348,6 @@ void ArrayList::addImageItem(int row, QJsonValue data)
     table->setRowHeight(row, image.height());
 }
 
-QString ArrayList::jsonValueToText(QString key, QJsonValue value)
-{
-    if (key == ARTS_AUTHORS_KEY)
-        return stringArrayToString(value.toArray());
-    else if (key == ARTS_RANK_KEY) {
-        if (value.isBool()) {
-            if (value.toBool())
-                return takeRank(1, ranks);
-            else
-                return takeRank(0, ranks);
-        } else
-            return takeRank(value.toInt(-1), ranks);
-    } else
-        return value.toString();
-}
-
 void ArrayList::adoptItems(int col, int oldSize, int newSize)
 {
     UNUSED(oldSize);
@@ -291,7 +370,7 @@ void ArrayList::adoptItems(int col, int oldSize, int newSize)
     }
 }
 
-void ArrayList::adoptText(int row)
+void ArrayList::adoptText(int row, int height)
 {
     QString str;
     bool enableFooter = false;
@@ -352,13 +431,36 @@ void ArrayList::on_backButton_clicked()
 
 void ArrayList::on_filterApplyButton_clicked()
 {
-    secOptions[FILTER_TEXT_KEY] = ui->filterEdit->text();
-}
+    QFont font = ui->filterButton->font();
+    QString str = ui->filterEdit->text();
+    secOptions[FILTER_TEXT_KEY] = str;
 
-void ArrayList::on_sortApplyButton_clicked()
-{
-    secOptions[SORT_TEXT_KEY] = ui->sortCombo->currentIndex();
-    secOptions[SORT_ORDER_KEY] = sortOrder;
+    QJsonObject object;
+    QTableWidget *table = ui->arrayTable;
+
+    for (int i = 0; i < table->rowCount(); i++)
+        table->showRow(i);
+    bool isHide;
+    if (!str.isEmpty()) {
+        for (int i = 0; i < table->rowCount(); i++) {
+            isHide = true;
+            object = jsonArray[i].toObject();
+            for (QString key : object.keys()) {
+                if (jsonValueToText(key, object[key]).contains(str)) {
+                    isHide = false;
+                    break;
+                }
+            }
+            if (isHide)
+                table->hideRow(i);
+        }
+        ui->filterButton->setIcon(QIcon(":/check.png"));
+        font.setBold(true);
+    } else {
+        ui->filterButton->setIcon(QIcon());
+        font.setBold(false);
+    }
+    ui->filterButton->setFont(font);
 }
 
 void ArrayList::on_sortOrderButton_clicked()
@@ -368,6 +470,7 @@ void ArrayList::on_sortOrderButton_clicked()
     else
         ui->sortOrderButton->setText(settings[AL_SORT_ORDER_ASC_KEY].toString());
     sortOrder = !sortOrder;
+    sortStateChanged(ui->sortEnable->isChecked());
 }
 
 void ArrayList::on_editButton_clicked()

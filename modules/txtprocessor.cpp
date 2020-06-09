@@ -71,3 +71,12 @@ QStringList reserveList(int count)
     return newList;
 
 }
+
+bool isValidDateFormat(QString format)
+{
+    QString date = QDate::currentDate().toString(format);
+    if (!date.isEmpty())
+        return true;
+    else
+        return false;
+}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>534</width>
-    <height>357</height>
+    <width>538</width>
+    <height>368</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -71,23 +71,27 @@
      <property name="title">
       <string/>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
+     <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0">
       <item>
-       <widget class="QPushButton" name="sortOrderButton">
+       <widget class="QCheckBox" name="sortEnable">
         <property name="text">
          <string/>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="sortCombo"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="sortApplyButton">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
+        <item>
+         <widget class="QPushButton" name="sortOrderButton">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="sortCombo"/>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -224,9 +228,6 @@
   <tabstop>sortButton</tabstop>
   <tabstop>filterEdit</tabstop>
   <tabstop>filterApplyButton</tabstop>
-  <tabstop>sortOrderButton</tabstop>
-  <tabstop>sortCombo</tabstop>
-  <tabstop>sortApplyButton</tabstop>
   <tabstop>backButton</tabstop>
   <tabstop>removeButton</tabstop>
  </tabstops>

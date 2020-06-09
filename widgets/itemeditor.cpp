@@ -269,15 +269,6 @@ bool ItemEditor::isFirstStageCheckOk()
         return false;
 }
 
-bool ItemEditor::isValidDateFormat(QString format)
-{
-    QString date = QDate::currentDate().toString(format);
-    if (!date.isEmpty())
-        return true;
-    else
-        return false;
-}
-
 void ItemEditor::recieveEras(QStringList &list)
 {
     eras = list;

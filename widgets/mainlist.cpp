@@ -19,15 +19,24 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
     settings = opt[getClassName(this)].toObject();
     errorsMsg = opt[ERRORS_SUBSECTION_KEY].toObject();
     isChanged = changed;
+    jsonFile = fn;
 
     settings[ML_EXPORT_TO_JSON_KEY] = settings[ML_EXPORT_TO_JSON_KEY].toString(ML_EXPORT_TO_JSON);
     settings[ML_SAVE_BUTTON_KEY] = settings[ML_SAVE_BUTTON_KEY].toString(ML_SAVE_BUTTON);
     settings[ML_MERGE_BUTTON_KEY] = settings[ML_MERGE_BUTTON_KEY].toString(ML_MERGE_BUTTON);
 
+    settings[ML_FILE_LABEL_KEY] = settings[ML_FILE_LABEL_KEY].toString(ML_FILE_LABEL);
+    settings[ML_FILE_CREATED_LABEL_KEY] = settings[ML_FILE_CREATED_LABEL_KEY].toString(ML_FILE_CREATED_LABEL);
+    settings[ML_FILE_MODIFIED_LABEL_KEY] = settings[ML_FILE_MODIFIED_LABEL_KEY].toString(ML_FILE_MODIFIED_LABEL);
+    settings[ML_FILE_SIZE_LABEL_KEY] = settings[ML_FILE_SIZE_LABEL_KEY].toString(ML_FILE_SIZE_LABEL);
+    settings[ML_FILES_LABEL_KEY] = settings[ML_FILES_LABEL_KEY].toString(ML_FILES_LABEL);
+    settings[ML_FILE_DATE_FORMAT_KEY] = settings[ML_FILE_DATE_FORMAT_KEY].toString(ML_FILE_DATE_FORMAT);
+    if (!isValidDateFormat(settings[ML_FILE_DATE_FORMAT_KEY].toString()))
+        settings[ML_FILE_DATE_FORMAT_KEY] = ML_FILE_DATE_FORMAT;
+
+
     ui->saveButton->setText(settings[ML_SAVE_BUTTON_KEY].toString());
     ui->mergeButton->setText(settings[ML_MERGE_BUTTON_KEY].toString());
-
-    ui->filesInfo->setText(QString(DATAFILE_TITLE) + ": " + fileInfo(jsonPath));
 
     if (settings[ARTS_KEY].toString().isEmpty()) {
         settings[ARTS_KEY] = ARTS_LABEL;
@@ -53,6 +62,8 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
         ui->erasButton->setText(settings[ERAS_KEY].toString() +
                                 " (" + QString::number(data[ERAS_KEY].toArray().count()) + ")");
 
+    updateInfo();
+
     exportAction = exportMenu.addAction(settings[ML_EXPORT_TO_JSON_KEY].toString(), this, SLOT(exportToJson()));
 
     exportDialog.initData(fn, data, opt);
@@ -65,6 +76,24 @@ MainList::~MainList()
     settingsChanged(getClassName(this), settings);
     delete exportAction;
     delete ui;
+}
+
+void MainList::updateInfo()
+{
+    ui->pathInfo->setText(takeDirPath(jsonFile));
+    QString path = toNativeSeparators(takeDirPath(jsonFile) + "/" +
+                                      takeFileName(jsonFile.left(jsonFile.count() - takeFileExt(jsonFile).count() - 1)) + "/");
+    QString info = settings[ML_FILE_LABEL_KEY].toString() + ": " + takeFileName(jsonFile) + "\n" +
+        settings[ML_FILE_SIZE_LABEL_KEY].toString() + ": " + takeHumanReadableSize(fileSize(jsonFile)) + "\n" +
+        settings[ML_FILE_CREATED_LABEL_KEY].toString() + ": " + fileCreated(jsonFile, ML_FILE_DATE_FORMAT) + "\n" +
+        settings[ML_FILE_MODIFIED_LABEL_KEY].toString() + ": " + lastModified(jsonFile, ML_FILE_DATE_FORMAT) + "\n" +
+        settings[ARTS_KEY].toString() + ": " + QString::number(filesCount(path + ARTS_KEY)) + " " + settings[ML_FILES_LABEL_KEY].toString() + ", " +
+        takeHumanReadableSize(dirSize(path + ARTS_KEY)) + "\n" +
+        settings[AUTHORS_KEY].toString() + ": " + QString::number(filesCount(path + AUTHORS_KEY)) + " " + settings[ML_FILES_LABEL_KEY].toString() + ", " +
+        takeHumanReadableSize(dirSize(path + AUTHORS_KEY)) + "\n" +
+        settings[ERAS_KEY].toString() + ": " + QString::number(filesCount(path + ERAS_KEY)) + " " + settings[ML_FILES_LABEL_KEY].toString() + ", " +
+        takeHumanReadableSize(dirSize(path + ERAS_KEY));
+    ui->filesInfo->setText(info);
 }
 
 void MainList::on_artsButton_clicked()
@@ -93,6 +122,7 @@ void MainList::on_saveButton_clicked()
             msg.exec();
             isChanged = false;
             dataSaved();
+            updateInfo();
         } else {
             QMessageBox msg(QMessageBox::Critical, errorsMsg[ERRORS_TITLE_KEY].toString(),
                             errorsMsg[ERRORS_DATA_UNSAVED_KEY].toString(), QMessageBox::Close);
@@ -134,6 +164,7 @@ void MainList::exportToJson()
             saveImages();
             isChanged = false;
             dataSaved();
+            updateInfo();
             exportDialog.setModal(true);
             exportDialog.exec();
         }

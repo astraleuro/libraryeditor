@@ -49,9 +49,11 @@ protected:
     void fillTable();
     void eraseTable();
     void addImageItem(int row, QJsonValue data);
-    QString jsonValueToText(QString key, QJsonValue value);
     QJsonObject takeSettings();
     void changeItem(QJsonObject data, int row);
+    QString jsonValueToText(QString key, QJsonValue value);
+    void fillSortBox();
+    void reorderItems(QVector<int> &order);
 
 signals:
     void dataChanged();
@@ -65,15 +67,15 @@ signals:
     void clearEraInArts(QString, QString);
 
 private slots:
+    void sortStateChanged(int state = 1);
     void itemUniqueCheck(QJsonValue value, QString key, int index);
     void adoptItems(int col, int oldSize, int newSize);
-    void adoptText(int row);
+    void adoptText(int row, int height = -1);
     void openItemEditor(int index = -1);
     void on_filterButton_toggled(bool checked);
     void on_sortButton_toggled(bool checked);
     void on_backButton_clicked();
     void on_filterApplyButton_clicked();
-    void on_sortApplyButton_clicked();
     void on_sortOrderButton_clicked();
     void on_editButton_clicked();
     void on_addButton_clicked();

@@ -4,7 +4,10 @@
 #define SEPARATOR "|"
 
 #define APPLICATION_NAME  "LEditor"
-#define APPLICATION_VERSION "0.8 alpha"
+#define APPLICATION_MAJOR_VERSION "0"
+#define APPLICATION_MINOR_VERSION "10"
+#define APPLICATION_VERSION_SUFFIX "alpha"
+#define APPLICATION_VERSION APPLICATION_MAJOR_VERSION "." APPLICATION_MINOR_VERSION " " APPLICATION_VERSION_SUFFIX
 
 #define PROGRAM_AUTHOR_NAME "Кирилл Зимин (astral.euro@gmail.com)"
 #define PROGRAM_NAME APPLICATION_NAME " - управление данными приложения «Пазлы-Живопись»\n" \
@@ -12,7 +15,7 @@
 
 #define MAINWINDOW_TITLE APPLICATION_NAME " " APPLICATION_VERSION
 
-#define CONFIG_FILE APPLICATION_NAME ".conf"
+#define CONFIG_FILE APPLICATION_NAME "_" APPLICATION_MAJOR_VERSION "." APPLICATION_MINOR_VERSION ".conf"
 
 #define BASE_EXTENSION ".ledb"
 #define BASE_EXTENSION_FILTER "*" BASE_EXTENSION
@@ -93,8 +96,8 @@
     SEPARATOR "Зарубежное искусство" SEPARATOR "0"
 
 #define DATAFILE_TITLE "Файл данных"
-#define FILE_SIZE_MULT 1024
-#define FILE_SIZE_UNIT "KB"
+#define FILE_SIZE_MULT "1" SEPARATOR "1024" SEPARATOR "10240"
+#define FILE_SIZE_UNIT "Б" SEPARATOR "КиБ" SEPARATOR "МиБ"
 
 #define EDITOR_ADD_TITLE_KEY "addWindowTitle"
 #define EDITOR_ADD_TITLE "Добавить..."
@@ -190,8 +193,6 @@
 #define AL_FILTER_APPLY "Применить"
 #define AL_SORT_BUTTON_KEY "sortButton"
 #define AL_SORT_BUTTON "Сортировка"
-#define AL_SORT_APPLY_KEY "sortApply"
-#define AL_SORT_APPLY "Применить"
 #define AL_SORT_ORDER_ASC_KEY "sortOrderAsc"
 #define AL_SORT_ORDER_ASC "А..Я"
 #define AL_SORT_ORDER_DSC_KEY "sortOrderDsc"
@@ -268,6 +269,25 @@
 #define EDITOR_LAST_PATH ""
 #define ERRORS_JOBISDONOT_DIALOG_KEY "jobisDoNot"
 #define ERRORS_JOBISDONOT_DIALOG "Что-то пошло не по плану!"
+
+#define ML_FILE_LABEL_KEY "fileLabel"
+#define ML_FILE_LABEL "Файл данных"
+#define ML_FILE_CREATED_LABEL_KEY "fileCreatedLabel"
+#define ML_FILE_CREATED_LABEL "Создан"
+#define ML_FILE_MODIFIED_LABEL_KEY "fileModifiedLabel"
+#define ML_FILE_MODIFIED_LABEL "Изменен"
+#define ML_FILE_SIZE_LABEL_KEY "fileSizeLabel"
+#define ML_FILE_SIZE_LABEL "Размер"
+#define ML_FILES_LABEL_KEY "filesLabel"
+#define ML_FILES_LABEL "файл(ов)"
+#define ML_FILE_DATE_FORMAT_KEY "fileDateFormat"
+#define ML_FILE_DATE_FORMAT "yyyy.MM.dd HH:mm"
+
+#define AL_SORT_ENABLE_CHECK_KEY "enableSortingCheckState"
+#define AL_SORT_ENABLE_CHECK 0
+
+#define AL_SORT_ENABLE_TITLE_KEY "enableSortingTitle"
+#define AL_SORT_ENABLE_TITLE "Включить сортировку по..."
 
 #define RESOURCE_QUESTION ":/question.png"
 

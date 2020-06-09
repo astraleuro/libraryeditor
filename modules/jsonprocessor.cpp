@@ -104,3 +104,50 @@ QJsonArray modifyObjectsKeyInArray(QString prefix, QString key, QJsonArray array
     }
     return array;
 }
+
+QJsonArray bubbleSortByKey(QJsonArray array, QString key, bool order, QVector<int> &swaps)
+{
+    bool isSwap;
+    int index;
+    QJsonObject object;
+    swaps.resize(array.count());
+    for (int i = 0; i < swaps.count(); i++)
+        swaps[i] = i;
+    for (int i = 0; i < array.count() - 1; i++) {
+        for (int j = 0; j < array.count() - i - 1; j++) {
+            isSwap = false;
+            switch (array[j].toObject()[key].type()) {
+            case QJsonValue::Bool:
+                if ((order && array[j].toObject()[key].toBool() > array[j + 1].toObject()[key].toBool()) ||
+                        (!order && array[j].toObject()[key].toBool() < array[j + 1].toObject()[key].toBool()))
+                    isSwap = true;
+                break;
+            case QJsonValue::Double:
+                if ((order && array[j].toObject()[key].toDouble() > array[j + 1].toObject()[key].toDouble()) ||
+                        (!order && array[j].toObject()[key].toDouble() < array[j + 1].toObject()[key].toDouble()))
+                    isSwap = true;
+                break;
+            case QJsonValue::Array:
+                if ((order && stringArrayToString(array[j].toObject()[key].toArray()) > stringArrayToString(array[j + 1].toObject()[key].toArray())) ||
+                        (!order && stringArrayToString(array[j].toObject()[key].toArray()) < stringArrayToString(array[j + 1].toObject()[key].toArray())))
+                    isSwap = true;
+                break;
+            default:
+                if ((order && array[j].toObject()[key].toString() > array[j + 1].toObject()[key].toString()) ||
+                        (!order && array[j].toObject()[key].toString() < array[j + 1].toObject()[key].toString()))
+                    isSwap = true;
+                break;
+            }
+            if (isSwap) {
+                index = swaps[j];
+                swaps[j] = swaps[j + 1];
+                swaps[j + 1] = index;
+                object = array[j].toObject();
+                array[j] = array[j + 1];
+                array[j + 1] = object;
+
+            }
+        }
+    }
+    return array;
+}
