@@ -9,6 +9,7 @@ MainList::MainList(QWidget *parent) :
     ui->saveButton->setHiddenMenu(&exportMenu);
 
     connect(&exportDialog, SIGNAL(settingsChanged(QString, QJsonObject)), this, SIGNAL(settingsChanged(QString, QJsonObject)));
+
 }
 
 void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool changed)
@@ -24,7 +25,7 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
     settings[ML_EXPORT_TO_JSON_KEY] = settings[ML_EXPORT_TO_JSON_KEY].toString(ML_EXPORT_TO_JSON);
     settings[ML_SAVE_BUTTON_KEY] = settings[ML_SAVE_BUTTON_KEY].toString(ML_SAVE_BUTTON);
     settings[ML_MERGE_BUTTON_KEY] = settings[ML_MERGE_BUTTON_KEY].toString(ML_MERGE_BUTTON);
-
+    settings[MERGE_OPENFILE_TITLE_KEY] = settings[MERGE_OPENFILE_TITLE_KEY].toString(MERGE_OPENFILE_TITLE);
     settings[ML_FILE_LABEL_KEY] = settings[ML_FILE_LABEL_KEY].toString(ML_FILE_LABEL);
     settings[ML_FILE_CREATED_LABEL_KEY] = settings[ML_FILE_CREATED_LABEL_KEY].toString(ML_FILE_CREATED_LABEL);
     settings[ML_FILE_MODIFIED_LABEL_KEY] = settings[ML_FILE_MODIFIED_LABEL_KEY].toString(ML_FILE_MODIFIED_LABEL);
@@ -94,6 +95,38 @@ void MainList::updateInfo()
         settings[ERAS_KEY].toString() + ": " + QString::number(filesCount(path + ERAS_KEY)) + " " + settings[ML_FILES_LABEL_KEY].toString() + ", " +
         takeHumanReadableSize(dirSize(path + ERAS_KEY));
     ui->filesInfo->setText(info);
+}
+
+void MainList::mergeFiles()
+{
+    QString fn;
+    QJsonObject json;
+    QFileDialog dialog(nullptr, settings[MERGE_OPENFILE_TITLE_KEY].toString(),
+                       settings[WELCOME_LAST_PATH_KEY].toString(), BASE_EXTENSION_FILTER);
+    dialog.setDefaultSuffix(BASE_EXTENSION);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setModal(true);
+    dialog.exec();
+    if (dialog.result() == QDialog::Accepted && !dialog.selectedFiles().isEmpty())
+        fn = dialog.selectedFiles()[0];
+    if (!fn.isEmpty()) {
+        if (fn != jsonFile) {
+            if (checkPath(fn) && checkPath(takeDirPath(fn))) {
+                QJsonParseError log;
+                if (readJson(fn, json, log))
+                    if (log.error == QJsonParseError::NoError) {
+                        settings[WELCOME_LAST_FILE_KEY] = fn;
+                        settings[WELCOME_LAST_PATH_KEY] = takeDirPath(fn);
+                    }
+            }
+        } else {
+            QMessageBox msg(QMessageBox::Critical, errorsMsg[ERRORS_TITLE_KEY].toString(),
+                            errorsMsg[ERRORS_MERGE_SAME_FILE_KEY].toString(), QMessageBox::Close);
+            msg.setModal(true);
+            msg.exec();
+        }
+    }
 }
 
 void MainList::on_artsButton_clicked()
@@ -181,4 +214,23 @@ void MenuButton::mouseReleaseEvent(QMouseEvent *e)
     QPushButton::mouseReleaseEvent(e);
     if (e->button() == Qt::RightButton && menu != nullptr)
         menu->popup(e->globalPos());
+}
+
+void MainList::on_mergeButton_clicked()
+{
+    if (!isChanged) {
+        mergeFiles();
+    } else {
+        QMessageBox msg(QMessageBox::Information, errorsMsg[ERRORS_TITLE_KEY].toString(),
+                        errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(), QMessageBox::Save | QMessageBox::Ignore);
+        msg.setModal(true);
+        msg.exec();
+        if (msg.result() == QMessageBox::Save) {
+            saveImages();
+            isChanged = false;
+            dataSaved();
+            updateInfo();
+            mergeFiles();
+        }
+    }
 }

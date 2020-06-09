@@ -289,7 +289,14 @@
 #define AL_SORT_ENABLE_TITLE_KEY "enableSortingTitle"
 #define AL_SORT_ENABLE_TITLE "Включить сортировку по..."
 
+#define ERRORS_MERGE_SAME_FILE_KEY "sameFileForMerge"
+#define ERRORS_MERGE_SAME_FILE "Выбран тот же файл!"
+
+#define RESOURCE_CHECK ":/check.png"
 #define RESOURCE_QUESTION ":/question.png"
+
+#define MERGE_OPENFILE_TITLE_KEY "mergeOpenFileTitle"
+#define MERGE_OPENFILE_TITLE "Выберите..."
 
 enum JsonDataSections {
     ArtsSection = 0,

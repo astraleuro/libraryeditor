@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>320</height>
+    <width>422</width>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,7 +63,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>arts</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -76,7 +76,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>authors</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -89,7 +89,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>eras</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -118,7 +118,7 @@
      <item>
       <widget class="MenuButton" name="saveButton">
        <property name="text">
-        <string>Сохранить</string>
+        <string/>
        </property>
       </widget>
      </item>

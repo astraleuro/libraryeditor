@@ -23,27 +23,55 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QPushButton" name="filterButton">
-       <property name="text">
-        <string/>
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
+       <item>
+        <widget class="QPushButton" name="filterButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="disableFilter">
+         <property name="text">
+          <string>X</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="sortButton">
-       <property name="text">
-        <string/>
+      <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,0">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
+       <item>
+        <widget class="QPushButton" name="sortButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="disableSort">
+         <property name="text">
+          <string>X</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -224,8 +252,6 @@
   <tabstop>arrayTable</tabstop>
   <tabstop>addButton</tabstop>
   <tabstop>editButton</tabstop>
-  <tabstop>filterButton</tabstop>
-  <tabstop>sortButton</tabstop>
   <tabstop>filterEdit</tabstop>
   <tabstop>filterApplyButton</tabstop>
   <tabstop>backButton</tabstop>

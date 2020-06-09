@@ -28,6 +28,7 @@ MainWindow::MainWindow(QString path, QWidget *parent)
     errorsMsg[ERRORS_DATA_CHANGED_KEY] = errorsMsg[ERRORS_DATA_CHANGED_KEY].toString(ERRORS_DATA_CHANGED);
     errorsMsg[ERRORS_JOBISDON_DIALOG_KEY] = errorsMsg[ERRORS_JOBISDON_DIALOG_KEY].toString(ERRORS_JOBISDON_DIALOG);
     errorsMsg[ERRORS_SAVE_BEFORE_KEY] = errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(ERRORS_SAVE_BEFORE);
+    errorsMsg[ERRORS_MERGE_SAME_FILE_KEY] = errorsMsg[ERRORS_MERGE_SAME_FILE_KEY].toString(ERRORS_MERGE_SAME_FILE);
     allSettings[ERRORS_SUBSECTION_KEY] = errorsMsg;
 
     settings[MAIN_WIDTH_KEY] = settings[MAIN_WIDTH_KEY].toInt(MAIN_WIDTH);

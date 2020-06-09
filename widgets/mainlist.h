@@ -51,6 +51,7 @@ signals:
 
 protected:
     void updateInfo();
+    void mergeFiles();
 
 private slots:
     void on_artsButton_clicked();
@@ -59,6 +60,7 @@ private slots:
     void on_saveButton_clicked();
     void on_goBackButton_clicked();
     void exportToJson();
+    void on_mergeButton_clicked();
 
 private:
     Ui::MainList *ui;

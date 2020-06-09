@@ -23,8 +23,12 @@ ArrayList::ArrayList(QWidget *parent) :
     ui->filterBox->setVisible(false);
     ui->sortBox->setVisible(false);
 
-    void readyForEras();
-    void fillEras(QStringList &list);
+    //void readyForEras();
+    //void fillEras(QStringList &list);
+
+    ui->disableFilter->setMaximumWidth(ui->disableFilter->height());
+    ui->disableSort->setMaximumWidth(ui->disableSort->height());
+
 }
 
 void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDataSections &sec)
@@ -111,6 +115,7 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
     if (secOptions[FILTER_TEXT_KEY].isUndefined())
         secOptions[FILTER_TEXT_KEY] = "";
     ui->filterEdit->setText(secOptions[FILTER_TEXT_KEY].toString());
+    filterStr = ui->filterEdit->text();
 
     if (secOptions[SORT_VISIBLE_KEY].toBool(false))
         ui->sortButton->toggle();
@@ -142,7 +147,6 @@ void ArrayList::initData(QString fn, QJsonObject &data, QJsonObject &opt, JsonDa
         ui->sortEnable->setCheckState(Qt::Unchecked);
 
     sortStateChanged(ui->sortEnable->isChecked());
-    //on_filterApplyButton_clicked();
 }
 
 QJsonArray ArrayList::takeData()
@@ -196,7 +200,6 @@ void ArrayList::changeItem(QJsonObject data, int row)
     }
 
     sortStateChanged(ui->sortEnable->isChecked());
-    //on_filterApplyButton_clicked();
 }
 
 QString ArrayList::jsonValueToText(QString key, QJsonValue value)
@@ -255,6 +258,43 @@ void ArrayList::reorderItems(QVector<int> &order)
     }
 }
 
+void ArrayList::updateFilterState()
+{
+    QFont font = ui->filterButton->font();
+    applyFilter();
+    if (!filterStr.isEmpty()) {
+        ui->filterButton->setIcon(QIcon(RESOURCE_CHECK));
+        font.setBold(true);
+    } else {
+        ui->filterButton->setIcon(QIcon());
+        font.setBold(false);
+    }
+    ui->filterButton->setFont(font);
+}
+
+void ArrayList::applyFilter()
+{
+    QTableWidget *table = ui->arrayTable;
+    QJsonObject object;
+
+    for (int i = 0; i < table->rowCount(); i++)
+        table->showRow(i);
+
+    bool isHide;
+    for (int i = 0; i < table->rowCount(); i++) {
+        isHide = true;
+        object = jsonArray[i].toObject();
+        for (QString key : object.keys()) {
+            if (jsonValueToText(key, object[key]).contains(filterStr)) {
+                isHide = false;
+                break;
+            }
+        }
+        if (isHide)
+            table->hideRow(i);
+    }
+}
+
 void ArrayList::sortStateChanged(int state)
 {
     QFont font = ui->sortButton->font();
@@ -265,7 +305,7 @@ void ArrayList::sortStateChanged(int state)
 
     if (state > 0) {
         font.setBold(true);
-        ui->sortButton->setIcon(QIcon(":/check.png"));
+        ui->sortButton->setIcon(QIcon(RESOURCE_CHECK));
         QVector<int> swaps;
         jsonArray = bubbleSortByKey(jsonArray, ui->sortCombo->itemData(ui->sortCombo->currentIndex()).toString(), sortOrder, swaps);
         for (int i = 0; i < ui->arrayTable->rowCount(); i++)
@@ -279,7 +319,8 @@ void ArrayList::sortStateChanged(int state)
         ui->sortCombo->setEnabled(false);
         ui->sortOrderButton->setEnabled(false);
     }
-    on_filterApplyButton_clicked();
+    ui->sortButton->setFont(font);
+    updateFilterState();
 }
 
 void ArrayList::itemUniqueCheck(QJsonValue value, QString key, int index)
@@ -370,7 +411,7 @@ void ArrayList::adoptItems(int col, int oldSize, int newSize)
     }
 }
 
-void ArrayList::adoptText(int row, int height)
+void ArrayList::adoptText(int row)
 {
     QString str;
     bool enableFooter = false;
@@ -432,35 +473,9 @@ void ArrayList::on_backButton_clicked()
 void ArrayList::on_filterApplyButton_clicked()
 {
     QFont font = ui->filterButton->font();
-    QString str = ui->filterEdit->text();
-    secOptions[FILTER_TEXT_KEY] = str;
-
-    QJsonObject object;
-    QTableWidget *table = ui->arrayTable;
-
-    for (int i = 0; i < table->rowCount(); i++)
-        table->showRow(i);
-    bool isHide;
-    if (!str.isEmpty()) {
-        for (int i = 0; i < table->rowCount(); i++) {
-            isHide = true;
-            object = jsonArray[i].toObject();
-            for (QString key : object.keys()) {
-                if (jsonValueToText(key, object[key]).contains(str)) {
-                    isHide = false;
-                    break;
-                }
-            }
-            if (isHide)
-                table->hideRow(i);
-        }
-        ui->filterButton->setIcon(QIcon(":/check.png"));
-        font.setBold(true);
-    } else {
-        ui->filterButton->setIcon(QIcon());
-        font.setBold(false);
-    }
-    ui->filterButton->setFont(font);
+    filterStr = ui->filterEdit->text();
+    secOptions[FILTER_TEXT_KEY] = filterStr;
+    updateFilterState();
 }
 
 void ArrayList::on_sortOrderButton_clicked()
@@ -511,4 +526,16 @@ void ArrayList::on_removeButton_clicked()
     removeArraySelectedItems(jsonArray, ui->arrayTable->selectedItems());
     removeTableSelectedItems(ui->arrayTable, ui->arrayTable->selectedItems());
     dataChanged();
+}
+
+void ArrayList::on_disableFilter_clicked()
+{
+    ui->filterEdit->setText("");
+    on_filterApplyButton_clicked();
+}
+
+void ArrayList::on_disableSort_clicked()
+{
+    ui->sortEnable->setCheckState(Qt::Unchecked);
+    sortStateChanged(0);
 }

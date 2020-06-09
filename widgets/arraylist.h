@@ -67,10 +67,12 @@ signals:
     void clearEraInArts(QString, QString);
 
 private slots:
+    void updateFilterState();
+    void applyFilter();
     void sortStateChanged(int state = 1);
     void itemUniqueCheck(QJsonValue value, QString key, int index);
     void adoptItems(int col, int oldSize, int newSize);
-    void adoptText(int row, int height = -1);
+    void adoptText(int row);
     void openItemEditor(int index = -1);
     void on_filterButton_toggled(bool checked);
     void on_sortButton_toggled(bool checked);
@@ -80,6 +82,8 @@ private slots:
     void on_editButton_clicked();
     void on_addButton_clicked();
     void on_removeButton_clicked();
+    void on_disableFilter_clicked();
+    void on_disableSort_clicked();
 
 private:
     Ui::ArrayList *ui;
@@ -87,7 +91,7 @@ private:
     QJsonArray jsonArray;
     QString allFilesPath;
     JsonDataSections section;
-    QString secFilesPath, tmpFilesPath, imageKey, textColKeyF;
+    QString secFilesPath, tmpFilesPath, imageKey, textColKeyF, filterStr;
     QStringList textColKeysH, textColLabels, ranks;
     bool sortOrder = true;
     ItemEditor itemEditor;
