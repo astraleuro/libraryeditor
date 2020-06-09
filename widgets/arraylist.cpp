@@ -258,22 +258,9 @@ void ArrayList::reorderItems(QVector<int> &order)
     }
 }
 
-void ArrayList::updateFilterState()
-{
-    QFont font = ui->filterButton->font();
-    applyFilter();
-    if (!filterStr.isEmpty()) {
-        ui->filterButton->setIcon(QIcon(RESOURCE_CHECK));
-        font.setBold(true);
-    } else {
-        ui->filterButton->setIcon(QIcon());
-        font.setBold(false);
-    }
-    ui->filterButton->setFont(font);
-}
-
 void ArrayList::applyFilter()
 {
+    QFont font = ui->filterButton->font();
     QTableWidget *table = ui->arrayTable;
     QJsonObject object;
 
@@ -293,6 +280,15 @@ void ArrayList::applyFilter()
         if (isHide)
             table->hideRow(i);
     }
+
+    if (!filterStr.isEmpty()) {
+        ui->filterButton->setIcon(QIcon(RESOURCE_CHECK));
+        font.setBold(true);
+    } else {
+        ui->filterButton->setIcon(QIcon());
+        font.setBold(false);
+    }
+    ui->filterButton->setFont(font);
 }
 
 void ArrayList::sortStateChanged(int state)
@@ -320,7 +316,7 @@ void ArrayList::sortStateChanged(int state)
         ui->sortOrderButton->setEnabled(false);
     }
     ui->sortButton->setFont(font);
-    updateFilterState();
+    applyFilter();
 }
 
 void ArrayList::itemUniqueCheck(QJsonValue value, QString key, int index)
@@ -475,7 +471,7 @@ void ArrayList::on_filterApplyButton_clicked()
     QFont font = ui->filterButton->font();
     filterStr = ui->filterEdit->text();
     secOptions[FILTER_TEXT_KEY] = filterStr;
-    updateFilterState();
+    applyFilter();
 }
 
 void ArrayList::on_sortOrderButton_clicked()

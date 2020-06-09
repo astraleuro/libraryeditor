@@ -67,7 +67,6 @@ signals:
     void clearEraInArts(QString, QString);
 
 private slots:
-    void updateFilterState();
     void applyFilter();
     void sortStateChanged(int state = 1);
     void itemUniqueCheck(QJsonValue value, QString key, int index);
