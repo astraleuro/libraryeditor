@@ -26,6 +26,7 @@ SOURCES += \
     widgets/chooselist.cpp \
     widgets/itemeditor.cpp \
     widgets/jsonexport.cpp \
+    widgets/logcollector.cpp \
     widgets/mainlist.cpp \
     widgets/welcomescreen.cpp
 
@@ -41,6 +42,7 @@ HEADERS += \
     widgets/chooselist.h \
     widgets/itemeditor.h \
     widgets/jsonexport.h \
+    widgets/logcollector.h \
     widgets/mainlist.h \
     widgets/welcomescreen.h
 
@@ -49,6 +51,7 @@ FORMS += \
     widgets/chooselist.ui \
     widgets/itemeditor.ui \
     widgets/jsonexport.ui \
+    widgets/logcollector.ui \
     widgets/mainlist.ui \
     widgets/welcomescreen.ui
 

@@ -33,5 +33,7 @@ int dirSize(QString path);
 QString takeFileName(QString path);
 QString takeDirPath(QString path);
 QString takeValidSeparator(QString path);
+bool removeFile(QString path);
+bool copyFile(QString in, QString out);
 
 #endif // FSPROCESSOR_H

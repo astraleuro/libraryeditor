@@ -39,6 +39,8 @@
 #define ERAS_OPTIONS_KEY "erasOptions"
 
 #define FILE_SECTION_KEY "artPath" SEPARATOR "authorImagePath" SEPARATOR "eraImagePath"
+#define UNIQUE_SECTION_KEY "artName" SEPARATOR "authorName" SEPARATOR "eraName"
+#define NEWESTBY_SECTION_KEY "lastUpdate"
 
 #define FILTER_VISIBLE_KEY "filterVisible"
 #define FILTER_TEXT_KEY "filterData"
@@ -285,7 +287,6 @@
 
 #define AL_SORT_ENABLE_CHECK_KEY "enableSortingCheckState"
 #define AL_SORT_ENABLE_CHECK 0
-
 #define AL_SORT_ENABLE_TITLE_KEY "enableSortingTitle"
 #define AL_SORT_ENABLE_TITLE "Включить сортировку по..."
 
@@ -297,6 +298,28 @@
 
 #define MERGE_OPENFILE_TITLE_KEY "mergeOpenFileTitle"
 #define MERGE_OPENFILE_TITLE "Выберите..."
+
+#define ERRORS_MERGE_ITEM_ADDED_KEY "mergeItemAdded"
+#define ERRORS_MERGE_ITEM_ADDED "Запись добавлена"
+
+#define ERRORS_MERGE_ITEM_CHANGED_KEY "mergeItemChanged"
+#define ERRORS_MERGE_ITEM_CHANGED "Запись обновлена"
+
+#define ERRORS_MERGE_FILE_ADDED_KEY "mergeFileAdded"
+#define ERRORS_MERGE_FILE_ADDED "Файл добавлен"
+
+#define ERRORS_MERGE_FILE_ADD_FAIL_KEY "mergeFileAddFail"
+#define ERRORS_MERGE_FILE_ADD_FAIL "Ошибка добавления файла"
+
+#define ERRORS_MERGE_ITEM_SKIPPED_KEY "mergeItemSkipped"
+#define ERRORS_MERGE_ITEM_SKIPPED "Запись пропущена"
+
+#define ERRORS_MERGE_SUCCESS_KEY "mergeSuccess"
+#define ERRORS_MERGE_SUCCESS "Объединение успешно завершено!\nХотите посмотреть лог?"
+
+#define ERRORS_MERGE_FAIL_KEY "mergeFail"
+#define ERRORS_MERGE_FAIL "Объединение завершено с ошибками!\nХотите посмотреть лог?"
+
 
 enum JsonDataSections {
     ArtsSection = 0,

@@ -29,6 +29,13 @@ MainWindow::MainWindow(QString path, QWidget *parent)
     errorsMsg[ERRORS_JOBISDON_DIALOG_KEY] = errorsMsg[ERRORS_JOBISDON_DIALOG_KEY].toString(ERRORS_JOBISDON_DIALOG);
     errorsMsg[ERRORS_SAVE_BEFORE_KEY] = errorsMsg[ERRORS_SAVE_BEFORE_KEY].toString(ERRORS_SAVE_BEFORE);
     errorsMsg[ERRORS_MERGE_SAME_FILE_KEY] = errorsMsg[ERRORS_MERGE_SAME_FILE_KEY].toString(ERRORS_MERGE_SAME_FILE);
+    errorsMsg[ERRORS_MERGE_ITEM_ADDED_KEY] = errorsMsg[ERRORS_MERGE_ITEM_ADDED_KEY].toString(ERRORS_MERGE_ITEM_ADDED);
+    errorsMsg[ERRORS_MERGE_ITEM_CHANGED_KEY] = errorsMsg[ERRORS_MERGE_ITEM_CHANGED_KEY].toString(ERRORS_MERGE_ITEM_CHANGED);
+    errorsMsg[ERRORS_MERGE_FILE_ADDED_KEY] = errorsMsg[ERRORS_MERGE_FILE_ADDED_KEY].toString(ERRORS_MERGE_FILE_ADDED);
+    errorsMsg[ERRORS_MERGE_FILE_ADD_FAIL_KEY] = errorsMsg[ERRORS_MERGE_FILE_ADD_FAIL_KEY].toString(ERRORS_MERGE_FILE_ADD_FAIL);
+    errorsMsg[ERRORS_MERGE_SUCCESS_KEY] = errorsMsg[ERRORS_MERGE_SUCCESS_KEY].toString(ERRORS_MERGE_SUCCESS);
+    errorsMsg[ERRORS_MERGE_FAIL_KEY] = errorsMsg[ERRORS_MERGE_FAIL_KEY].toString(ERRORS_MERGE_FAIL);
+    errorsMsg[ERRORS_MERGE_ITEM_SKIPPED_KEY] = errorsMsg[ERRORS_MERGE_ITEM_SKIPPED_KEY].toString(ERRORS_MERGE_ITEM_SKIPPED);
     allSettings[ERRORS_SUBSECTION_KEY] = errorsMsg;
 
     settings[MAIN_WIDTH_KEY] = settings[MAIN_WIDTH_KEY].toInt(MAIN_WIDTH);
@@ -114,6 +121,8 @@ void MainWindow::showMainList(QString fn, QJsonObject &data)
     connect(mainList, SIGNAL(showArrayList(JsonDataSections)), this, SLOT(showArrayList(JsonDataSections)));
     connect(mainList, SIGNAL(dataSaved()), this, SLOT(setSaved()));
     connect(mainList, SIGNAL(saveImages()), this, SLOT(saveImages()));
+    connect(mainList, SIGNAL(dataMerged()), this, SLOT(updateData()));
+    connect(mainList, SIGNAL(dataNotMerged()), this, SLOT(saveImages()));
     mainList->initData(jsonPath, jsonData, allSettings, isChanged);
     mainLayout->addWidget(mainList);
 }
@@ -213,6 +222,13 @@ void MainWindow::removeAuthorsInArts(QString subkey, QString key)
 void MainWindow::clearEraInArts(QString subkey, QString key)
 {
     jsonData[ARTS_KEY] = clearKeyInObjectArray(subkey, key, jsonData[ARTS_KEY].toArray());
+}
+
+void MainWindow::updateData()
+{
+    jsonData = mainList->takeData();
+    saveImages();
+    isChanged = true;
 }
 
 void MainWindow::removeUnused(QString path)

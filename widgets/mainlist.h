@@ -13,6 +13,7 @@
 #include "modules/fsprocessor.h"
 #include "widgets/jsonexport.h"
 #include "modules/txtprocessor.h"
+#include "modules/jsonprocessor.h"
 
 class MenuButton : public QPushButton
 {
@@ -40,6 +41,7 @@ class MainList : public QWidget
 public:
     explicit MainList(QWidget *parent = nullptr);
     void initData(QString fn, QJsonObject &data, QJsonObject &opt, bool changed = false);
+    QJsonObject takeData();
     ~MainList();
 
 signals:
@@ -48,10 +50,15 @@ signals:
     void settingsChanged(QString, QJsonObject);
     void goBack();
     void showArrayList(JsonDataSections section);
+    void dataMerged();
+    void dataNotMerged();
 
 protected:
     void updateInfo();
-    void mergeFiles();
+    void merge();
+    QJsonArray mergeArrays(QString inPath, QString outPath, QString secSuffix,
+                           QString filePathKey, QString uniqueByKey, QString newestByKey,
+                           QJsonArray inArr, QJsonArray outArr);
 
 private slots:
     void on_artsButton_clicked();
@@ -68,9 +75,12 @@ private:
     QJsonObject allSettings, settings, jsonData, errorsMsg;
     QString jsonPath;
     bool isChanged = false;
+    bool isMergeOk = true;
+    bool isMerged = false;
     QAction *exportAction;
     QMenu exportMenu;
     JsonExport exportDialog;
+    QStringList log;
 };
 
 #endif // MAINLIST_H

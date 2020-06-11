@@ -151,3 +151,14 @@ QJsonArray bubbleSortByKey(QJsonArray array, QString key, bool order, QVector<in
     }
     return array;
 }
+
+int indexOfObjectByKey(QString uniqueKey, QString data, const QJsonArray &array)
+{
+    int index = -1;
+    for (int i = 0; i < array.count(); i++)
+        if (array[i].toObject()[uniqueKey] == data) {
+            index = i;
+            break;
+        }
+    return index;
+}

@@ -36,6 +36,7 @@ protected slots:
     void saveImages();
     void removeAuthorsInArts(QString subkey, QString key);
     void clearEraInArts(QString subkey, QString key);
+    void updateData();
 
 protected:
     void removeUnused(QString path);

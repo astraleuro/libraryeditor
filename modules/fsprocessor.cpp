@@ -281,3 +281,15 @@ int filesCount(QString path)
 
     return size;
 }
+
+bool removeFile(QString path)
+{
+    QFile file(path);
+    return file.remove();
+}
+
+bool copyFile(QString in, QString out)
+{
+    QFile file;
+    return file.copy(in, out);
+}
