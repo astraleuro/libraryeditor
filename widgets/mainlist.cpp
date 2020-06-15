@@ -254,7 +254,7 @@ void MainList::merge()
                                     filePathKeys[1], uniqueByKey[1], newestByKey,
                                     json[AUTHORS_KEY].toArray(), jsonData[AUTHORS_KEY].toArray());
                         log.append("");
-                        log.append(errorsMsg[ERRORS_MERGE_SECTION_KEY].toString() + " \"" + settings[AUTHORS_KEY].toString() + "\":");
+                        log.append(errorsMsg[ERRORS_MERGE_SECTION_KEY].toString() + " \"" + settings[ERAS_KEY].toString() + "\":");
                         mergeData[ERAS_KEY] = mergeArrays(
                                     toNativeSeparators(fn + "/" + ERAS_KEY + "/"),
                                     toNativeSeparators(out + "/"),
