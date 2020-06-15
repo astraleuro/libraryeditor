@@ -117,10 +117,9 @@ bool readJson(QString path, QJsonObject &json, QJsonParseError &log)
         QJsonDocument jsonDoc;
         jsonDoc = QJsonDocument::fromJson(file.readAll(), &log);
         file.close();
-        if (log.error == QJsonParseError::NoError) {
+        if (log.error == QJsonParseError::NoError)
             json = jsonDoc.object();
-            return true;
-        }
+        return true;
     }
     return false;
 }

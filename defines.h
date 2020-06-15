@@ -4,9 +4,9 @@
 #define SEPARATOR "|"
 
 #define APPLICATION_NAME  "LEditor"
-#define APPLICATION_MAJOR_VERSION "0"
-#define APPLICATION_MINOR_VERSION "10"
-#define APPLICATION_VERSION_SUFFIX "alpha"
+#define APPLICATION_MAJOR_VERSION "1"
+#define APPLICATION_MINOR_VERSION "0"
+#define APPLICATION_VERSION_SUFFIX ""
 #define APPLICATION_VERSION APPLICATION_MAJOR_VERSION "." APPLICATION_MINOR_VERSION " " APPLICATION_VERSION_SUFFIX
 
 #define PROGRAM_AUTHOR_NAME "Кирилл Зимин (astral.euro@gmail.com)"
@@ -39,6 +39,7 @@
 #define ERAS_OPTIONS_KEY "erasOptions"
 
 #define FILE_SECTION_KEY "artPath" SEPARATOR "authorImagePath" SEPARATOR "eraImagePath"
+#define ARRAY_SECTION_KEY "arts" SEPARATOR "authors" SEPARATOR "eras"
 #define UNIQUE_SECTION_KEY "artName" SEPARATOR "authorName" SEPARATOR "eraName"
 #define NEWESTBY_SECTION_KEY "lastUpdate"
 
@@ -290,36 +291,75 @@
 #define AL_SORT_ENABLE_TITLE_KEY "enableSortingTitle"
 #define AL_SORT_ENABLE_TITLE "Включить сортировку по..."
 
-#define ERRORS_MERGE_SAME_FILE_KEY "sameFileForMerge"
-#define ERRORS_MERGE_SAME_FILE "Выбран тот же файл!"
-
 #define RESOURCE_CHECK ":/check.png"
 #define RESOURCE_QUESTION ":/question.png"
+#define RESOURCE_SCHEMA ":/schema.json"
 
 #define MERGE_OPENFILE_TITLE_KEY "mergeOpenFileTitle"
 #define MERGE_OPENFILE_TITLE "Выберите..."
 
+#define ERRORS_MERGE_SAME_FILE_KEY "sameFileForMerge"
+#define ERRORS_MERGE_SAME_FILE "Выбран тот же файл!"
 #define ERRORS_MERGE_ITEM_ADDED_KEY "mergeItemAdded"
 #define ERRORS_MERGE_ITEM_ADDED "Запись добавлена"
-
 #define ERRORS_MERGE_ITEM_CHANGED_KEY "mergeItemChanged"
 #define ERRORS_MERGE_ITEM_CHANGED "Запись обновлена"
-
 #define ERRORS_MERGE_FILE_ADDED_KEY "mergeFileAdded"
 #define ERRORS_MERGE_FILE_ADDED "Файл добавлен"
-
 #define ERRORS_MERGE_FILE_ADD_FAIL_KEY "mergeFileAddFail"
 #define ERRORS_MERGE_FILE_ADD_FAIL "Ошибка добавления файла"
-
 #define ERRORS_MERGE_ITEM_SKIPPED_KEY "mergeItemSkipped"
 #define ERRORS_MERGE_ITEM_SKIPPED "Запись пропущена"
-
 #define ERRORS_MERGE_SUCCESS_KEY "mergeSuccess"
 #define ERRORS_MERGE_SUCCESS "Объединение успешно завершено!\nХотите посмотреть лог?"
-
 #define ERRORS_MERGE_FAIL_KEY "mergeFail"
 #define ERRORS_MERGE_FAIL "Объединение завершено с ошибками!\nХотите посмотреть лог?"
 
+#define LOG_TITLE_KEY "logTitle"
+#define LOG_TITLE "Информация"
+
+#define LOG_CLOSE_KEY "logCloseButton"
+#define LOG_CLOSE "Закрыть"
+
+#define ERRORS_MERGE_SECTION_KEY "mergeSectionTitle"
+#define ERRORS_MERGE_SECTION "Объединение разделов"
+#define ERRORS_INVALID_SCHEMA_KEY "invalidSchema"
+#define ERRORS_INVALID_SCHEMA "Файл не соотвествует схеме!"
+#define ERRORS_READ_FILE_KEY "readJson"
+#define ERRORS_READ_FILE "Ошибка чтения файла. Нет доступа!"
+#define ERRORS_CHECK_PATH_KEY "checkPaths"
+#define ERRORS_CHECK_PATH "Ошибка проверки подкаталогов. Нет доступа!"
+#define ERRORS_WRITE_FILE_KEY "writeJson"
+#define ERRORS_WRITE_FILE "Ошибка записи файла. Нет доступа!"
+#define ERRORS_CHECK_FILES_BEGIN_KEY "checkFileBegin"
+#define ERRORS_CHECK_FILES_BEGIN "Проверка файлов..."
+#define ERRORS_CHECK_FILES_SECTION_BEGIN_KEY "checkFilesSectionBegin"
+#define ERRORS_CHECK_FILES_SECTION_BEGIN "Раздел"
+#define ERRORS_FILE_NOT_FOUND_KEY "fileNotFound"
+#define ERRORS_FILE_NOT_FOUND "Отсутствует файл"
+#define ERRORS_NOT_FOUND_KEY "everythingIsNormal"
+#define ERRORS_NOT_FOUND "Ошибок не найдено!"
+#define ERRORS_CHECK_ARTS_BEGIN_KEY "checkArtsBegin"
+#define ERRORS_CHECK_ARTS_BEGIN "Проверка произведений искусства..."
+#define ERRORS_CHECK_ARTS_ERA_EMPTY_KEY "artEraEmpty"
+#define ERRORS_CHECK_ARTS_ERA_EMPTY "эпоха не указана!"
+#define ERRORS_CHECK_ARTS_ERA_NOT_FOUND_KEY "artEraNotFound"
+#define ERRORS_CHECK_ARTS_ERA_NOT_FOUND "эпоха отсутствует"
+#define ERRORS_CHECK_ARTS_AUTHORS_EMPTY_KEY "artAuthorsEmpty"
+#define ERRORS_CHECK_ARTS_AUTHORS_EMPTY "авторы не указаны!"
+#define ERRORS_CHECK_ARTS_AUTHOR_NOT_FOUND_KEY "artAuthorNotFound"
+#define ERRORS_CHECK_ARTS_AUTHOR_NOT_FOUND "автор отсутствует"
+#define ERRORS_CHECK_ARTS_INFO_EMPTY_KEY "artInfoEmpty"
+#define ERRORS_CHECK_ARTS_INFO_EMPTY "информация не указана!"
+#define ERRORS_CHECK_AUTHORS_BEGIN_KEY "checkAuthorsBegin"
+#define ERRORS_CHECK_AUTHORS_BEGIN "Проверка авторов..."
+#define ERRORS_CHECK_AUTHORS_INFO_EMPTY_KEY "authorInfoEmpty"
+#define ERRORS_CHECK_AUTHORS_INFO_EMPTY "информация не указана!"
+
+#define ERRORS_FOUND_KEY "errorsFound"
+#define ERRORS_FOUND "Найдены ошибки!"
+#define ERRORS_DETAILS_KEY "errorDetails"
+#define ERRORS_DETAILS "Подробнее..."
 
 enum JsonDataSections {
     ArtsSection = 0,

@@ -36,6 +36,25 @@ MainWindow::MainWindow(QString path, QWidget *parent)
     errorsMsg[ERRORS_MERGE_SUCCESS_KEY] = errorsMsg[ERRORS_MERGE_SUCCESS_KEY].toString(ERRORS_MERGE_SUCCESS);
     errorsMsg[ERRORS_MERGE_FAIL_KEY] = errorsMsg[ERRORS_MERGE_FAIL_KEY].toString(ERRORS_MERGE_FAIL);
     errorsMsg[ERRORS_MERGE_ITEM_SKIPPED_KEY] = errorsMsg[ERRORS_MERGE_ITEM_SKIPPED_KEY].toString(ERRORS_MERGE_ITEM_SKIPPED);
+    errorsMsg[ERRORS_MERGE_SECTION_KEY] = errorsMsg[ERRORS_MERGE_SECTION_KEY].toString(ERRORS_MERGE_SECTION);
+    errorsMsg[ERRORS_INVALID_SCHEMA_KEY] = errorsMsg[ERRORS_INVALID_SCHEMA_KEY].toString(ERRORS_INVALID_SCHEMA);
+    errorsMsg[ERRORS_READ_FILE_KEY] = errorsMsg[ERRORS_READ_FILE_KEY].toString(ERRORS_READ_FILE);
+    errorsMsg[ERRORS_CHECK_PATH_KEY] = errorsMsg[ERRORS_CHECK_PATH_KEY].toString(ERRORS_CHECK_PATH);
+    errorsMsg[ERRORS_WRITE_FILE_KEY] = errorsMsg[ERRORS_WRITE_FILE_KEY].toString(ERRORS_WRITE_FILE);
+    errorsMsg[ERRORS_CHECK_FILES_BEGIN_KEY] = errorsMsg[ERRORS_CHECK_FILES_BEGIN_KEY].toString(ERRORS_CHECK_FILES_BEGIN);
+    errorsMsg[ERRORS_CHECK_FILES_SECTION_BEGIN_KEY] = errorsMsg[ERRORS_CHECK_FILES_SECTION_BEGIN_KEY].toString(ERRORS_CHECK_FILES_SECTION_BEGIN);
+    errorsMsg[ERRORS_FILE_NOT_FOUND_KEY] = errorsMsg[ERRORS_FILE_NOT_FOUND_KEY].toString(ERRORS_FILE_NOT_FOUND);
+    errorsMsg[ERRORS_NOT_FOUND_KEY] = errorsMsg[ERRORS_NOT_FOUND_KEY].toString(ERRORS_NOT_FOUND);
+    errorsMsg[ERRORS_CHECK_ARTS_BEGIN_KEY] = errorsMsg[ERRORS_CHECK_ARTS_BEGIN_KEY].toString(ERRORS_CHECK_ARTS_BEGIN);
+    errorsMsg[ERRORS_CHECK_ARTS_ERA_EMPTY_KEY] = errorsMsg[ERRORS_CHECK_ARTS_ERA_EMPTY_KEY].toString(ERRORS_CHECK_ARTS_ERA_EMPTY);
+    errorsMsg[ERRORS_CHECK_ARTS_ERA_NOT_FOUND_KEY] = errorsMsg[ERRORS_CHECK_ARTS_ERA_NOT_FOUND_KEY].toString(ERRORS_CHECK_ARTS_ERA_NOT_FOUND);
+    errorsMsg[ERRORS_CHECK_ARTS_AUTHORS_EMPTY_KEY] = errorsMsg[ERRORS_CHECK_ARTS_AUTHORS_EMPTY_KEY].toString(ERRORS_CHECK_ARTS_AUTHORS_EMPTY);
+    errorsMsg[ERRORS_CHECK_ARTS_AUTHOR_NOT_FOUND_KEY] = errorsMsg[ERRORS_CHECK_ARTS_AUTHOR_NOT_FOUND_KEY].toString(ERRORS_CHECK_ARTS_AUTHOR_NOT_FOUND);
+    errorsMsg[ERRORS_CHECK_ARTS_INFO_EMPTY_KEY] = errorsMsg[ERRORS_CHECK_ARTS_INFO_EMPTY_KEY].toString(ERRORS_CHECK_ARTS_INFO_EMPTY);
+    errorsMsg[ERRORS_CHECK_AUTHORS_BEGIN_KEY] = errorsMsg[ERRORS_CHECK_AUTHORS_BEGIN_KEY].toString(ERRORS_CHECK_AUTHORS_BEGIN);
+    errorsMsg[ERRORS_CHECK_AUTHORS_INFO_EMPTY_KEY] = errorsMsg[ERRORS_CHECK_AUTHORS_INFO_EMPTY_KEY].toString(ERRORS_CHECK_AUTHORS_INFO_EMPTY);
+    errorsMsg[ERRORS_FOUND_KEY] = errorsMsg[ERRORS_FOUND_KEY].toString(ERRORS_FOUND);
+    errorsMsg[ERRORS_DETAILS_KEY] = errorsMsg[ERRORS_DETAILS_KEY].toString(ERRORS_DETAILS);
     allSettings[ERRORS_SUBSECTION_KEY] = errorsMsg;
 
     settings[MAIN_WIDTH_KEY] = settings[MAIN_WIDTH_KEY].toInt(MAIN_WIDTH);
@@ -45,11 +64,19 @@ MainWindow::MainWindow(QString path, QWidget *parent)
                 settings[MAIN_WIDTH_KEY].toInt(),
                 settings[MAIN_HEIGHT_KEY].toInt());
 
+    connect(&logCollector, SIGNAL(settingsChanged(QString, QJsonObject)), this, SLOT(saveSettings(QString, QJsonObject)));
+    logCollector.initData(allSettings);
+
     setCentralWidget(new QWidget);
     delete centralWidget()->layout();
     centralWidget()->setLayout(mainLayout);
     setWindowTitle(APPLICATION_NAME);
     showWelcomeScreen();
+}
+
+void MainWindow::openFile(QString fn)
+{
+    welcomeScreen->openFile(fn);
 }
 
 MainWindow::~MainWindow()
@@ -81,7 +108,7 @@ MainWindow::~MainWindow()
                 msg.exec();
             } else {
                 QMessageBox msg(QMessageBox::Critical, errorsMsg[ERRORS_TITLE_KEY].toString(),
-                                errorsMsg[ERRORS_DATA_UNSAVED_KEY].toString(), QMessageBox::Close);
+                                errorsMsg[ERRORS_DATA_UNSAVED_KEY].toString() + jsonPath, QMessageBox::Close);
                 msg.setModal(true);
                 msg.exec();
             }
@@ -123,7 +150,7 @@ void MainWindow::showMainList(QString fn, QJsonObject &data)
     connect(mainList, SIGNAL(saveImages()), this, SLOT(saveImages()));
     connect(mainList, SIGNAL(dataMerged()), this, SLOT(updateData()));
     connect(mainList, SIGNAL(dataNotMerged()), this, SLOT(saveImages()));
-    mainList->initData(jsonPath, jsonData, allSettings, isChanged);
+    mainList->initData(&logCollector, jsonPath, jsonData, allSettings, isChanged);
     mainLayout->addWidget(mainList);
 }
 

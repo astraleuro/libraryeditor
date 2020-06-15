@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "defines.h"
 #include "templates.h"
@@ -20,7 +21,11 @@ class WelcomeScreen : public QWidget
 public:
     explicit WelcomeScreen(QWidget *parent = nullptr);
     void initData(QJsonObject &opt, QString defaultPath);
+    void openFile(QString fn);
     ~WelcomeScreen();
+
+protected:
+    void showMsg(QMessageBox::Icon icon, QString text);
 
 signals:
     void settingsChanged(QString, QJsonObject);
@@ -36,7 +41,7 @@ private slots:
 
 private:
     Ui::WelcomeScreen *ui;
-    QJsonObject settings;
+    QJsonObject settings, errorsMsg;
 };
 
 #endif // WELCOMESCREEN_H

@@ -21,6 +21,7 @@ QJsonArray clearKeyInObjectArray(QString subkey, QString key, QJsonArray array);
 QJsonArray removeKeyInObjectArray(QString subkey, QString key, QJsonArray array);
 QJsonArray modifyObjectsKeyInArray(QString prefix, QString key, QJsonArray array);
 QJsonArray bubbleSortByKey(QJsonArray array, QString key, bool order, QVector<int> &swaps);
-int indexOfObjectByKey(QString uniqueKey, QString data, const QJsonArray& array);
+int indexOfObjectByKey(QString uniqueKey, QString data, QJsonArray array);
+bool isValidSchema(QJsonValue file, QJsonValue schema);
 
 #endif // JSONPROCESSOR_H

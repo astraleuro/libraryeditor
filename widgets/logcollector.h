@@ -3,6 +3,10 @@
 
 #include <QDialog>
 
+#include "defines.h"
+#include "templates.h"
+#include "modules/jsonprocessor.h"
+
 namespace Ui {
 class LogCollector;
 }
@@ -17,8 +21,15 @@ public:
     void fillLog(QStringList list);
     ~LogCollector();
 
+signals:
+    void settingsChanged(QString, QJsonObject);
+
+private slots:
+    void on_closeButton_clicked();
+
 private:
     Ui::LogCollector *ui;
+    QJsonObject settings;
 };
 
 #endif // LOGCOLLECTOR_H

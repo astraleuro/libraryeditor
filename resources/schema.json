@@ -1,0 +1,30 @@
+{
+    "arts": [
+        {
+            "artAuthors": [
+                ""
+            ],
+            "artEra": "",
+            "artInfo": "",
+            "artName": "",
+            "artPath": "",
+            "isDomestic": false,
+            "lastUpdate": ""
+        }
+    ],
+    "authors": [
+        {
+            "authorImagePath": "",
+            "authorInfo": "",
+            "authorName": "",
+            "lastUpdate": ""
+        }
+    ],
+    "eras": [
+        {
+            "eraImagePath": "",
+            "eraName": "",
+            "lastUpdate": ""
+        }
+    ]
+}

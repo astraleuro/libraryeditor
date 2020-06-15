@@ -12,6 +12,7 @@
 #include "widgets/arraylist.h"
 #include "modules/fsprocessor.h"
 #include "modules/jsonprocessor.h"
+#include "widgets/logcollector.h"
 
 class MainWindow : public QMainWindow
 {
@@ -20,6 +21,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr) : QMainWindow(parent) {};
     MainWindow(QString config, QWidget *parent = nullptr);
+    void openFile(QString fn);
     ~MainWindow();
 
 protected slots:
@@ -51,6 +53,7 @@ private:
     QString configPath, jsonPath, defaultPath;
     QJsonObject allSettings, settings, jsonData, errorsMsg;
     bool isChanged = false;
+    LogCollector logCollector;
 };
 
 #endif // MAINWINDOW_H

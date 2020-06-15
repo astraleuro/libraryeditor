@@ -152,7 +152,7 @@ QJsonArray bubbleSortByKey(QJsonArray array, QString key, bool order, QVector<in
     return array;
 }
 
-int indexOfObjectByKey(QString uniqueKey, QString data, const QJsonArray &array)
+int indexOfObjectByKey(QString uniqueKey, QString data, QJsonArray array)
 {
     int index = -1;
     for (int i = 0; i < array.count(); i++)
@@ -161,4 +161,55 @@ int indexOfObjectByKey(QString uniqueKey, QString data, const QJsonArray &array)
             break;
         }
     return index;
+}
+
+bool isValidSchema(QJsonValue file, QJsonValue schema)
+{
+    bool isOk;
+    QJsonValue fVal, sVal;
+    QJsonObject fObj, sObj;
+    QJsonArray fArr, sArr;
+    if (file.type() == schema.type()) {
+        switch (schema.type()) {
+        case QJsonValue::Object:
+            fObj = file.toObject();
+            sObj = schema.toObject();
+            if (fObj.keys() != sObj.keys())
+                return false;
+            isOk = true;
+            for (QString key : fObj.keys()) {
+                if (fObj[key].type() != sObj[key].type())
+                    return false;
+                if (fObj[key].isArray())
+                    isOk = isValidSchema(fObj[key].toArray(), sObj[key].toArray());
+                else if (fObj[key].isObject())
+                    isOk = isValidSchema(fObj[key].toObject(), sObj[key].toObject());
+                if (isOk)
+                    return true;
+                else
+                    return false;
+            }
+            break;
+        case QJsonValue::Array:
+            fArr = file.toArray();
+            sArr = schema.toArray();
+            isOk = true;
+            sVal = sArr[0];
+            for (int i = 0; i < fArr.count(); i++) {
+                fVal = fArr[i];
+                if (fVal.type() != sVal.type())
+                    return false;
+                if (fVal.isObject())
+                    isOk = isValidSchema(fArr[i].toObject(), sVal.toObject());
+                if (!isOk)
+                    return false;
+            }
+            return isOk;
+            break;
+        default:
+            return false;
+        }
+        return false;
+    } else
+        return false;
 }

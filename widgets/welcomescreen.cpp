@@ -17,6 +17,7 @@ WelcomeScreen::WelcomeScreen(QWidget *parent) :
 void WelcomeScreen::initData(QJsonObject &opt, QString defaultPath)
 {
     settings = opt[getClassName(this)].toObject();
+    errorsMsg = opt[ERRORS_SUBSECTION_KEY].toObject();
     settings[WELCOME_LAST_PATH_KEY] = settings[WELCOME_LAST_PATH_KEY].toString(defaultPath);
     settings[WELCOME_CREATE_BUTTON_KEY] = settings[WELCOME_CREATE_BUTTON_KEY].toString(WELCOME_CREATE_BUTTON);
     settings[WELCOME_OPEN_BUTTON_KEY] = settings[WELCOME_OPEN_BUTTON_KEY].toString(WELCOME_OPEN_BUTTON);
@@ -44,10 +45,22 @@ void WelcomeScreen::initData(QJsonObject &opt, QString defaultPath)
 
 }
 
+void WelcomeScreen::openFile(QString fn)
+{
+    openData(fn);
+}
+
 WelcomeScreen::~WelcomeScreen()
 {
     settingsChanged(getClassName(this), settings);
     delete ui;
+}
+
+void WelcomeScreen::showMsg(QMessageBox::Icon icon, QString text)
+{
+    QMessageBox msg(icon, errorsMsg[ERRORS_TITLE_KEY].toString(), text, QMessageBox::Close);
+    msg.setModal(true);
+    msg.exec();
 }
 
 void WelcomeScreen::saveData()
@@ -73,7 +86,11 @@ void WelcomeScreen::saveData()
                     settings[WELCOME_LAST_FILE_KEY] = fn;
                     settings[WELCOME_LAST_PATH_KEY] = takeDirPath(fn);
                     dataReady(fn, json);
+                } else {
+                    showMsg(QMessageBox::Critical, errorsMsg[ERRORS_DATA_UNSAVED_KEY].toString() + fn);
                 }
+            } else {
+                showMsg(QMessageBox::Critical, errorsMsg[ERRORS_CHECK_PATH_KEY].toString());
             }
         }
     }
@@ -93,17 +110,34 @@ void WelcomeScreen::openData(QString fn)
         if (dialog.result() == QDialog::Accepted && !dialog.selectedFiles().isEmpty())
             fn = dialog.selectedFiles()[0];
     }
-    if (!fn.isEmpty())
-        if (checkPath(fn) && checkPath(takeDirPath(fn))) {
+    if (!fn.isEmpty()) {
+        QString dir = toNativeSeparators(fn.left(fn.count() - takeFileExt(fn).count() - 1) + "/");
+        if (checkPath(fn) &&
+                checkPath(dir + ARTS_KEY, true) &&
+                checkPath(dir + AUTHORS_KEY, true) &&
+                checkPath(dir + ERAS_KEY, true)) {
             QJsonParseError log;
-            if (readJson(fn, json, log))
+            if (readJson(fn, json, log)) {
                 if (log.error == QJsonParseError::NoError) {
-                    settings[WELCOME_LAST_FILE_KEY] = fn;
-                    settings[WELCOME_LAST_PATH_KEY] = takeDirPath(fn);
-                    dataReady(fn, json);
+                    QJsonObject schema;
+                    readJson(RESOURCE_SCHEMA, schema, log);
+                    if (isValidSchema(json, schema)) {
+                        settings[WELCOME_LAST_FILE_KEY] = fn;
+                        settings[WELCOME_LAST_PATH_KEY] = takeDirPath(fn);
+                        dataReady(fn, json);
+                    } else {
+                        showMsg(QMessageBox::Critical, errorsMsg[ERRORS_INVALID_SCHEMA_KEY].toString());
+                    }
+                } else {
+                    showMsg(QMessageBox::Critical, log.errorString());
                 }
+            } else {
+                showMsg(QMessageBox::Critical, errorsMsg[ERRORS_READ_FILE_KEY].toString());
+            }
+        } else {
+            showMsg(QMessageBox::Critical, errorsMsg[ERRORS_CHECK_PATH_KEY].toString());
         }
-
+    }
 }
 
 void WelcomeScreen::on_openLastBase_clicked()

@@ -344,6 +344,11 @@ void ItemEditor::fillAuthors()
     else
         list = stringArrayToList(itemTemplate[ARTS_AUTHORS_KEY].toArray());
     list.sort(Qt::CaseInsensitive);
+    for (int i = 0; i < list.count(); i++)
+        if (!authors.contains(list[i])) {
+            list.removeAt(i);
+            i--;
+        }
     tableFromList(ui->authorTable, list);
 }
 

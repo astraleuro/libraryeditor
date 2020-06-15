@@ -12,7 +12,7 @@ MainList::MainList(QWidget *parent) :
 
 }
 
-void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool changed)
+void MainList::initData(LogCollector *logDialog, QString fn, QJsonObject &data, QJsonObject &opt, bool changed)
 {
     jsonPath = fn;
     allSettings = opt;
@@ -21,6 +21,7 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
     errorsMsg = opt[ERRORS_SUBSECTION_KEY].toObject();
     isChanged = changed;
     jsonFile = fn;
+    logCollector = logDialog;
 
     settings[ML_EXPORT_TO_JSON_KEY] = settings[ML_EXPORT_TO_JSON_KEY].toString(ML_EXPORT_TO_JSON);
     settings[ML_SAVE_BUTTON_KEY] = settings[ML_SAVE_BUTTON_KEY].toString(ML_SAVE_BUTTON);
@@ -32,6 +33,9 @@ void MainList::initData(QString fn, QJsonObject &data, QJsonObject &opt, bool ch
     settings[ML_FILE_SIZE_LABEL_KEY] = settings[ML_FILE_SIZE_LABEL_KEY].toString(ML_FILE_SIZE_LABEL);
     settings[ML_FILES_LABEL_KEY] = settings[ML_FILES_LABEL_KEY].toString(ML_FILES_LABEL);
     settings[ML_FILE_DATE_FORMAT_KEY] = settings[ML_FILE_DATE_FORMAT_KEY].toString(ML_FILE_DATE_FORMAT);
+    settings[ARTS_KEY] = settings[ARTS_KEY].toString(ARTS_LABEL);
+    settings[AUTHORS_KEY] = settings[AUTHORS_KEY].toString(AUTHORS_LABEL);
+    settings[ERAS_KEY] = settings[ERAS_KEY].toString(ERAS_LABEL);
     if (!isValidDateFormat(settings[ML_FILE_DATE_FORMAT_KEY].toString()))
         settings[ML_FILE_DATE_FORMAT_KEY] = ML_FILE_DATE_FORMAT;
 
@@ -60,6 +64,122 @@ MainList::~MainList()
     delete ui;
 }
 
+bool MainList::checkFiles(QStringList &list)
+{
+    bool isOk, isAllOk = true;
+    QString path = toNativeSeparators(jsonFile.left(jsonFile.count() - takeFileExt(jsonFile).count() - 1) + "/");
+    QStringList files;
+    QStringList flSections = QString(FILE_SECTION_KEY).split(SEPARATOR);
+    QStringList arrSections = QString(ARRAY_SECTION_KEY).split(SEPARATOR);
+    list.append(errorsMsg[ERRORS_CHECK_FILES_BEGIN_KEY].toString());
+    QString sub;
+    for (int i = 0; i < 3; i++) {
+        list.append("");
+        isOk = true;
+        switch (i) {
+        case 0:
+            list.append(errorsMsg[ERRORS_CHECK_FILES_SECTION_BEGIN_KEY].toString() + " \"" + settings[ARTS_KEY].toString() + "\":");
+            sub = toNativeSeparators(QString(ARTS_KEY) + "/");
+            break;
+        case 1:
+            list.append(errorsMsg[ERRORS_CHECK_FILES_SECTION_BEGIN_KEY].toString() + " \"" + settings[AUTHORS_KEY].toString() + "\":");
+            sub = toNativeSeparators(QString(AUTHORS_KEY) + "/");
+            break;
+        case 2:
+            list.append(errorsMsg[ERRORS_CHECK_FILES_SECTION_BEGIN_KEY].toString() + " \"" + settings[ERAS_KEY].toString() + "\":");
+            sub = toNativeSeparators(QString(ERAS_KEY) + "/");
+            break;
+        }
+        files = takeListByObjectKey(flSections[i], jsonData[arrSections[i]].toArray());
+        for (int j = 0; j < files.count(); j++)
+            if (!checkPath(path + sub + files[j])) {
+                list.append(errorsMsg[ERRORS_FILE_NOT_FOUND_KEY].toString() + " - " + files[j]);
+                isOk = false;
+                isAllOk = false;
+            }
+        if (isOk)
+            list.append(errorsMsg[ERRORS_NOT_FOUND_KEY].toString());
+    }
+    list.append("");
+    return isAllOk;
+}
+
+bool MainList::checkAuthors(QStringList &list)
+{
+    bool isOk = true;
+    QJsonArray authors = jsonData[AUTHORS_KEY].toArray();
+    QJsonObject author;
+    list.append(errorsMsg[ERRORS_CHECK_AUTHORS_BEGIN_KEY].toString());
+    for (int i = 0; i < authors.count(); i++) {
+        author = authors[i].toObject();
+        if (author[AUTHORS_INFO_KEY].toString().isEmpty()) {
+            list.append("\"" + author[AUTHORS_NAME_KEY].toString() + "\" - " + errorsMsg[ERRORS_CHECK_AUTHORS_INFO_EMPTY_KEY].toString());
+            isOk = false;
+        }
+    }
+    if (isOk) {
+        list.append(errorsMsg[ERRORS_NOT_FOUND_KEY].toString());
+    }
+    list.append("");
+    return isOk;
+}
+
+bool MainList::checkArts(QStringList &list)
+{
+    bool isOk = true;
+    QJsonArray arts = jsonData[ARTS_KEY].toArray();
+    QStringList eras = takeListByObjectKey(ERAS_NAME_KEY, jsonData[ERAS_KEY].toArray());
+    QStringList authors = takeListByObjectKey(AUTHORS_NAME_KEY, jsonData[AUTHORS_KEY].toArray());
+    QString artEra;
+    QStringList artAuthors;
+    QJsonObject art;
+    list.append(errorsMsg[ERRORS_CHECK_ARTS_BEGIN_KEY].toString());
+    for (int i = 0; i < arts.count(); i++) {
+        art = arts[i].toObject();
+        artEra = art[ARTS_ERA_KEY].toString();
+        artAuthors = stringArrayToList(art[ARTS_AUTHORS_KEY].toArray());
+        if (artEra.isEmpty()) {
+            list.append("\"" + art[ARTS_NAME_KEY].toString() + "\" - " + errorsMsg[ERRORS_CHECK_ARTS_ERA_EMPTY_KEY].toString());
+            isOk = false;
+        } else {
+            if (!eras.contains(artEra)) {
+                list.append("\"" + art[ARTS_NAME_KEY].toString() + "\" - " + errorsMsg[ERRORS_CHECK_ARTS_ERA_NOT_FOUND_KEY].toString() +
+                            " \"" + artEra + "\"");
+                isOk = false;
+            }
+        }
+        if (artAuthors.isEmpty()) {
+            list.append("\"" + art[ARTS_NAME_KEY].toString() + "\" - " + errorsMsg[ERRORS_CHECK_ARTS_AUTHORS_EMPTY_KEY].toString());
+            isOk = false;
+        } else {
+            for (int j = 0; j < artAuthors.count(); j++) {
+                if (!authors.contains(artAuthors[j])) {
+                    list.append("\"" + art[ARTS_NAME_KEY].toString() + "\" - " + errorsMsg[ERRORS_CHECK_ARTS_AUTHOR_NOT_FOUND_KEY].toString() +
+                                " \"" + artAuthors[j] + "\"");
+                    isOk = false;
+                }
+            }
+        }
+        if (art[ARTS_INFO_KEY].toString().isEmpty()) {
+            list.append("\"" + art[ARTS_NAME_KEY].toString() + "\" - " + errorsMsg[ERRORS_CHECK_ARTS_INFO_EMPTY_KEY].toString());
+            isOk = false;
+        }
+    }
+    if (isOk)
+        list.append(errorsMsg[ERRORS_NOT_FOUND_KEY].toString());
+    list.append("");
+    return isOk;
+}
+
+bool MainList::isCheck()
+{
+    check.clear();
+    if (checkArts(check) & checkAuthors(check) & checkFiles(check))
+        return true;
+    else
+        return false;
+}
+
 void MainList::updateInfo()
 {
     ui->pathInfo->setText(takeDirPath(jsonFile));
@@ -75,31 +195,20 @@ void MainList::updateInfo()
         takeHumanReadableSize(dirSize(path + AUTHORS_KEY)) + "\n" +
         settings[ERAS_KEY].toString() + ": " + QString::number(filesCount(path + ERAS_KEY)) + " " + settings[ML_FILES_LABEL_KEY].toString() + ", " +
         takeHumanReadableSize(dirSize(path + ERAS_KEY));
+
     ui->filesInfo->setText(info);
-
-    if (settings[ARTS_KEY].toString().isEmpty()) {
-        settings[ARTS_KEY] = ARTS_LABEL;
-        ui->artsButton->setText(QString(ARTS_LABEL) +
+    ui->artsButton->setText(settings[ARTS_KEY].toString() +
                                 " (" + QString::number(jsonData[ARTS_KEY].toArray().count()) + ")");
-    } else
-        ui->artsButton->setText(settings[ARTS_KEY].toString() +
-                                " (" + QString::number(jsonData[ARTS_KEY].toArray().count()) + ")");
-
-    if (settings[AUTHORS_KEY].toString().isEmpty()) {
-        settings[AUTHORS_KEY] = AUTHORS_LABEL;
-        ui->authorsButton->setText(QString(AUTHORS_LABEL) +
-                                   " (" + QString::number(jsonData[AUTHORS_KEY].toArray().count()) + ")");
-    } else
-        ui->authorsButton->setText(settings[AUTHORS_KEY].toString() +
-                                   " (" + QString::number(jsonData[AUTHORS_KEY].toArray().count()) + ")");
-
-    if (settings[ERAS_KEY].toString().isEmpty()) {
-        settings[ERAS_KEY] = ERAS_LABEL;
-        ui->erasButton->setText(QString(ERAS_LABEL) +
+    ui->authorsButton->setText(settings[AUTHORS_KEY].toString() +
+                                " (" + QString::number(jsonData[AUTHORS_KEY].toArray().count()) + ")");
+    ui->erasButton->setText(settings[ERAS_KEY].toString() +
                                 " (" + QString::number(jsonData[ERAS_KEY].toArray().count()) + ")");
-    } else
-        ui->erasButton->setText(settings[ERAS_KEY].toString() +
-                                " (" + QString::number(jsonData[ERAS_KEY].toArray().count()) + ")");
+
+    if (isCheck()) {
+        ui->checkInfo->setText(errorsMsg[ERRORS_NOT_FOUND_KEY].toString());
+    } else {
+        ui->checkInfo->setText(errorsMsg[ERRORS_FOUND_KEY].toString() + " <a href=\"details\">" + errorsMsg[ERRORS_DETAILS_KEY].toString() + "</a>");
+    }
 }
 
 void MainList::merge()
@@ -128,22 +237,28 @@ void MainList::merge()
                         QString out = jsonFile.left(jsonFile.count() - takeFileExt(jsonFile).count() - 1);
                         fn = fn.left(fn.count() - takeFileExt(fn).count() - 1);
                         QJsonObject mergeData;
+                        log.clear();
+                        log.append(errorsMsg[ERRORS_MERGE_SECTION_KEY].toString() + " \"" + settings[ARTS_KEY].toString() + "\":");
                         mergeData[ARTS_KEY] = mergeArrays(
                                     toNativeSeparators(fn + "/" + ARTS_KEY + "/"),
                                     toNativeSeparators(out + "/"),
-                                    "." + QString(ARTS_KEY),
+                                    ARTS_KEY,
                                     filePathKeys[0], uniqueByKey[0], newestByKey,
                                     json[ARTS_KEY].toArray(), jsonData[ARTS_KEY].toArray());
+                        log.append("");
+                        log.append(errorsMsg[ERRORS_MERGE_SECTION_KEY].toString() + " \"" + settings[AUTHORS_KEY].toString() + "\":");
                         mergeData[AUTHORS_KEY] = mergeArrays(
                                     toNativeSeparators(fn + "/" + AUTHORS_KEY + "/"),
                                     toNativeSeparators(out + "/"),
-                                    "." + QString(AUTHORS_KEY),
+                                    AUTHORS_KEY,
                                     filePathKeys[1], uniqueByKey[1], newestByKey,
                                     json[AUTHORS_KEY].toArray(), jsonData[AUTHORS_KEY].toArray());
+                        log.append("");
+                        log.append(errorsMsg[ERRORS_MERGE_SECTION_KEY].toString() + " \"" + settings[AUTHORS_KEY].toString() + "\":");
                         mergeData[ERAS_KEY] = mergeArrays(
                                     toNativeSeparators(fn + "/" + ERAS_KEY + "/"),
                                     toNativeSeparators(out + "/"),
-                                    "." + QString(ERAS_KEY),
+                                    ERAS_KEY,
                                     filePathKeys[2], uniqueByKey[2], newestByKey,
                                     json[ERAS_KEY].toArray(), jsonData[ERAS_KEY].toArray());
                         QMessageBox msg(QMessageBox::Information, errorsMsg[ERRORS_TITLE_KEY].toString(), "",
@@ -163,11 +278,12 @@ void MainList::merge()
                             msg.exec();
                             dataNotMerged();
                         }
-                        /*if (msg.result() == QMessageBox::Yes) {
-                            logDialog->setModal(false);
-                            if (!logDialog.isVisibly)
-                                logDialog->show();
-                        }*/
+                        if (msg.result() == QMessageBox::Yes) {
+                            logCollector->fillLog(log);
+                            logCollector->setModal(false);
+                            if (!logCollector->isVisible())
+                                logCollector->show();
+                        }
 
                     }
             }
@@ -184,7 +300,8 @@ QJsonArray MainList::mergeArrays(QString inPath, QString outPath, QString secSuf
                                  QString filePathKey, QString uniqueByKey, QString newestByKey,
                                  QJsonArray inArr, QJsonArray outArr)
 {
-    QString tmpPath = toNativeSeparators(outPath + secSuffix + "/");
+    QString tmpPath = toNativeSeparators(outPath + "." + secSuffix + "/");
+    outPath = toNativeSeparators(outPath + secSuffix + "/");
     QStringList outPaths({outPath, tmpPath});
     QString outFn;
     QJsonObject obj;
@@ -192,26 +309,32 @@ QJsonArray MainList::mergeArrays(QString inPath, QString outPath, QString secSuf
     checkPath(tmpPath, true);
 
     isMergeOk = true;
+    bool isFileAdd;
     int existIndex;
     for (int i = 0; i < inArr.count(); i++) {
+        isFileAdd = true;
         existIndex = indexOfObjectByKey(uniqueByKey,inArr[i].toObject()[uniqueByKey].toString(), outArr);
         obj = inArr[i].toObject();
         outFn = toFileNameWithIndex(obj[filePathKey].toString(), outPaths);
-        if (copyFile(inPath + obj[filePathKey].toString(), tmpPath + outFn))
-            log.append(errorsMsg[ERRORS_MERGE_FILE_ADDED_KEY].toString() + ": " + outFn);
-        else {
-            log.append(errorsMsg[ERRORS_MERGE_FILE_ADD_FAIL_KEY].toString() + ": " + outFn);
-            isMergeOk = false;
-        }
         obj[filePathKey] = outFn;
         if (existIndex == -1) {
-            log.append(errorsMsg[ERRORS_MERGE_ITEM_ADDED_KEY].toString() + ": " + obj[uniqueByKey].toString());
+            log.append(errorsMsg[ERRORS_MERGE_ITEM_ADDED_KEY].toString() + " - " + obj[uniqueByKey].toString());
             outArr.append(obj);
         } else if (obj[newestByKey].toString() > outArr[existIndex].toObject()[newestByKey].toString()) {
-            log.append(errorsMsg[ERRORS_MERGE_ITEM_CHANGED_KEY].toString() + ": " + obj[uniqueByKey].toString());
+            log.append(errorsMsg[ERRORS_MERGE_ITEM_CHANGED_KEY].toString() + " - " + obj[uniqueByKey].toString());
             outArr[existIndex] = obj;
-        } else
-            log.append(errorsMsg[ERRORS_MERGE_ITEM_SKIPPED_KEY].toString() + ": " + obj[uniqueByKey].toString());
+        } else {
+            log.append(errorsMsg[ERRORS_MERGE_ITEM_SKIPPED_KEY].toString() + " - " + obj[uniqueByKey].toString());
+            isFileAdd = false;
+        }
+        if (isFileAdd) {
+            if (copyFile(inPath + inArr[i].toObject()[filePathKey].toString(), tmpPath + outFn))
+                log.append(errorsMsg[ERRORS_MERGE_FILE_ADDED_KEY].toString() + " - " + outFn);
+            else {
+                log.append(errorsMsg[ERRORS_MERGE_FILE_ADD_FAIL_KEY].toString() + " - " + outFn);
+                isMergeOk = false;
+            }
+        }
     }
     return outArr;
 }
@@ -323,4 +446,12 @@ void MainList::on_mergeButton_clicked()
             merge();
         }
     }
+}
+
+void MainList::on_checkInfo_linkActivated(const QString &link)
+{
+    UNUSED(link);
+    logCollector->fillLog(check);
+    if (!logCollector->isVisible())
+        logCollector->show();
 }
