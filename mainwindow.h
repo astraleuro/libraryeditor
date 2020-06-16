@@ -38,6 +38,7 @@ protected slots:
     void saveImages();
     void removeAuthorsInArts(QString subkey, QString key);
     void clearEraInArts(QString subkey, QString key);
+    void changeKeyArgInArts(QString prevArg, QString newArg, QString key);
     void updateData();
 
 protected:

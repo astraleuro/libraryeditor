@@ -213,3 +213,32 @@ bool isValidSchema(QJsonValue file, QJsonValue schema)
     } else
         return false;
 }
+
+QJsonArray changeKeyInObjectArray(QString prevArg, QString newArg, QString key, QJsonArray array)
+{
+    QJsonObject object;
+    QJsonArray subArray;
+    bool isReplaced;
+    for (int i = 0; i < array.count(); i++) {
+        object = array[i].toObject();
+        if (object.keys().contains(key)) {
+            if (object[key].isString() && object[key].toString() == prevArg) {
+                object[key] = newArg;
+                array[i] = object;
+            } else if (object[key].isArray()){
+                isReplaced = false;
+                subArray = object[key].toArray();
+                for (int j = 0; j < subArray.count(); j++)
+                    if (subArray[j].toString() == prevArg) {
+                        subArray[j] = newArg;
+                        object[key] = subArray;
+                        isReplaced = true;
+                        break;
+                    }
+                if (isReplaced)
+                    array[i] = object;
+            }
+        }
+    }
+    return array;
+}

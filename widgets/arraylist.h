@@ -65,6 +65,7 @@ signals:
     void sendAuthors(QStringList&);
     void removeAuthorsInArts(QString, QString);
     void clearEraInArts(QString, QString);
+    void changeKeyArgInArts(QString, QString, QString);
 
 private slots:
     void applyFilter();

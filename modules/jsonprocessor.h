@@ -19,6 +19,7 @@ void removeArraySelectedItems(QJsonArray &array, QList<QTableWidgetItem*> range)
 QStringList takeListByObjectKey(QString key, QJsonArray array);
 QJsonArray clearKeyInObjectArray(QString subkey, QString key, QJsonArray array);
 QJsonArray removeKeyInObjectArray(QString subkey, QString key, QJsonArray array);
+QJsonArray changeKeyInObjectArray(QString prevArg, QString newArg, QString key, QJsonArray array);
 QJsonArray modifyObjectsKeyInArray(QString prefix, QString key, QJsonArray array);
 QJsonArray bubbleSortByKey(QJsonArray array, QString key, bool order, QVector<int> &swaps);
 int indexOfObjectByKey(QString uniqueKey, QString data, QJsonArray array);

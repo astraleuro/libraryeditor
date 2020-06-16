@@ -23,9 +23,6 @@ ArrayList::ArrayList(QWidget *parent) :
     ui->filterBox->setVisible(false);
     ui->sortBox->setVisible(false);
 
-    //void readyForEras();
-    //void fillEras(QStringList &list);
-
     ui->disableFilter->setMaximumWidth(ui->disableFilter->height());
     ui->disableSort->setMaximumWidth(ui->disableSort->height());
 
@@ -188,12 +185,28 @@ QJsonObject ArrayList::takeSettings()
 
 void ArrayList::changeItem(QJsonObject data, int row)
 {
+    QString key;
+    QString newArg;
     if (row == -1) {
         jsonArray.append(data);
         ui->arrayTable->insertRow(ui->arrayTable->rowCount());
         addImageItem(ui->arrayTable->rowCount() - 1, data);
         adoptText(ui->arrayTable->rowCount() - 1);
     } else {
+        switch (section) {
+        case ArtsSection:
+            break;
+        case AuthorsSection:
+            newArg = data[AUTHORS_NAME_KEY].toString();
+            key = settings[AL_AUTHORS_KEY_FOR_ARTS_LIST_KEY].toString();
+            changeKeyArgInArts(jsonArray[row].toObject()[AUTHORS_NAME_KEY].toString(), newArg, key);
+            break;
+        case ErasSection:
+            newArg = data[ERAS_NAME_KEY].toString();
+            key = settings[AL_ERAS_KEY_FOR_ARTS_LIST_KEY].toString();
+            changeKeyArgInArts(jsonArray[row].toObject()[ERAS_NAME_KEY].toString(), newArg, key);
+            break;
+        }
         jsonArray[row] = data;
         addImageItem(row, data);
         adoptText(row);

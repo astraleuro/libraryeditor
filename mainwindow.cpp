@@ -165,6 +165,7 @@ void MainWindow::showArrayList(JsonDataSections sec)
     connect(arrayList, SIGNAL(dataChanged()), this, SLOT(setChanged()));
     connect(arrayList, SIGNAL(removeAuthorsInArts(QString, QString)), this, SLOT(removeAuthorsInArts(QString, QString)));
     connect(arrayList, SIGNAL(clearEraInArts(QString, QString)), this, SLOT(clearEraInArts(QString, QString)));
+    connect(arrayList, SIGNAL(changeKeyArgInArts(QString, QString, QString)), this, SLOT(changeKeyArgInArts(QString, QString, QString)));
     arrayList->initData(jsonPath, jsonData, allSettings, sec);
     mainLayout->addWidget(arrayList);
 }
@@ -249,6 +250,11 @@ void MainWindow::removeAuthorsInArts(QString subkey, QString key)
 void MainWindow::clearEraInArts(QString subkey, QString key)
 {
     jsonData[ARTS_KEY] = clearKeyInObjectArray(subkey, key, jsonData[ARTS_KEY].toArray());
+}
+
+void MainWindow::changeKeyArgInArts(QString prevArg, QString newArg, QString key)
+{
+    jsonData[ARTS_KEY] = changeKeyInObjectArray(prevArg, newArg, key, jsonData[ARTS_KEY].toArray());
 }
 
 void MainWindow::updateData()
