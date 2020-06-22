@@ -82,16 +82,16 @@ void MainWindow::openFile(QString fn)
 MainWindow::~MainWindow()
 {
     if (isChanged) {
-        if (arrayList != nullptr) {
-            switch (arrayList->takeSection()) {
+        if (itemList != nullptr) {
+            switch (itemList->takeSection()) {
             case ArtsSection:
-                jsonData[ARTS_KEY] = arrayList->takeData();
+                jsonData[ARTS_KEY] = itemList->takeData();
                 break;
             case AuthorsSection:
-                jsonData[AUTHORS_KEY] = arrayList->takeData();
+                jsonData[AUTHORS_KEY] = itemList->takeData();
                 break;
             case ErasSection:
-                jsonData[ERAS_KEY] = arrayList->takeData();
+                jsonData[ERAS_KEY] = itemList->takeData();
                 break;
             }
         }
@@ -129,45 +129,45 @@ void MainWindow::showWelcomeScreen()
     isChanged = false;
     welcomeScreen = new WelcomeScreen;
     connect(welcomeScreen, SIGNAL(settingsChanged(QString, QJsonObject)), this, SLOT(saveSettings(QString, QJsonObject)));
-    connect(welcomeScreen, SIGNAL(dataReady(QString, QJsonObject&)), this, SLOT(showMainList(QString, QJsonObject&)));
+    connect(welcomeScreen, SIGNAL(dataReady(QString, QJsonObject&)), this, SLOT(showMainMenu(QString, QJsonObject&)));
     connect(welcomeScreen, SIGNAL(closeApp()), this, SLOT(closeApp()));
     welcomeScreen->initData(allSettings, defaultPath);
     mainLayout->addWidget(welcomeScreen);
 }
 
-void MainWindow::showMainList(QString fn, QJsonObject &data)
+void MainWindow::showMainMenu(QString fn, QJsonObject &data)
 {
     jsonPath = fn;
     if (&jsonData != &data)
         jsonData = data;
 
     clearMainLayout();
-    mainList = new MainList;
-    connect(mainList, SIGNAL(goBack()), this, SLOT(showWelcomeScreen()));
-    connect(mainList, SIGNAL(settingsChanged(QString, QJsonObject)), this, SLOT(saveSettings(QString, QJsonObject)));
-    connect(mainList, SIGNAL(showArrayList(JsonDataSections)), this, SLOT(showArrayList(JsonDataSections)));
-    connect(mainList, SIGNAL(dataSaved()), this, SLOT(setSaved()));
-    connect(mainList, SIGNAL(saveImages()), this, SLOT(saveImages()));
-    connect(mainList, SIGNAL(dataMerged()), this, SLOT(updateData()));
-    connect(mainList, SIGNAL(dataNotMerged()), this, SLOT(saveImages()));
-    mainList->initData(&logCollector, jsonPath, jsonData, allSettings, isChanged);
-    mainLayout->addWidget(mainList);
+    mainMenu = new MainMenu;
+    connect(mainMenu, SIGNAL(goBack()), this, SLOT(showWelcomeScreen()));
+    connect(mainMenu, SIGNAL(settingsChanged(QString, QJsonObject)), this, SLOT(saveSettings(QString, QJsonObject)));
+    connect(mainMenu, SIGNAL(showItemList(JsonDataSections)), this, SLOT(showItemList(JsonDataSections)));
+    connect(mainMenu, SIGNAL(dataSaved()), this, SLOT(setSaved()));
+    connect(mainMenu, SIGNAL(saveImages()), this, SLOT(saveImages()));
+    connect(mainMenu, SIGNAL(dataMerged()), this, SLOT(updateData()));
+    connect(mainMenu, SIGNAL(dataNotMerged()), this, SLOT(saveImages()));
+    mainMenu->initData(&logCollector, jsonPath, jsonData, allSettings, isChanged);
+    mainLayout->addWidget(mainMenu);
 }
 
-void MainWindow::showArrayList(JsonDataSections sec)
+void MainWindow::showItemList(JsonDataSections sec)
 {
     clearMainLayout();
-    arrayList = new ArrayList;
-    connect(arrayList, SIGNAL(goBack()), this, SLOT(backFromArrayList()));
-    connect(arrayList, SIGNAL(settingsChanged(QString, QJsonObject)), this, SLOT(saveSettings(QString, QJsonObject)));
-    connect(arrayList, SIGNAL(readyForEras(QString)), this, SLOT(sendEras(QString)));
-    connect(arrayList, SIGNAL(readyForAuthors(QString)), this, SLOT(sendAuthors(QString)));
-    connect(arrayList, SIGNAL(dataChanged()), this, SLOT(setChanged()));
-    connect(arrayList, SIGNAL(removeAuthorsInArts(QString, QString)), this, SLOT(removeAuthorsInArts(QString, QString)));
-    connect(arrayList, SIGNAL(clearEraInArts(QString, QString)), this, SLOT(clearEraInArts(QString, QString)));
-    connect(arrayList, SIGNAL(changeKeyArgInArts(QString, QString, QString)), this, SLOT(changeKeyArgInArts(QString, QString, QString)));
-    arrayList->initData(jsonPath, jsonData, allSettings, sec);
-    mainLayout->addWidget(arrayList);
+    itemList = new ItemList;
+    connect(itemList, SIGNAL(goBack()), this, SLOT(backFromItemList()));
+    connect(itemList, SIGNAL(settingsChanged(QString, QJsonObject)), this, SLOT(saveSettings(QString, QJsonObject)));
+    connect(itemList, SIGNAL(readyForEras(QString)), this, SLOT(sendEras(QString)));
+    connect(itemList, SIGNAL(readyForAuthors(QString)), this, SLOT(sendAuthors(QString)));
+    connect(itemList, SIGNAL(dataChanged()), this, SLOT(setChanged()));
+    connect(itemList, SIGNAL(removeAuthorsInArts(QString, QString)), this, SLOT(removeAuthorsInArts(QString, QString)));
+    connect(itemList, SIGNAL(clearEraInArts(QString, QString)), this, SLOT(clearEraInArts(QString, QString)));
+    connect(itemList, SIGNAL(changeKeyArgInArts(QString, QString, QString)), this, SLOT(changeKeyArgInArts(QString, QString, QString)));
+    itemList->initData(jsonPath, jsonData, allSettings, sec);
+    mainLayout->addWidget(itemList);
 }
 
 void MainWindow::saveSettings(QString key, QJsonObject keySettings)
@@ -175,32 +175,32 @@ void MainWindow::saveSettings(QString key, QJsonObject keySettings)
     allSettings[key] = keySettings;
 }
 
-void MainWindow::backFromArrayList()
+void MainWindow::backFromItemList()
 {
-    switch (arrayList->takeSection()) {
+    switch (itemList->takeSection()) {
     case ArtsSection:
-        jsonData[ARTS_KEY] = arrayList->takeData();
+        jsonData[ARTS_KEY] = itemList->takeData();
         break;
     case AuthorsSection:
-        jsonData[AUTHORS_KEY] = arrayList->takeData();
+        jsonData[AUTHORS_KEY] = itemList->takeData();
         break;
     case ErasSection:
-        jsonData[ERAS_KEY] = arrayList->takeData();
+        jsonData[ERAS_KEY] = itemList->takeData();
         break;
     }
-    showMainList(jsonPath, jsonData);
+    showMainMenu(jsonPath, jsonData);
 }
 
 void MainWindow::sendEras(QString key)
 {
     QStringList eras = objectArrayToList(jsonData[ERAS_KEY].toArray(), key);
-    arrayList->sendEras(eras);
+    itemList->sendEras(eras);
 }
 
 void MainWindow::sendAuthors(QString key)
 {
     QStringList authors = objectArrayToList(jsonData[AUTHORS_KEY].toArray(), key);
-    arrayList->sendAuthors(authors);
+    itemList->sendAuthors(authors);
 }
 
 void MainWindow::closeApp()
@@ -259,7 +259,7 @@ void MainWindow::changeKeyArgInArts(QString prevArg, QString newArg, QString key
 
 void MainWindow::updateData()
 {
-    jsonData = mainList->takeData();
+    jsonData = mainMenu->takeData();
     saveImages();
     isChanged = true;
 }
@@ -300,15 +300,15 @@ void MainWindow::clearMainLayout()
         delete welcomeScreen;
         welcomeScreen = nullptr;
     }
-    if (mainList != nullptr) {
-        mainLayout->removeWidget(mainList);
-        delete mainList;
-        mainList = nullptr;
+    if (mainMenu != nullptr) {
+        mainLayout->removeWidget(mainMenu);
+        delete mainMenu;
+        mainMenu = nullptr;
     }
-    if (arrayList != nullptr) {
-        mainLayout->removeWidget(arrayList);
-        delete arrayList;
-        arrayList = nullptr;
+    if (itemList != nullptr) {
+        mainLayout->removeWidget(itemList);
+        delete itemList;
+        itemList = nullptr;
     }
 }
 

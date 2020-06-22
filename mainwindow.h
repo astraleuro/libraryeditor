@@ -8,8 +8,8 @@
 
 #include "defines.h"
 #include "widgets/welcomescreen.h"
-#include "widgets/mainlist.h"
-#include "widgets/arraylist.h"
+#include "widgets/mainmenu.h"
+#include "widgets/itemlist.h"
 #include "modules/fsprocessor.h"
 #include "modules/jsonprocessor.h"
 #include "widgets/logcollector.h"
@@ -26,10 +26,10 @@ public:
 
 protected slots:
     void showWelcomeScreen();
-    void showMainList(QString fn, QJsonObject &data);
-    void showArrayList(JsonDataSections sec);
+    void showMainMenu(QString fn, QJsonObject &data);
+    void showItemList(JsonDataSections sec);
     void saveSettings(QString key, QJsonObject keySettings);
-    void backFromArrayList();
+    void backFromItemList();
     void sendEras(QString key);
     void sendAuthors(QString key);
     void closeApp();
@@ -49,8 +49,8 @@ protected:
 private:
     QVBoxLayout *mainLayout = new QVBoxLayout;
     WelcomeScreen *welcomeScreen = nullptr;
-    MainList *mainList = nullptr;
-    ArrayList *arrayList = nullptr;
+    MainMenu *mainMenu = nullptr;
+    ItemList *itemList = nullptr;
     QString configPath, jsonPath, defaultPath;
     QJsonObject allSettings, settings, jsonData, errorsMsg;
     bool isChanged = false;

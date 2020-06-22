@@ -2,7 +2,9 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11 -Wunused-parameter
+CONFIG += c++11
+
+QMAKE_LFLAGS_RELEASE += -static -static-libgcc
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -22,12 +24,12 @@ SOURCES += \
     modules/jsonprocessor.cpp \
     modules/tableprocessor.cpp \
     modules/txtprocessor.cpp \
-    widgets/arraylist.cpp \
-    widgets/chooselist.cpp \
+    widgets/authorchoose.cpp \
     widgets/itemeditor.cpp \
+    widgets/itemlist.cpp \
     widgets/jsonexport.cpp \
     widgets/logcollector.cpp \
-    widgets/mainlist.cpp \
+    widgets/mainmenu.cpp \
     widgets/welcomescreen.cpp
 
 HEADERS += \
@@ -38,21 +40,21 @@ HEADERS += \
     modules/tableprocessor.h \
     modules/txtprocessor.h \
     templates.h \
-    widgets/arraylist.h \
-    widgets/chooselist.h \
+    widgets/authorchoose.h \
     widgets/itemeditor.h \
+    widgets/itemlist.h \
     widgets/jsonexport.h \
     widgets/logcollector.h \
-    widgets/mainlist.h \
+    widgets/mainmenu.h \
     widgets/welcomescreen.h
 
 FORMS += \
-    widgets/arraylist.ui \
-    widgets/chooselist.ui \
+    widgets/authorchoose.ui \
     widgets/itemeditor.ui \
+    widgets/itemlist.ui \
     widgets/jsonexport.ui \
     widgets/logcollector.ui \
-    widgets/mainlist.ui \
+    widgets/mainmenu.ui \
     widgets/welcomescreen.ui
 
 # Default rules for deployment.

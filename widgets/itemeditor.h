@@ -19,7 +19,7 @@
 #include "modules/jsonprocessor.h"
 #include "modules/txtprocessor.h"
 #include "modules/tableprocessor.h"
-#include "widgets/chooselist.h"
+#include "widgets/authorchoose.h"
 
 class ItemEditor;
 
@@ -105,7 +105,7 @@ private:
     QAction *saveTemplateA, *clearTemplateA;
     QFileDialog dialog;
     QStringList eras, authors;
-    ChooseList authorsList;
+    AuthorChoose authorsList;
     bool isImageChanged = false;
     QString rankType;
     QString tmpFilePath;
